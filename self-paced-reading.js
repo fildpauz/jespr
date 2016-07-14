@@ -15,6 +15,15 @@ var exptFontname;   // Font to be used for main display elements
 var exptFontsize;   // Base font size to be used for main display elements
 
 /*
+ * A function to run the whole experiment from initialization to administration
+ * to clean-up afterward.
+ */
+function doExperiment(){
+    loadExperiment();
+    initExperiment();
+}
+
+/*
  * Load experimental design and stimuli
  */
 function loadExperiment(){

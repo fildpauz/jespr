@@ -1,0 +1,80 @@
+{
+    "title": "My self-paced reading experiment",
+    "investigators": {
+        "investigator": "Ima Jeanyuss",
+        "investigator": "Dawn Tchannou"
+    },
+    "font-name": "Courier new",
+    "font-size": "12",
+    "text-color": "black",
+    "background-color": "white",
+    "display": "moving window",
+    "masking character": "_",
+    "fixation character": "+",
+    "instruction screens": {
+        "instruction screen": "blah blah blah",
+        "instruction screen": "blah blah blah"
+    },
+    "practice-stimuli": {
+        "randomize": "false",
+        "items": {
+            "group": {
+                "item": {
+                    "id": "practice01",
+                    "strings": {
+                        "string": ""
+                    }
+                }
+            }
+        }
+    },
+    "post-practice instructions screens": {
+        "instruction screen": "blah blah blah"
+    },
+    "stimuli": {
+        "name": "my stimuli",
+        "randomize": "true",
+        "items": {
+            "group" : {
+                "tag-template": {
+                    "tags": "condition1//condition2"
+                },
+                "item": {
+                    "id": "item01",
+                    "strings": {
+                        "string": "The|quick|brown|fox//cat|jumped|over|the|lazy|dogs."
+                    }
+                },
+                "item": {
+                    "id": "item01",
+                    "strings": {
+                        "string": "Those|who|believe//conspire|in|telekinetics,|raise|my|hand."
+                    }
+                },
+                "item": {
+                    "id": "item01",
+                    "strings": {
+                        "string": "I'd|rather|live|with|a|good//bad|question|than|a|bad|answer."
+                    }
+                }
+            },
+            "group": {
+                "tag-template": {
+                    "tags": "filler"
+                },
+                "item": {
+                    "id": "filler01",
+                    "strings": {
+                        "string": "Donec|tempor,|magna|quis|efficitur|rutrum,|ligula|nisi."
+                    }
+                },
+                "item": {
+                    "id": "filler02",
+                    "strings": {
+                        "string": "Quisque|ac|velit|viverra,|dictum|velit|a,|tempus."
+                    }
+                }
+            }
+        }
+    }
+}
