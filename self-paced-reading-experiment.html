@@ -9,11 +9,28 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
         <script src="self-paced-reading.js"></script>
     </head>
     <body>
         <script>
-            var experimentDesign = require('./spr-sample1.json');
+            var designFileURL = "https://raw.githubusercontent.com/fildpauz/self-paced-reading.js/master/spr-sample1.json";
+            var experimentDesign;
+            $.getJSON(designFileURL, function (json) {
+                console.log("success");
+                document.write(json.title);
+            })
+                    .done(function () {
+                        console.log("second success");
+                    })
+                    .fail(function () {
+                        console.log("error");
+                    })
+                    .always(function () {
+                        console.log("complete");
+                    });
+            //var experimentDesign = $.parseJSON(json.responseText);
+            //document.write(experimentDesign["title"]);
             doExperiment(); // Start and run the whole thing
         </script>
     </body>
