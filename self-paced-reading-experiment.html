@@ -15,10 +15,10 @@ and open the template in the editor.
     <body>
         <script>
             var designFileURL = "https://raw.githubusercontent.com/fildpauz/self-paced-reading.js/master/spr-sample1.json";
-            var experimentDesign;
+            var experimentTitle;
             $.getJSON(designFileURL, function (json) {
                 console.log("success");
-                document.write(json.title);
+                start(json);
             })
                     .done(function () {
                         console.log("second success");
@@ -29,9 +29,12 @@ and open the template in the editor.
                     .always(function () {
                         console.log("complete");
                     });
-            //var experimentDesign = $.parseJSON(json.responseText);
-            //document.write(experimentDesign["title"]);
-            doExperiment(); // Start and run the whole thing
+
+            function start(experimentDesign) {
+                console.log(experimentDesign.title);
+                loadExperiment(experimentDesign);
+                doExperiment(); // Start and run the whole thing
+            }
         </script>
     </body>
 </html>
