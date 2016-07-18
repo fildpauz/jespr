@@ -16,6 +16,10 @@ var exptFontsize = "12";   // Base font size to be used for main display element
 // Following colors must be HTML supported color names; e.g., http://www.w3schools.com/colors/colors_names.asp
 var exptTextcolor = "black";    // Basic textcolor for stimuli and instructions
 var exptBackgroundcolor = "white";  // Basic background color for all screens
+var exptDisplay = "Moving window";  // Type of Self-paced Reading display
+// Following must be only one character in length
+var exptMaskchar = "_";     // Char to use as masking character during trials
+var exptFixationchar = "+";     // Char to use as fixation symbol between trials
 
 /*
  * A function to run the whole experiment from initialization to administration
@@ -35,6 +39,7 @@ function loadExperiment(design){
     exptFontsize = getFontsize(design);
     exptTextcolor = getTextcolor(design);
     exptBackgroundcolor = getBackgroundcolor(design);
+    exptDisplay = getDisplay(design);
 }
 
 /*
@@ -50,8 +55,9 @@ function initExperiment(){
 /*
  * Log administrative messages about experiment operation
  */
-function log(message){
+function sprLog(message){
     console.log(Date() + ": " + message);
+    // TODO: Store the messages in a variable and submit together with expt data
 }
 
 /*
@@ -67,10 +73,10 @@ function displayErrorMessage(message){
 function getTitle(design){
     if (typeof design["title"] !== 'undefined'){
         return design["title"];
-        log("Set title: \'" + design["title"] + "\'");
+        sprLog("Set title: \'" + design["title"] + "\'");
     } else {
         return exptTitle;
-        log("Title unchanged: \'" + exptTitle + "\'");
+        sprLog("Title unchanged: \'" + exptTitle + "\'");
     }
 }
 
@@ -80,10 +86,10 @@ function getTitle(design){
 function getFontname(design){
     if (typeof design["font-name"] !== 'undefined'){
         return design["font-name"];
-        log("Set font name: \'" + design["font-name"] + "\'");
+        sprLog("Set font name: \'" + design["font-name"] + "\'");
     } else {
         return exptFontname;
-        log("Font name unchanged: \'" + exptFontname + "\'");
+        sprLog("Font name unchanged: \'" + exptFontname + "\'");
     }
 }
 
@@ -93,10 +99,10 @@ function getFontname(design){
 function getFontsize(design){
     if (typeof design["font-size"] !== 'undefined'){
         return design["font-size"];
-        log("Set font size: \'" + design["font-size"] + "\'");
+        sprLog("Set font size: \'" + design["font-size"] + "\'");
     } else {
         return exptFontsize;
-        log("Font size unchanged: \'" + exptFontsize + "\'");
+        sprLog("Font size unchanged: \'" + exptFontsize + "\'");
     }
 }
 
@@ -107,15 +113,15 @@ function getTextcolor(design){
     if (typeof design["text-color"] !== 'undefined'){
         if (validTextColour(design["text-color"])){
             return design["text-color"];
-            log("Set text color: \'" + design["text-color"] + "\'");
+            sprLog("Set text color: \'" + design["text-color"] + "\'");
         } else {
             displayErrorMessage("The color \'" + design["text-color"] + "\' is not defined. Using default text color, \'" + exptTextcolor + "\'.");
             return exptTextcolor;
-            log("Text color unchanged: \'" + exptTextcolor + "\'");
+            sprLog("Text color unchanged: \'" + exptTextcolor + "\'");
         }
     } else {
         return exptTextcolor;
-        log("Text color unchanged: \'" + exptTextcolor + "\'");
+        sprLog("Text color unchanged: \'" + exptTextcolor + "\'");
     }
 }
 
@@ -126,15 +132,33 @@ function getBackgroundcolor(design){
     if (typeof design["background-color"] !== 'undefined'){
         if (validTextColour(design["background-color"])){
             return design["background-color"];
-            log("Set background color: \'" + design["background-color"] + "\'");
+            sprLog("Set background color: \'" + design["background-color"] + "\'");
         } else {
             displayErrorMessage("The color \'" + design["background-color"] + "\' is not defined. Using default background color, \'" + exptTextcolor + "\'.");
             return exptBackgroundcolor;
-            log("Background color unchanged: \'" + exptBackgroundcolor + "\'");
+            sprLog("Background color unchanged: \'" + exptBackgroundcolor + "\'");
         }
     } else {
         return exptBackgroundcolor;
-        log("Background color unchanged: \'" + exptBackgroundcolor + "\'");
+        sprLog("Background color unchanged: \'" + exptBackgroundcolor + "\'");
+    }
+}
+
+/*
+ * Get display type from design file or leave as default
+ */
+function getDisplay(design){
+    if (typeof design["display"] !== 'undefined'){
+        if (design["display"] == "cumulative" || design["display"] == "moving window"){
+            return design["display"];
+            sprLog("Set display: \'" + design["display"] + "\'");
+        } else {
+            return exptDisplay;
+            sprLog("Display unchanged: \'" + exptDisplay + "\'");
+        }
+    } else {
+        return exptDisplay;
+        sprLog("Display unchanged: \'" + exptDisplay + "\'");
     }
 }
 
