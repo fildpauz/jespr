@@ -8,19 +8,19 @@
             "investigator": "Dawn Tchannou"
         }
     ],
-    "font-name": "Courier new",
-    "font-size": "12",
-    "text-color": "black",
-    "background-color": "white",
-    "display": "moving window",
-    "masking character": "_",
-    "fixation character": "+",
-    "instruction screens": [
+    "font-name": "Arial",
+    "font-size": "10",
+    "text-color": "green",
+    "background-color": "black",
+    "display": "cumulative",
+    "masking-character": "*",
+    "fixation-character": "X",
+    "instruction-screens": [
         {
-            "instruction screen": "blah blah blah"
+            "instruction-screen": "blah blah blah"
         },
         {
-            "instruction screen": "blah blah blah"
+            "instruction-screen": "blah blah blah"
         }
     ],
     "practice-stimuli": {
@@ -44,7 +44,7 @@
     },
     "post-practice instructions screens": [
         {
-            "instruction screen": "blah blah blah"
+            "instruction-screen": "blah blah blah"
         }
     ],
     "experiment-stimuli": {

@@ -10,7 +10,6 @@
  * Script-wide variables
  */
 var exptTitle = "No title";      // Title of experiment
-var exptFrame;      // Top level div container for experiment display
 var exptFontname = "Courier new";   // Font to be used for main display elements
 var exptFontsize = "12";   // Base font size to be used for main display elements
 // Following colors must be HTML supported color names; e.g., http://www.w3schools.com/colors/colors_names.asp
@@ -20,13 +19,15 @@ var exptDisplay = "Moving window";  // Type of Self-paced Reading display
 // Following must be only one character in length
 var exptMaskchar = "_";     // Char to use as masking character during trials
 var exptFixationchar = "+";     // Char to use as fixation symbol between trials
+var exptForm;       // HTML form object that will contain and return the experimental data. Must be named "SPRForm".
+var exptFrame;      // Top level div container for experiment display
 
 /*
  * A function to run the whole experiment from initialization to administration
  * to clean-up afterward.
  */
 function doExperiment(){
-    loadExperiment();
+    //loadExperiment();
     initExperiment();
 }
 
@@ -34,12 +35,14 @@ function doExperiment(){
  * Load experimental design and stimuli
  */
 function loadExperiment(design){
-    exptTitle = getTitle(design);
-    exptFontname = getFontname(design);
-    exptFontsize = getFontsize(design);
-    exptTextcolor = getTextcolor(design);
-    exptBackgroundcolor = getBackgroundcolor(design);
-    exptDisplay = getDisplay(design);
+    setTitle(design);
+    setFontname(design);
+    setFontsize(design);
+    setTextcolor(design);
+    setBackgroundcolor(design);
+    setDisplay(design);
+    setMaskchar(design);
+    setFixationchar(design);
 }
 
 /*
@@ -47,6 +50,14 @@ function loadExperiment(design){
  */
 function initExperiment(){
   // create exptFrame
+  exptForm = document.getElementsByName("SPRForm")[0];
+  if (exptForm === 'undefined'){
+      sprLog("The HTML document does not contain a form named \'SPRForm\'");
+      displayErrorMessage("The HTML document does not contain a form named \'SPRForm\'. Discontinuing experiment.");
+  }
+  exptFrame = document.createElement("div");
+  exptFrame.style.class = "experiment-frame";
+  exptForm.appendChild(exptFrame);
   // create elements of exptFrame
   // populate elements with initial values
   // show title
@@ -68,97 +79,114 @@ function displayErrorMessage(message){
 }
 
 /*
- * Get title from design file or leave as default
+ * Set title from design file or leave as default
  */
-function getTitle(design){
+function setTitle(design){
     if (typeof design["title"] !== 'undefined'){
-        return design["title"];
-        sprLog("Set title: \'" + design["title"] + "\'");
+        exptTitle = design["title"].trim();
+        sprLog("Set title: \'" + exptTitle + "\'");
     } else {
-        return exptTitle;
         sprLog("Title unchanged: \'" + exptTitle + "\'");
     }
 }
 
 /*
- * Get font name from design file or leave as default
+ * Set font name from design file or leave as default
  */
-function getFontname(design){
+function setFontname(design){
     if (typeof design["font-name"] !== 'undefined'){
-        return design["font-name"];
-        sprLog("Set font name: \'" + design["font-name"] + "\'");
+        exptFontname = design["font-name"].trim();
+        sprLog("Set font name: \'" + exptFontname + "\'");
     } else {
-        return exptFontname;
         sprLog("Font name unchanged: \'" + exptFontname + "\'");
     }
 }
 
 /*
- * Get font size from design file or leave as default
+ * Set font size from design file or leave as default
  */
-function getFontsize(design){
+function setFontsize(design){
     if (typeof design["font-size"] !== 'undefined'){
-        return design["font-size"];
-        sprLog("Set font size: \'" + design["font-size"] + "\'");
+        exptFontsize = design["font-size"].trim();
+        sprLog("Set font size: \'" + exptFontsize + "\'");
     } else {
-        return exptFontsize;
         sprLog("Font size unchanged: \'" + exptFontsize + "\'");
     }
 }
 
 /*
- * Get text color from design file or leave as default
+ * Set text color from design file or leave as default
  */
-function getTextcolor(design){
+function setTextcolor(design){
     if (typeof design["text-color"] !== 'undefined'){
         if (validTextColour(design["text-color"])){
-            return design["text-color"];
-            sprLog("Set text color: \'" + design["text-color"] + "\'");
+            exptTextcolor = design["text-color"].trim();
+            sprLog("Set text color: \'" + exptTextcolor + "\'");
         } else {
             displayErrorMessage("The color \'" + design["text-color"] + "\' is not defined. Using default text color, \'" + exptTextcolor + "\'.");
-            return exptTextcolor;
             sprLog("Text color unchanged: \'" + exptTextcolor + "\'");
         }
     } else {
-        return exptTextcolor;
         sprLog("Text color unchanged: \'" + exptTextcolor + "\'");
     }
 }
 
 /*
- * Get text color from design file or leave as default
+ * Set text color from design file or leave as default
  */
-function getBackgroundcolor(design){
+function setBackgroundcolor(design){
     if (typeof design["background-color"] !== 'undefined'){
         if (validTextColour(design["background-color"])){
-            return design["background-color"];
-            sprLog("Set background color: \'" + design["background-color"] + "\'");
+            exptBackgroundcolor = design["background-color"].trim();
+            sprLog("Set background color: \'" + exptBackgroundcolor + "\'");
         } else {
             displayErrorMessage("The color \'" + design["background-color"] + "\' is not defined. Using default background color, \'" + exptTextcolor + "\'.");
-            return exptBackgroundcolor;
             sprLog("Background color unchanged: \'" + exptBackgroundcolor + "\'");
         }
     } else {
-        return exptBackgroundcolor;
         sprLog("Background color unchanged: \'" + exptBackgroundcolor + "\'");
     }
 }
 
 /*
- * Get display type from design file or leave as default
+ * Set display type from design file or leave as default
  */
-function getDisplay(design){
+function setDisplay(design){
     if (typeof design["display"] !== 'undefined'){
         if (design["display"] == "cumulative" || design["display"] == "moving window"){
-            return design["display"];
-            sprLog("Set display: \'" + design["display"] + "\'");
+            exptDisplay = design["display"].trim();
+            sprLog("Set display: \'" + exptDisplay + "\'");
         } else {
-            return exptDisplay;
             sprLog("Display unchanged: \'" + exptDisplay + "\'");
         }
     } else {
-        return exptDisplay;
         sprLog("Display unchanged: \'" + exptDisplay + "\'");
+    }
+}
+
+/*
+ * Set masking character from design file or leave as default
+ * Only the first character will be saved.
+ */
+function setMaskchar(design){
+    if (typeof design["masking-character"] !== 'undefined'){
+        return design["masking-character"].trim().substr(0,1);
+        sprLog("Set masking character: \'" + exptMaskchar + "\'");
+    } else {
+        sprLog("Masking character unchanged: \'" + exptMaskchar + "\'");
+    }
+}
+
+/*
+ * Set fixaction character from design file or leave as default
+ * Only the first character will be saved.
+ */
+function setFixationchar(design){
+    if (typeof design["fixation-character"] !== 'undefined'){
+        exptFixationchar = design["fixation-character"].trim().substr(0,1);
+        sprLog("Set fixation character: \'" + exptFixationkchar + "\'");
+    } else {
+        sprLog("Fixation character unchanged: \'" + exptFixationchar + "\'");
     }
 }
 

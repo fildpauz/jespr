@@ -15,20 +15,19 @@ and open the template in the editor.
     <body>
         <form id="frmSPR" name="SPRForm" method="POST"></form>
         <script>
-            var designFileURL = "https://raw.githubusercontent.com/fildpauz/self-paced-reading.js/master/spr-sample1.json";
-            var experimentTitle;
+            var designFileURL = "https://raw.githubusercontent.com/fildpauz/self-paced-reading.js/master/spr-sample.json";
             $.getJSON(designFileURL, function (json) {
                 console.log("success");
                 start(json);
             })
-                    .done(function () {
-                        console.log("second success");
-                    })
+//                    .done(function () {
+//                        console.log("second success");
+//                    })
+//                    .always(function () {
+//                        console.log("complete");
+//                    })
                     .fail(function () {
                         console.log("error");
-                    })
-                    .always(function () {
-                        console.log("complete");
                     });
 
             function start(experimentDesign) {
