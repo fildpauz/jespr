@@ -56,7 +56,7 @@ function initExperiment(){
       displayErrorMessage("The HTML document does not contain a form named \'SPRForm\'. Discontinuing experiment.");
   }
   exptFrame = document.createElement("div");
-  exptFrame.style.class = "experiment-frame";
+  exptFrame.className = "experiment-frame";
   exptForm.appendChild(exptFrame);
   // create elements of exptFrame
   // populate elements with initial values
@@ -184,7 +184,7 @@ function setMaskchar(design){
 function setFixationchar(design){
     if (typeof design["fixation-character"] !== 'undefined'){
         exptFixationchar = design["fixation-character"].trim().substr(0,1);
-        sprLog("Set fixation character: \'" + exptFixationkchar + "\'");
+        sprLog("Set fixation character: \'" + exptFixationchar + "\'");
     } else {
         sprLog("Fixation character unchanged: \'" + exptFixationchar + "\'");
     }
