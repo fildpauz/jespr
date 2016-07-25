@@ -2,10 +2,10 @@
     "title": "My self-paced reading experiment",
     "investigators": [
         {
-            "investigator": "Ima Jeanyuss"
+            "primary": "Ima Jeanyuss"
         },
         {
-            "investigator": "Dawn Tchannou"
+            "other": "Dawn Tchannou"
         }
     ],
     "font-name": "Arial",

@@ -21,4 +21,13 @@ html, body {
     top: 0;
     background-color: red;
     z-index: 10;
+    text-align: center;
+}
+
+.title {
+    display: none;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
 }

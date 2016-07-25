@@ -58,9 +58,30 @@ function initExperiment(){
   exptFrame = document.createElement("div");
   exptFrame.className = "experiment-frame";
   exptForm.appendChild(exptFrame);
+  // create title screen
+  var titleDiv = createTitleDiv();
+  exptFrame.appendChild(titleDiv);
   // create elements of exptFrame
   // populate elements with initial values
   // show title
+  titleDiv.style.display = "block";
+ }
+
+/*
+ * Creates a div element and populates it with html containing the
+ * experiment title and names of investigators
+ * @returns a div element containing title and other info
+ */
+function createTitleDiv(){
+    // create the title div
+    var titleDiv = document.createElement("div");
+    titleDiv.className = "title";
+    // create and add the title
+    var title = document.createElement("h1");
+    title.textContent = exptTitle;
+    titleDiv.appendChild(title);
+    // TODO: create and add the investigators's names
+    return titleDiv;
 }
 
 /*
