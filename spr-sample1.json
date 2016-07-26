@@ -35,6 +35,16 @@
                         }
                     ]
                 }
+            },
+            {
+                "item": {
+                    "id": "practice02",
+                    "strings": [
+                        {
+                            "string": "blah1|blah2|blah3|blah4|blah5"
+                        }
+                    ]
+                }
             }
         ]
     },
@@ -54,32 +64,38 @@
                             "tags": "condition1//condition2"
                         }
                     ],
-                    "items": {
-                        "item": {
-                            "id": "item01",
-                            "strings": [
-                                {
-                                    "string": "The|quick|brown|fox//cat|jumped|over|the|lazy|dogs."
-                                }
-                            ]
+                    "items": [
+                        {
+                            "item": {
+                                "id": "item01",
+                                "strings": [
+                                    {
+                                        "string": "The|quick|brown|fox//cat|jumped|over|the|lazy|dogs."
+                                    }
+                                ]
+                            }
                         },
-                        "item": {
-                            "id": "item01",
-                            "strings": [
-                                {
-                                    "string": "Those|who|believe//conspire|in|telekinetics,|raise|my|hand."
-                                }
-                            ]
+                        {
+                            "item": {
+                                "id": "item01",
+                                "strings": [
+                                    {
+                                        "string": "Those|who|believe//conspire|in|telekinetics,|raise|my|hand."
+                                    }
+                                ]
+                            }
                         },
-                        "item": {
-                            "id": "item01",
-                            "strings": [
-                                {
-                                    "string": "I'd|rather|live|with|a|good//bad|question|than|a|bad|answer."
-                                }
-                            ]
+                        {
+                            "item": {
+                                "id": "item01",
+                                "strings": [
+                                    {
+                                        "string": "I'd|rather|live|with|a|good//bad|question|than|a|bad|answer."
+                                    }
+                                ]
+                            }
                         }
-                    }
+                    ]
                 }
             },
             {
@@ -89,24 +105,28 @@
                             "tags": "filler"
                         }
                     ],
-                    "items": {
-                        "item": {
-                            "id": "filler01",
-                            "strings": [
-                                {
-                                    "string": "Donec|tempor,|magna|quis|efficitur|rutrum,|ligula|nisi."
-                                }
-                            ]
+                    "items": [
+                        {
+                            "item": {
+                                "id": "filler01",
+                                "strings": [
+                                    {
+                                        "string": "Donec|tempor,|magna|quis|efficitur|rutrum,|ligula|nisi."
+                                    }
+                                ]
+                            }
                         },
-                        "item": {
-                            "id": "filler02",
-                            "strings": [
-                                {
-                                    "string": "Quisque|ac|velit|viverra,|dictum|velit|a,|tempus."
-                                }
-                            ]
+                        {
+                            "item": {
+                                "id": "filler02",
+                                "strings": [
+                                    {
+                                        "string": "Quisque|ac|velit|viverra,|dictum|velit|a,|tempus."
+                                    }
+                                ]
+                            }
                         }
-                    }
+                    ]
                 }
             }
         ]
