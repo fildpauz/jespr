@@ -37,7 +37,7 @@
                 }
             },
             {
-                "item": {
+                "iteme": {
                     "id": "practice02",
                     "strings": [
                         {
@@ -99,7 +99,7 @@
                 }
             },
             {
-                "group": {
+                "gropu": {
                     "tag-template": [
                         {
                             "tags": "filler"
@@ -111,7 +111,7 @@
                                 "id": "filler01",
                                 "strings": [
                                     {
-                                        "string": "Donec|tempor,|magna|quis|efficitur|rutrum,|ligula|nisi."
+                                        "strin": "Donec|tempor,|magna|quis|efficitur|rutrum,|ligula|nisi."
                                     }
                                 ]
                             }
