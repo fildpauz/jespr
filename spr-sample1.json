@@ -37,7 +37,7 @@
                 }
             },
             {
-                "iteme": {
+                "item": {
                     "id": "practice02",
                     "strings": [
                         {
@@ -90,7 +90,7 @@
                                 "id": "item03",
                                 "strings": [
                                     {
-                                        "strin": "I'd|rather|live|with|a|good//bad|question|than|a|bad|answer."
+                                        "string": "I'd|rather|live|with|a|good//bad|question|than|a|bad|answer."
                                     }
                                 ]
                             }
@@ -99,7 +99,7 @@
                 }
             },
             {
-                "gropu": {
+                "group": {
                     "tag-template": [
                         {
                             "tags": "filler"
