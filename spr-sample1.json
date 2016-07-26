@@ -17,34 +17,30 @@
     "fixation-character": "X",
     "instruction-screens": [
         {
-            "instruction-screen": "blah blah blah"
+            "instruction-screen": "blah1 blah1 blah1"
         },
         {
-            "instruction-screen": "blah blah blah"
+            "instruction-screen": "blah2 blah2 blah2"
         }
     ],
     "practice-stimuli": {
         "randomize": "false",
         "items": [
             {
-                "group": [
-                    {
-                        "item": {
-                            "id": "practice01",
-                            "strings": [
-                                {
-                                    "string": ""
-                                }
-                            ]
+                "item": {
+                    "id": "practice01",
+                    "strings": [
+                        {
+                            "string": "blah1|blah2|blah3|blah4|blah5"
                         }
-                    }
-                ]
+                    ]
+                }
             }
         ]
     },
-    "post-practice instructions screens": [
+    "post-practice-instruction-screens": [
         {
-            "instruction-screen": "blah blah blah"
+            "instruction-screen": "blah3 blah3 blah3"
         }
     ],
     "experiment-stimuli": {
