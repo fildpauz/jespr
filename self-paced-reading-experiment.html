@@ -6,7 +6,7 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Self-paced reading experiment using self-paced-reading.js</title>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
@@ -33,8 +33,13 @@ and open the template in the editor.
 
             function start(experimentDesign) {
                 console.log(experimentDesign.title);
-                loadExperiment(experimentDesign);
-                doExperiment(); // Start and run the whole thing
+                if (isValidDesign(experimentDesign)){
+                    loadExperiment(experimentDesign);
+                    doExperiment(); // Start and run the whole thing
+                } else {
+                    displayErrorMessage("Problem loading the json experiment design. Check it for errors and try again.");
+                    sprLog("Problem loading the json experiment design.");
+                }
             }
         </script>
     </body>
