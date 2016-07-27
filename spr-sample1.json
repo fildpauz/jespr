@@ -54,74 +54,75 @@
         }
     ],
     "experiment-stimuli": {
-        "name": "my stimuli",
-        "randomize": "true",
-        "stimuli": [
+        "order": "fixed",
+        "merge": "true",
+        "stimuli-sets": [
             {
-                "group": {
-                    "tag-template": [
+                "stimuli-set": {
+                    "name": "my stimuli",
+                    "order": "random",
+                    "merge": "true",
+                    "groups": [
                         {
-                            "tags": "condition1//condition2"
-                        }
-                    ],
-                    "items": [
-                        {
-                            "item": {
-                                "id": "item01",
-                                "strings": [
+                            "group": {
+                                "order": "random",
+                                "items": [
                                     {
-                                        "string": "The|quick|brown|fox//cat|jumped|over|the|lazy|dogs."
+                                        "item": {
+                                            "id": "item01",
+                                            "strings": [
+                                                {
+                                                    "string": "The|quick|brown|fox|jumped|over|the|lazy|dogs."
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "item02",
+                                            "strings": [
+                                                {
+                                                    "string": "Those|who|believe|in|telekinetics,|raise|my|hand."
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "item03",
+                                            "strings": [
+                                                {
+                                                    "string": "I'd|rather|live|with|a|good|question|than|a|bad|answer."
+                                                }
+                                            ]
+                                        }
                                     }
                                 ]
                             }
                         },
                         {
-                            "item": {
-                                "id": "item02",
-                                "strings": [
+                            "group": {
+                                "order": "fixed",
+                                "items": [
                                     {
-                                        "string": "Those|who|believe//conspire|in|telekinetics,|raise|my|hand."
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "item": {
-                                "id": "item03",
-                                "strings": [
+                                        "item": {
+                                            "id": "filler01",
+                                            "strings": [
+                                                {
+                                                    "string": "Donec|tempor,|magna|quis|efficitur|rutrum,|ligula|nisi."
+                                                }
+                                            ]
+                                        }
+                                    },
                                     {
-                                        "string": "I'd|rather|live|with|a|good//bad|question|than|a|bad|answer."
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            },
-            {
-                "group": {
-                    "tag-template": [
-                        {
-                            "tags": "filler"
-                        }
-                    ],
-                    "items": [
-                        {
-                            "item": {
-                                "id": "filler01",
-                                "strings": [
-                                    {
-                                        "string": "Donec|tempor,|magna|quis|efficitur|rutrum,|ligula|nisi."
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "item": {
-                                "id": "filler02",
-                                "strings": [
-                                    {
-                                        "string": "Quisque|ac|velit|viverra,|dictum|velit|a,|tempus."
+                                        "item": {
+                                            "id": "filler02",
+                                            "strings": [
+                                                {
+                                                    "string": "Quisque|ac|velit|viverra,|dictum|velit|a,|tempus."
+                                                }
+                                            ]
+                                        }
                                     }
                                 ]
                             }
