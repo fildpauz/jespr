@@ -23,7 +23,7 @@ var exptMaskchar = "_";     // Char to use as masking character during trials
 var exptFixationchar = "+";     // Char to use as fixation symbol between trials
 var exptForm;       // HTML form object that will contain and return the experimental data. Must be named "SPRForm".
 var exptFrame;      // Top level div container for experiment display
-var screenInfo = [];     // List of all screen divs in the experiment: title, instructions, stimulus items
+var screensInfo = [];     // List of all screen divs in the experiment: title, instructions, stimulus items
 var curScreenIndex; // The index of the current screen in screenInfo array being displayed.
 
 /*
@@ -33,8 +33,28 @@ var curScreenIndex; // The index of the current screen in screenInfo array being
 function doExperiment(){
     //loadExperiment();
     initDisplay();
+    document.body.addEventListener("keypress", processKeyPress);
+    window.focus();
     curScreenIndex = 0;
     showNextScreen(curScreenIndex);
+}
+
+/*
+ * Hhandle all key press events and advance the experiment.
+ */
+function processKeyPress(e){
+    var keyCode = e.keyCode;
+    switch (keyCode) {
+        case 32: // space bar
+            curScreenIndex++;
+            showNextScreen(curScreenIndex);
+            break;
+        case 49: // digit 1
+            break;
+        case 48: // digit 0
+            break;
+        default:
+    }
 }
 
 /*
@@ -42,7 +62,7 @@ function doExperiment(){
  * @param index indicating the index of the screen in screenInfo array to display
  */
 function showNextScreen(index){
-    var nextDiv = screenInfo[index]["div"];
+    var nextDiv = screensInfo[index]["div"];
     exptFrame.appendChild(nextDiv);
     nextDiv.style.display = "block";
 }
@@ -70,11 +90,11 @@ function loadExperiment(design){
     setMaskchar(design);
     setFixationchar(design);
     // Populate the screenInfo array with the sequence of screens for the whole experiment
-    screenInfo.push(getTitleScreenInfo(design));
-    screenInfo.concat(getInstructionScreensInfo(design["instruction-screens"]));
-    screenInfo.concat(getStimuliGroupScreensInfo(design["practice-stimuli"]));
-    screenInfo.concat(getInstructionScreensInfo(design["post-practice-instruction-screens"]));
-    screenInfo.concat(getStimuliSetsScreensInfo(design["experiment-stimuli"]));
+    screensInfo.push(getTitleScreenInfo(design));
+    screensInfo.concat(getInstructionScreensInfo(design["instruction-screens"]));
+    screensInfo.concat(getStimuliGroupScreensInfo(design["practice-stimuli"]));
+    screensInfo.concat(getInstructionScreensInfo(design["post-practice-instruction-screens"]));
+    screensInfo.concat(getStimuliSetsScreensInfo(design["experiment-stimuli"]));
 }
 
 /*
@@ -121,7 +141,7 @@ function getTitleScreenInfo(design){
  * @returns {undefined}
  */
 function getInstructionScreensInfo(design){
-    var screensInfo = [];
+    var screens = [];
     for (var i=0; i<design.length; i++){
         // Create the div container for the instructions
         var instructionsDiv = document.createElement("div");
@@ -129,9 +149,9 @@ function getInstructionScreensInfo(design){
         // Create the screenInfo object and push it to the array
         var screenInfo = { "type": "instructions" };
         screenInfo["div"] = instructionsDiv;
-        screensInfo.push(screenInfo);
+        screens.push(screenInfo);
     }
-    return screensInfo;
+    return screens;
 }
 
 /*
@@ -141,7 +161,7 @@ function getInstructionScreensInfo(design){
  * @returns array of items
  */
 function getStimuliGroupScreensInfo(design){
-    var screensInfo = [];
+    var screens = [];
     var order = getOrder(design["order"]);
     // go through items array and create screenInfo object for each item
     for (var i=0; i<design["items"].length; i++){
@@ -178,12 +198,12 @@ function getStimuliGroupScreensInfo(design){
         // Create the screenInfo object and push it to the array
         var screenInfo = { "type": "item" };
         screenInfo["div"] = itemDiv;
-        screensInfo.push(screenInfo);
+        screens.push(screenInfo);
     }
     if (order === "random"){
-        shuffle(screensInfo);
+        shuffle(screens);
     }
-    return screensInfo;
+    return screens;
 }
 
 /*
@@ -193,10 +213,10 @@ function getStimuliGroupScreensInfo(design){
  * @returns array of items
  */
 function getStimuliSetsScreensInfo(design){
-    var screensInfo = [];
+    var screens = [];
     var order = getOrder(design["order"]);
     
-    return screensInfo;
+    return screens;
 }
 
 /*
@@ -229,7 +249,6 @@ function initDisplay(){
   }
   exptFrame = document.createElement("div");
   exptFrame.className = "experiment-frame";
-  exptFrame.addEventListener("keypress", processKeyPress);
   exptForm.appendChild(exptFrame);
   // create title screen
 //  var titleDiv = createTitleDiv();
@@ -240,15 +259,6 @@ function initDisplay(){
   // show title
 //  titleDiv.style.display = "block";
  }
-
-/*
- * Create a key listener to handle all key press
- * events and advance the experiment.
- */
-function processKeyPress(e){
-    var keyCode = e.keyCode;
-    alert(keyCode);
-}
 
 /*
  * Creates a div element and populates it with html containing the
