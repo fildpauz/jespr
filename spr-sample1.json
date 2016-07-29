@@ -9,7 +9,7 @@
         }
     ],
     "font-name": "Arial",
-    "font-size": "10",
+    "font-size": "14",
     "text-color": "green",
     "background-color": "black",
     "display": "cumulative",
@@ -35,7 +35,7 @@
             {
                 "item": {
                     "id": "practice02",
-                    "string": "blah1|blah2|blah3|blah4|blah5"
+                    "string": "blech1|blech2|blech3|blech4|blech5"
                 }
             }
         ]
