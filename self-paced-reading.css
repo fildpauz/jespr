@@ -24,10 +24,35 @@ html, body {
     text-align: center;
 }
 
-.title {
+.title,
+.instructions,
+.item {
     display: none;
     position: relative;
     top: 50%;
     transform: translateY(-50%);
     text-align: center;
+}
+
+p.fixation {
+    display: block;
+    font-size: 5em;
+    margin: 0;
+}
+
+p.stimulus {
+    display: none;
+    margin: 0;
+}
+
+.primary-investigators {
+    font-weight: bold;
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+.other-investigators {
+    font-weight: normal;
+    margin-left: 1em;
+    margin-right: 1em;
 }

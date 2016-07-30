@@ -23,8 +23,11 @@ var exptMaskchar = "_";     // Char to use as masking character during trials
 var exptFixationchar = "+";     // Char to use as fixation symbol between trials
 var exptForm;       // HTML form object that will contain and return the experimental data. Must be named "SPRForm".
 var exptFrame;      // Top level div container for experiment display
-var screensInfo = [];     // List of all screen divs in the experiment: title, instructions, stimulus items
-var curScreenIndex; // The index of the current screen in screenInfo array being displayed.
+var screenInfo = [];  // List of all screen divs in the experiment: title, instructions, stimulus items
+var curScreenIndex;   // The index of the current screen in screenInfo array being displayed.
+var curRegionIndex;   // The index of the current SPR region being displayed
+var startTime;        // Reference time for the beginning of the experiment
+var curData = "";          // Variable to hold reaction time data for current item
 
 /*
  * A function to run the whole experiment from initialization to administration
@@ -33,38 +36,168 @@ var curScreenIndex; // The index of the current screen in screenInfo array being
 function doExperiment(){
     //loadExperiment();
     initDisplay();
+    startTime = Date.now();
     document.body.addEventListener("keypress", processKeyPress);
     window.focus();
     curScreenIndex = 0;
-    showNextScreen(curScreenIndex);
+    showScreen(curScreenIndex);
 }
 
 /*
- * Hhandle all key press events and advance the experiment.
+ * Handle all key press events and advance the experiment.
  */
 function processKeyPress(e){
+    var elapsedTime = Date.now() - startTime;
     var keyCode = e.keyCode;
+    if (curScreenIndex < screenInfo.length-1){
+        var curScreenType = screenInfo[curScreenIndex]["type"];
+        switch (curScreenType) {
+            case "title":
+            case "instructions":
+                processStaticScreen(keyCode);
+                break;
+            case "item":
+                processInteractiveScreen(keyCode, elapsedTime);
+                break;
+            default:
+        }
+    } else {
+        endExperiment();
+    }
+}
+
+/*
+ * Function to end experiment and close off any loose ends, programmatically
+ */
+function endExperiment(){
+    document.body.removeEventListener("keypress", processKeyPress);
+    exptForm.removeChild(exptFrame);
+    alert(document.getElementById("practice01").value);
+}
+
+/*
+ * Processes the keypress when the currently displayed screen is a title or
+ * instructions screen and advances to the next screen accordingly
+ * @param {type} keyCode
+ */
+function processStaticScreen(keyCode){
     switch (keyCode) {
         case 32: // space bar
+            removeScreen(curScreenIndex);
             curScreenIndex++;
-            showNextScreen(curScreenIndex);
+            showScreen(curScreenIndex);
             break;
         case 49: // digit 1
             break;
         case 48: // digit 0
             break;
         default:
+            console.log("e.keyCode = " + keyCode);
     }
+}
+
+/*
+ * 
+ * @param keyCode
+ * @param elapsedTime
+ */
+function processInteractiveScreen(keyCode, elapsedTime){
+    switch (keyCode) {
+        case 32: // space bar
+            var info = screenInfo[curScreenIndex];
+            var id = info["id"];
+            var regionsInfo = info["regionsInfo"];
+            var curRegionInfo = regionsInfo[curRegionIndex];
+            var nextRegionInfo = regionsInfo[curRegionIndex+1];
+            saveRegionData(id, curRegionInfo["id"], elapsedTime, keyCode);
+            if (curRegionIndex == 0){ // fixation char is showing
+                var fixationP = document.getElementById(curRegionInfo["id"]);
+                fixationP.style.display = "none"; // hide fixation
+                var regionSpan = document.getElementById(nextRegionInfo["id"]);
+                regionSpan.textContent = nextRegionInfo["string"];
+                var itemP = document.getElementById(id.concat("-stimulus"));
+                itemP.style.display = "block"; // show the whole stimulus
+                curRegionIndex++;
+            } else if (curRegionIndex < regionsInfo.length-1) {
+                var nextRegionSpan = document.getElementById(nextRegionInfo["id"]);
+                nextRegionSpan.textContent = nextRegionInfo["string"];
+                if (exptDisplay == "Moving window"){
+                    var curRegionSpan = document.getElementById(curRegionInfo["id"]);
+                    curRegionSpan.textContent = curRegionInfo["string"].replace(/./g, exptMaskchar);
+                }
+                curRegionIndex++;
+            } else { // No more regions, so go to next screen and save curData
+                processStaticScreen(keyCode);
+                document.getElementById(id).value += curData;
+                curData = ""; // reset curData variable
+            }
+            console.log(id + "\t"+ curRegionInfo["id"] + "\t" + elapsedTime + "\t" + keyCode + "\n");
+            break;
+        case 49: // digit 1
+            break;
+        case 48: // digit 0
+            break;
+        default:
+            console.log("e.keyCode = " + keyCode);
+    }
+}
+
+/*
+ * Saves the reaction time measure for the current region in the item ID hidden
+ * variable in the sprForm. The keyCode is also saved.
+ * @param itemId
+ * @param regionId
+ * @param elapsedTime
+ * @param keyCode
+ */
+function saveRegionData(itemId, regionId, elapsedTime, keyCode){
+//    var data = document.getElementById(itemId).value;
+    var newData = regionId + "\t" + elapsedTime + "\t" + keyCode + "\n";
+//    document.getElementById(itemId).value += newData; // I don't understand why this didn't work cumulatively: Only the last region got saved...
+    curData += newData;
 }
 
 /*
  * Displays the screen indexed in screenInfo indexed by the param.
  * @param index indicating the index of the screen in screenInfo array to display
  */
-function showNextScreen(index){
-    var nextDiv = screensInfo[index]["div"];
-    exptFrame.appendChild(nextDiv);
-    nextDiv.style.display = "block";
+function showScreen(index){
+    if (index < 0 || index >= screenInfo.length) {
+        displayErrorMessage("Error in 'showScreen()': index is out of range.");
+        sprLog("Error in 'showScreen()': index is out of range.");
+        return;
+    } else {
+        var nextScreen = screenInfo[curScreenIndex];
+        var nextDiv = nextScreen["div"];
+        exptFrame.appendChild(nextDiv);  // add it to DOM
+        if (nextScreen["type"] == "item") {
+            curRegionIndex = 0;
+            var id = nextScreen["id"];
+            var hiddenVar = document.createElement("input");
+            hiddenVar.id = id;
+            hiddenVar.type = "hidden";
+            hiddenVar.name = id;
+            hiddenVar.value = "";
+            exptForm.appendChild(hiddenVar);
+        }
+        nextDiv.style.display = "block"; // show it
+    }
+}
+
+/*
+ * Removes the screen indexed by the param.
+ * @param index indicating the index of the screen in screenInfo array to remove
+ */
+function removeScreen(index){
+    if (index < 0 || index >= screenInfo.length) {
+        displayErrorMessage("Error in 'removeScreen()': index is out of range.");
+        sprLog("Error in 'removeScreen()': index is out of range.");
+    } else {
+        var curDiv = screenInfo[curScreenIndex]["div"];
+        curDiv.style.display = "none"; // hide it
+        exptFrame.removeChild(curDiv); // remove it from DOM
+        curRegionIndex = undefined; // set to undefined index
+    }
 }
 
 /*
@@ -90,11 +223,11 @@ function loadExperiment(design){
     setMaskchar(design);
     setFixationchar(design);
     // Populate the screenInfo array with the sequence of screens for the whole experiment
-    screensInfo.push(getTitleScreenInfo(design));
-    screensInfo.concat(getInstructionScreensInfo(design["instruction-screens"]));
-    screensInfo.concat(getStimuliGroupScreensInfo(design["practice-stimuli"]));
-    screensInfo.concat(getInstructionScreensInfo(design["post-practice-instruction-screens"]));
-    screensInfo.concat(getStimuliSetsScreensInfo(design["experiment-stimuli"]));
+    screenInfo.push(getTitleScreenInfo(design));
+    screenInfo = screenInfo.concat(getInstructionScreensInfo(design["instruction-screens"]));
+    screenInfo = screenInfo.concat(getStimuliGroupScreensInfo(design["practice-stimuli"]));
+    screenInfo = screenInfo.concat(getInstructionScreensInfo(design["post-practice-instruction-screens"]));
+    screenInfo = screenInfo.concat(getStimuliSetsScreensInfo(design["experiment-stimuli"]));
 }
 
 /*
@@ -117,17 +250,26 @@ function getTitleScreenInfo(design){
     var pi = ""; // primary investigator list
     var oi = ""; // other investigator list
     for (var i=0; i<design["investigators"].length; i++){
-        if (typeof(design["investigators"][i]) === 'primary') {
+        if (typeof(design["investigators"][i]["primary"]) !== 'undefined') {
             if (pi.length > 0) { pi = pi.concat(", "); }
-            pi = pi.concat("<b>", design["investigators"][i]["primary"], "</b>");
-        } else if (typeof(design["investigators"][i]) === 'other') {
+            pi = pi.concat(design["investigators"][i]["primary"]);
+        } else if (typeof(design["investigators"][i]["other"]) !== 'undefined') {
             if (oi.length > 0) { oi = oi.concat(", "); }
             oi = oi.concat(design["investigators"][i]["other"]);
         } else {
             sprLog("Unknown type of investigator in investigator list: 'primary'/'other' expected.");
         }
     }
-    investigators.textContent = pi.concat(" ").concat(oi).trim();
+    var primary = document.createElement("span");
+    primary.className = "primary-investigators";
+    primary.textContent = pi;
+    var space = document.createTextNode(" ");
+    var other = document.createElement("span");
+    other.className = "other-investigators";
+    other.textContent = oi;
+    investigators.appendChild(primary);
+    investigators.appendChild(space);
+    investigators.appendChild(other);
     titleDiv.appendChild(investigators);
     var titleScreenInfo = { "type" : "title" };
     titleScreenInfo["div"] = titleDiv;
@@ -145,11 +287,12 @@ function getInstructionScreensInfo(design){
     for (var i=0; i<design.length; i++){
         // Create the div container for the instructions
         var instructionsDiv = document.createElement("div");
+        instructionsDiv.className = "instructions";
         instructionsDiv.textContent = design[i]["instruction-screen"];
         // Create the screenInfo object and push it to the array
-        var screenInfo = { "type": "instructions" };
-        screenInfo["div"] = instructionsDiv;
-        screens.push(screenInfo);
+        var scrnInfo = { "type": "instructions" };
+        scrnInfo["div"] = instructionsDiv;
+        screens.push(scrnInfo);
     }
     return screens;
 }
@@ -167,38 +310,53 @@ function getStimuliGroupScreensInfo(design){
     for (var i=0; i<design["items"].length; i++){
         // Create the div container for the item
         var itemDiv = document.createElement("div");
-        var itemId = design["items"][i]["id"];
+        itemDiv.className = "item";
+        var itemId = design["items"][i]["item"]["id"];
         itemDiv.id = itemId;
+        var fixationP = document.createElement("p");
+        fixationP.id = itemId.concat("-fixation");
+        fixationP.className = "fixation";
+        fixationP.textContent = exptFixationchar;
+        itemDiv.appendChild(fixationP);
         var regionsInfo = []; // the info array for the regions
-        if (design["items"][i]["string"]){ // single-line SPR type
+        var fixationInfo = { "id": itemId.concat("-fixation"),
+                             "string": exptFixationchar };
+        regionsInfo.push(fixationInfo);
+        if (design["items"][i]["item"]["string"]){ // single-line SPR type
             // split string into regions
-            var regions = design["items"][i]["string"].split("|");
+            var regions = design["items"][i]["item"]["string"].split("|");
+            var itemP = document.createElement("p"); // create p container for regions
+            itemP.id = itemId.concat("-stimulus");
+            itemP.className = "stimulus";
             // for each region
-            for (var i=0; i<regions.length; i++){
+            for (var j=0; j<regions.length; j++){
                 // create a regionInfo object with region ID and region text
-                var regionInfo = { "id": itemId.concat("_").concat(i),
-                                   "string": region[i].trim() };
+                var regionInfo = { "id": itemId.concat("_").concat(j+1),
+                                   "string": regions[j].trim() };
                 // add regionInfo to regionsInfo array
-                regionsInfo.push(regioninfo);
+                regionsInfo.push(regionInfo);
                 // create a span with region ID and text content with masking char
                 var regionSpan = document.createElement("span");
                 regionSpan.id = regionInfo["id"];
                 regionSpan.className = "sprRegion";
                 regionSpan.textContent = regionInfo["string"].replace(/./g, exptMaskchar);
                 // add span to div
-                if (i>0){
+                if (j>0){
                     var space = document.createTextNode(" ");
-                    itemDiv.appendChild(space);
+                    itemP.appendChild(space);
                 }
-                itemDiv.appendChild(regionSpan);
+                itemP.appendChild(regionSpan);
             }
-        } else if (design["items"][i]["strings"]){ // multi-line SPR type
+            itemDiv.appendChild(itemP);
+        } else if (design["items"][i]["item"]["strings"]){ // multi-line SPR type
             // TODO: implement the multi-line strings handler
         }
         // Create the screenInfo object and push it to the array
-        var screenInfo = { "type": "item" };
-        screenInfo["div"] = itemDiv;
-        screens.push(screenInfo);
+        var scrnInfo = { "type": "item" };
+        scrnInfo["id"] = itemId;
+        scrnInfo["regionsInfo"] = regionsInfo;
+        scrnInfo["div"] = itemDiv;
+        screens.push(scrnInfo);
     }
     if (order === "random"){
         shuffle(screens);
@@ -401,7 +559,7 @@ function setDisplay(design){
  */
 function setMaskchar(design){
     if (typeof design["masking-character"] !== 'undefined'){
-        return design["masking-character"].trim().substr(0,1);
+        exptMaskchar = design["masking-character"].trim().substr(0,1);
         sprLog("Set masking character: \'" + exptMaskchar + "\'");
     } else {
         sprLog("Masking character unchanged: \'" + exptMaskchar + "\'");
