@@ -338,7 +338,7 @@ function getStimuliGroupScreensInfo(design){
                 // create a span with region ID and text content with masking char
                 var regionSpan = document.createElement("span");
                 regionSpan.id = regionInfo["id"];
-                regionSpan.className = "sprRegion";
+                regionSpan.className = "region";
                 regionSpan.textContent = regionInfo["string"].replace(/./g, exptMaskchar);
                 // add span to div
                 if (j>0){
