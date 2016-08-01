@@ -7,6 +7,8 @@
  * to be used by self-paced-reading.js 
  */
 
+"use strict";
+
 var exptFixationchar;
 var exptMaskchar;
 
@@ -69,9 +71,11 @@ function Item(id, text, isHorizontal){
     this.id = id;
     this.text = text; // Is it useful to store this as plain text: .replace(/\|/g, ' ') ?
     this.regions = parseRegions(this);
+    this.curRegionIndex = 'undefined';   // The index of the current SPR region being displayed
     this.prompt = 'undefined';  // The prompt and options variables need to be
     this.options = 'undefined'; // explicitly set
     this.optionOrder = "fixed";
+    this.condition = []; // An array of values representing the experimental conditions
     this.html = createItemHtml(this);
 }
 
@@ -231,9 +235,120 @@ function createInstructionsHtml(instructions){
  * @param object - The object with information related to the screen
  * @param next - The next screen object in the experimental sequence
  */
-function Screen(type, object, next){
-    this.type = type;
+function Screen(type, object, nextScreen){
+    this.type = type; // possible values: title, instructions, item
     this.object = object;
-    this.next = next;
+    this.nextScreen = nextScreen;
+    this.processKeydown = function(keyCode, elapsedTime){
+        switch (this.type){
+            case "title":
+            case "instructions":
+                // TODO
+                break;
+            case "item":
+                // TODO
+                break;
+            default:
+                // TODO: error message
+        }
+    };
+}
+
+/*
+ * The Experiment object corresponds to the whole experiment and contains all
+ * the parameters, settings and stimuli of the experiment. It is the top-level
+ * object in the SPR architecture.
+ * @param design - A json-formatted object containing the experimental design
+ * @param form - the html <form> object that will handle the data values on submit
+ */
+function Experiment(design, form){
+    this.design = design; // json object containing the design, stimuli, etc.
+    this.designValidated = false;    // Boolean to indicate whether design file has been validated
+
+    // General experiment settings and parameters
+    this.title = design["title"] !== 'undefined' ? design["title"].trim() : "A Self-paced Reading Experiment";
+    this.fontname = design["font-name"] !== 'undefined' ? design["font-name"].trim() : "Courier new";
+    this.fontsize = design["font-size"] !== 'undefined' ? design["font-size"].trim() : "12";
+    // Following colors must be HTML supported color names; e.g., http://www.w3schools.com/colors/colors_names.asp
+    this.textcolor = design["text-color"] !== 'undefined' ? design["text-color"].trim() : "black";
+    this.textcolor = validTextColour(this.textcolor) ? this.textcolor : "black";
+    this.backgroundcolor = design["background-color"] !== 'undefined' ? design["background-color"].trim() : "white";
+    this.backgroundcolor = validTextColour(this.backgroundcolor) ? this.backgroundcolor : "white";
+    this.display = design["display"] !== 'undefined' ? design["display"].trim() : "Moving window";
+    // Following must be only one character in length
+    this.fixationchar = design["fixation-character"] !== 'undefined' ? design["fixation-character"].trim().substr(0,1) : "+";
+    this.maskchar = design["masking-character"] !== 'undefined' ? design["masking-character"].trim().substr(0,1) : "_";
     
+    // variables for experiment flow and execution
+    this.form = form;
+    this.frame = createExptFrame();
+    this.screens = [];  // List of all screen divs in the experiment: title, instructions, stimulus items
+    this.curScreenIndex;   // The index of the current screen in screenInfo array being displayed.
+    
+    // object methods
+    this.startExperiment = function(){};
+    this.processKeydown = function(keyCode, time){};
+    this.endExperiment = function(){};
+    this.validateDesign = function(){};
+    this.loadStimuli = function(){};
+}
+
+/*
+ * 
+ * @returns A <div> object representing the main experiment frame
+ */
+function createExptFrame(){
+  var frame = document.createElement("div");
+  frame.className = "experiment-frame";
+  document.body.appendChild(frame);
+  return frame;
+}
+
+//// General Helper Functions
+
+/*
+ * Check that the color name provided is one of the 147 HTML valid color names
+ * (e.g., http://www.w3schools.com/colors/colors_hex.asp).
+ * Credit: http://stackoverflow.com/questions/6386090/validating-css-color-names
+ * @param stringToTest - the string to be tested for validity (e.g., black, red)
+ * @returns true if string is a valid color name; false otherwise
+ */
+function validTextColour(stringToTest) {
+    //Alter the following conditions according to your need.
+    if (stringToTest === "") { return false; }
+    if (stringToTest === "inherit") { return false; }
+    if (stringToTest === "transparent") { return false; }
+
+    var image = document.createElement("img");
+    image.style.color = "rgb(0, 0, 0)";
+    image.style.color = stringToTest;
+    if (image.style.color !== "rgb(0, 0, 0)") { return true; }
+    image.style.color = "rgb(255, 255, 255)";
+    image.style.color = stringToTest;
+    return image.style.color !== "rgb(255, 255, 255)";
+}
+
+/*
+ * Shuffles an array object in place and returns the object
+ * Credit: https://github.com/coolaj86/knuth-shuffle
+ * @param an array
+ * @return the shuffled array
+ */
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
 }
