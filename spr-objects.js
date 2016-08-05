@@ -81,9 +81,10 @@ function Item(id, text, isHorizontal){
     this.text = text; // Is it useful to store this as plain text: .replace(/\|/g, ' ') ?
     this.regions = this.parseRegions();
     this.curRegionIndex = 'undefined';   // The index of the current SPR region being displayed
-    this.prompt = 'undefined';  // The prompt and options variables need to be
-    this.options = 'undefined'; // explicitly set
+    this.prompt = 'undefined';  // The prompt and options variables
+    this.options = 'undefined'; // need to be explicitly set
     this.optionOrder = "fixed";
+    this.feedback = 'undefined';
     this.condition = []; // An array of values representing the experimental conditions
     this.html = this.createHtml();
 }
@@ -108,17 +109,29 @@ Item.prototype.processKeypress = function(keyCode, elapsedTime){
 
             } else if (this.curRegionIndex < this.regions.length){ // non-final SPR region is showing
 
-            } else if (this.curRegionIndex === this.regions.length){ // final SPR region is showing
+            } else if (this.curRegionIndex === this.regions.length-1){ // final SPR region is showing
+                this.hide();
+                result = "end of screen";
+            } else if (this.curRegionIndex === this.regions.length+1){ // prompt is showing
+                this.hide();
+                result = "end of screen";
+            } else if (this.curRegionIndex === this.regions.length+1){ // feedback is showing
                 this.hide();
                 result = "end of screen";
             } else { // prompt is showing, but other key pressed -- ignore
             }
             break;
-        case 48: // digit 0
+        case 48:      // digit 0
+        case 112, 80: // p,P
+        case 108, 76: // l,L
+        case 109, 77: // m,M
             this.hide();
             result = "end of screen";
             break;
-        case 49: // digit 1
+        case 49:      // digit 1
+        case 113, 81: // q,Q
+        case 97, 65:  // a,A
+        case 122, 90: // z,Z
             this.hide();
             result = "end of screen";
             break;
@@ -175,7 +188,7 @@ Item.prototype.parseRegions = function(){
     var regionArr = [];
     var regions = this.text.split("|");
     var roiIndex = this.getRoi(regions);
-    if (roiIndex != -1){
+    if (roiIndex !== -1){
         regions[roiIndex] = regions[roiIndex].replace('{','').replace('}','');
     }
     for (var i=0; i<regions.length; i++){
@@ -396,10 +409,10 @@ Experiment.prototype.processKeypress = function(e){
     var elapsedTime = Date.now() - this.startTime;
     var keyCode = e.keyCode;
     var result = this.screens[curScreenIndex].processKeypress(keyCode, elapsedTime);
-    if (result == "end of screen"){
+    if (result === "end of screen"){
         this.curScreenIndex++;
     }
-    if (curScreenIndex < screens.length){
+    if (curScreenIndex < this.screens.length){
         this.screens[curScreenIndex].show(this.frame);
     } else {
         this.endExperiment();
