@@ -13,6 +13,7 @@
     "text-color": "green",
     "background-color": "black",
     "display": "cumulative",
+    "orientation": "horizontal",
     "masking-character": "*",
     "fixation-character": "X",
     "instruction-screens": [
@@ -103,5 +104,10 @@
                 }
             }
         ]
-    }
+    },
+    "ending-screens": [
+        {
+            "instruction-screen": "This is the end of the self-paced-reading experiment. Thank you for participating!"
+        }
+    ]
 }

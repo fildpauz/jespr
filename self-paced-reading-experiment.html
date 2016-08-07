@@ -30,6 +30,19 @@ and open the template in the editor.
                     .fail(function () {
                         console.log("error");
                     });
+            
+            function start(experimentDesign){
+                console.log(experimentDesign.title);
+                var sprForm = document.getElementById("frmSPR");
+                var sprExpt = new Experiment(experimentDesign, sprForm);
+                if (sprExpt.validateDesign()){
+                    sprExpt.loadDesign();
+                    sprExpt.startExperiment();
+                } else {
+                    displayErrorMessage("The json experiment design seems to be invalid. Check it for errors and try again.");
+                    sprLog("Failed to validate the json experiment design.");
+                }
+            }
 
             function start(experimentDesign) {
                 console.log(experimentDesign.title);
