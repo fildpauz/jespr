@@ -24,7 +24,7 @@ html, body {
     text-align: center;
 }
 
-.title,
+div.title,
 .instructions,
 .item {
     display: none;
@@ -32,31 +32,54 @@ html, body {
     top: 50%;
     transform: translateY(-50%);
     text-align: center;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+}
+
+p.title {
+    font-size: 250%;
 }
 
 p.fixation {
     display: block;
     font-size: 5em;
     margin: 0;
+    font-family: inherit;
+    color: inherit;
 }
 
 p.stimulus {
     display: none;
     margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    visibility: hidden;
 }
 
 span.region {
-    
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    display: inline-block;
+    text-align: center;
 }
 
 .primary-investigators {
     font-weight: bold;
     margin-left: 1em;
     margin-right: 1em;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
 }
 
 .other-investigators {
     font-weight: normal;
     margin-left: 1em;
     margin-right: 1em;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
 }

@@ -9,9 +9,6 @@
 
 "use strict";
 
-//var exptFixationchar;
-//var exptMaskchar;
-
 /*
  * The Region object defines a region of text to be displayed in
  * a self-paced-reading experiment.
@@ -35,7 +32,7 @@ function Region(id, text, index, location, item){
  */
 Region.prototype.mask = function(char){
     var maskChar = typeof char === 'undefined' ? "!" : char;
-    this.html.textContent = this.text.replace(/./g, maskChar);
+    this.html.textContent = this.text.replace(/[^\ ]/g, maskChar);
     return this;
 };
 
@@ -63,6 +60,13 @@ Region.prototype.createHtml = function(){
     return s;
 };
 
+Region.prototype.lockWidth = function(){
+    // This function will only be effective after the region has been added
+    // to the DOM and display is not 'none'. (but visibility may be 'hidden').
+    var width = this.html.offsetWidth;
+    this.html.style.width = width + "px";
+};
+
 /*
  * The Item object represents one experimental item containing a stimulus
  * (a set of self-paced-reading regions) and optionally a follow-up question
@@ -75,7 +79,7 @@ Region.prototype.createHtml = function(){
  * are presented horizontally (i.e., one-sentence stimuli) or vertically (i.e.,
  * multi-sentence stimuli). [default=true]
  */
-function Item(id, text, orientation, fixationChar, maskChar){
+function Item(id, text, orientation, fixationChar, maskChar, display){
     this.id = id;
     this.text = text; // Is it useful to store this as plain text: .replace(/\|/g, ' ') ?
     if (orientation === 'horizontal' | orientation === 'vertical') {
@@ -85,12 +89,13 @@ function Item(id, text, orientation, fixationChar, maskChar){
     }
     this.fixationChar = fixationChar;
     this.maskChar = maskChar;
+    this.display = display;
     this.regions = this.parseRegions();
-    this.curRegionIndex = 'undefined';   // The index of the current SPR region being displayed
-    this.prompt = 'undefined';  // The prompt and options variables
-    this.options = 'undefined'; // need to be explicitly set
+    this.curRegionIndex = undefined;   // The index of the current SPR region being displayed
+    this.prompt = undefined;  // The prompt and options variables
+    this.options = undefined; // need to be explicitly set
     this.optionOrder = "fixed";
-    this.feedback = 'undefined';
+    this.feedback = undefined;
     this.condition = []; // An array of values representing the experimental conditions
     this.html = this.createHtml();
     this.timeData = [];
@@ -108,7 +113,7 @@ Item.prototype.hide = function(){
     this.frame.removeChild(this.html); // remove from DOM
 };
 
-Item.prototype.processKeypress = function(keyCode, elapsedTime){
+Item.prototype.processKeydown = function(keyCode, elapsedTime){
     var result = "continue";
     switch (keyCode){
         case 32: // space bar
@@ -117,19 +122,28 @@ Item.prototype.processKeypress = function(keyCode, elapsedTime){
                 fixationP.style.display = "none";
                 var stimulusP = document.getElementById(this.id + "-stimulus");
                 stimulusP.style.display = "block";
-                curRegionIndex++;
+                for (var i=0; i<this.regions.length; i++){
+                    this.regions[i].unmask();
+                    this.regions[i].lockWidth();
+                    this.regions[i].mask(this.maskChar);
+                }
+                stimulusP.style.visibility = "visible";
+                this.curRegionIndex++;
+                this.regions[this.curRegionIndex].unmask();
                 this.saveData(this.id + "-fixation", elapsedTime, keyCode);
-            } else if (this.curRegionIndex < this.regions.length){ // non-final SPR region is showing
-                var curRegion = regions[curRegionIndex];
-                var nextRegion = regions[curRegionIndex+1];
-                curRegion.mask(this.maskChar);
+            } else if (this.curRegionIndex < this.regions.length-1){ // non-final SPR region is showing
+                var curRegion = this.regions[this.curRegionIndex];
+                if (this.display === "moving window"){
+                    curRegion.mask(this.maskChar);
+                }
+                var nextRegion = this.regions[this.curRegionIndex+1];
                 nextRegion.unmask();
-                curRegionIndex++;
+                this.curRegionIndex++;
                 this.saveData(curRegion.id, elapsedTime, keyCode);
             } else if (this.curRegionIndex === this.regions.length-1){ // final SPR region is showing
-                var curRegion = regions[curRegionIndex];
+                var curRegion = this.regions[this.curRegionIndex];
                 this.saveData(curRegion.id, elapsedTime, keyCode);
-                curRegionIndex++;
+                this.curRegionIndex++;
                 if (typeof this.prompt !== 'undefined'){
                     var stimulusP = document.getElementById(this.id + "-stimulus");
                     stimulusP.style.display = "none";
@@ -142,7 +156,7 @@ Item.prototype.processKeypress = function(keyCode, elapsedTime){
             } else if (this.curRegionIndex === this.regions.length){ // prompt is showing
                 // prompt is showing, but non-answer key pressed -- ignore
             } else if (this.curRegionIndex === this.regions.length+1){ // feedback is showing
-                this.saveData(this.id + "-feedback", elapsedTime, keyCode)
+                this.saveData(this.id + "-feedback", elapsedTime, keyCode);
                 this.hide();
                 result = "end of screen";
             } else { // This case should never be reached.
@@ -197,7 +211,7 @@ Item.prototype.saveData = function(regionId, elapsedTime, keyCode){
                  "elapsedTime": elapsedTime,
                  "keyCode": keyCode };
     this.timeData.push(data);
-}
+};
 
 /*
  * 
@@ -211,7 +225,7 @@ Item.prototype.createHtml = function(){
     var fixationP = document.createElement("p");
     fixationP.id = this.id.concat("-fixation");
     fixationP.className = "fixation";
-    fixationP.textContent = this.Fixationchar;
+    fixationP.textContent = this.fixationChar;
     itemDiv.appendChild(fixationP);
     if (this.orientation === 'horizontal'){ // single-line SPR type
         // split string into regions
@@ -225,7 +239,7 @@ Item.prototype.createHtml = function(){
                 var space = document.createTextNode(" ");
                 itemP.appendChild(space);
             }
-            itemP.appendChild(regions[i].mask(this.maskChar).html);
+            itemP.appendChild(this.regions[i].mask(this.maskChar).html);
         }
         itemDiv.appendChild(itemP);
     } else { // multi-line SPR type
@@ -285,7 +299,7 @@ function Title(text, primaryInvestigators, otherInvestigators){
     this.primaryInvestigators = primaryInvestigators;
     this.otherInvestigators = otherInvestigators;
     this.html = this.createHtml();
-    this.frame = 'undefined';
+    this.frame = undefined;
 }
 
 Title.prototype.show = function(frame){
@@ -299,7 +313,7 @@ Title.prototype.hide = function(){
     this.frame.removeChild(this.html); // remove from DOM
 };
 
-Title.prototype.processKeypress = function(keyCode, elapsedTime){
+Title.prototype.processKeydown = function(keyCode, elapsedTime){
     var result = "continue";
     switch (keyCode){
         case 32: // space bar
@@ -316,14 +330,15 @@ Title.prototype.processKeypress = function(keyCode, elapsedTime){
  * Creates a <div> object to show the experiment title and investigators' names
  * @returns a <div> object containing the opening screen info
  */
-Title.prototye.createHtml = function(){
+Title.prototype.createHtml = function(){
     // create the title div
     var titleDiv = document.createElement("div");
     titleDiv.className = "title";
     // create and add the title
-    var t = document.createElement("h1");
-    t.textContent = this.text;
-    titleDiv.appendChild(t);
+    var titleP = document.createElement("p");
+    titleP.className = "title";
+    titleP.textContent = this.text;
+    titleDiv.appendChild(titleP);
     // create and add investigator info
     var investigators = document.createElement("p");
     investigators.className = "investigators";
@@ -357,8 +372,8 @@ Title.prototye.createHtml = function(){
  */
 function Instructions(text){
     this.text = text;
-    this.html = createHtml();
-    this.frame = 'undefined';
+    this.html = this.createHtml();
+    this.frame = undefined;
 }
 
 /*
@@ -379,7 +394,7 @@ Instructions.prototype.hide = function(){
     this.frame.removeChild(this.html); // remove from DOM
 };
 
-Instructions.prototype.processKeypress = function(keyCode, elapsedTime){
+Instructions.prototype.processKeydown = function(keyCode, elapsedTime){
     var result = "continue";
     switch (keyCode){
         case 32: // space bar
@@ -415,8 +430,8 @@ function Screen(type, object){
     this.object = object;
 }
 
-Screen.prototype.processKeypress = function(keyCode, elapsedTime){
-    return this.object.processKepress(keyCode, elapsedTime);
+Screen.prototype.processKeydown = function(keyCode, elapsedTime){
+    return this.object.processKeydown(keyCode, elapsedTime);
 };
 
 /*
@@ -427,20 +442,22 @@ Screen.prototype.processKeypress = function(keyCode, elapsedTime){
  * @param form - the html <form> object that will handle the data values on submit
  */
 function Experiment(design, form){
+    // For binding 'this' inside listeners
+    var self = this;
     // General experiment settings and parameters
-    this.title = design["title"] !== 'undefined' ? design["title"].trim() : "A Self-paced Reading Experiment";
-    this.fontname = design["font-name"] !== 'undefined' ? design["font-name"].trim() : "Courier new";
-    this.fontsize = design["font-size"] !== 'undefined' ? design["font-size"].trim() : "12";
+    this.title = typeof design["title"] !== 'undefined' ? design["title"].trim() : "A Self-paced Reading Experiment";
+    this.fontname = typeof design["font-name"] !== 'undefined' ? design["font-name"].trim() : "Courier new";
+    this.fontsize = typeof design["font-size"] !== 'undefined' ? design["font-size"].trim() : "12"; // TODO: decide whether json must include units or not.
     // Following colors must be HTML supported color names; e.g., http://www.w3schools.com/colors/colors_names.asp
-    this.textcolor = design["text-color"] !== 'undefined' ? design["text-color"].trim() : "black";
+    this.textcolor = typeof design["text-color"] !== 'undefined' ? design["text-color"].trim() : "black";
     this.textcolor = validTextColour(this.textcolor) ? this.textcolor : "black";
-    this.backgroundcolor = design["background-color"] !== 'undefined' ? design["background-color"].trim() : "white";
+    this.backgroundcolor = typeof design["background-color"] !== 'undefined' ? design["background-color"].trim() : "white";
     this.backgroundcolor = validTextColour(this.backgroundcolor) ? this.backgroundcolor : "white";
-    this.display = design["display"] !== 'undefined' ? design["display"].trim() : "Moving window";
-    this.orientation = design["orientation"] !== 'undefined' ? design["orientation"] : "horizontal";
+    this.display = typeof design["display"] !== 'undefined' ? design["display"].trim() : "Moving window";
+    this.orientation = typeof design["orientation"] !== 'undefined' ? design["orientation"] : "horizontal";
     // Following must be only one character in length
-    this.fixationchar = design["fixation-character"] !== 'undefined' ? design["fixation-character"].trim().substr(0,1) : "+";
-    this.maskchar = design["masking-character"] !== 'undefined' ? design["masking-character"].trim().substr(0,1) : "_";
+    this.fixationchar = typeof design["fixation-character"] !== 'undefined' ? design["fixation-character"].trim().substr(0,1) : "+";
+    this.maskchar = typeof design["masking-character"] !== 'undefined' ? design["masking-character"].trim().substr(0,1) : "_";
     
     // Info about json object containing experimental design
     this.design = design; // json object containing the design, stimuli, etc.
@@ -448,133 +465,160 @@ function Experiment(design, form){
 
     // variables for experiment flow and execution
     this.form = form;
-    this.frame = createFrame();
+    this.frame = this.createFrame();
     this.screens = [];  // List of all screen divs in the experiment: title, instructions, stimulus items
     this.curScreenIndex;   // The index of the current screen in screenInfo array being displayed.
     this.startTime;     // The start time of the experiment. Timing results are relative to this.
+
+    Experiment.prototype.processKeydown = function(e){
+        var elapsedTime = Date.now() - self.startTime;
+        var keyCode = e.keyCode;
+        var result = self.screens[self.curScreenIndex].processKeydown(keyCode, elapsedTime);
+        if (result === "end of screen"){
+            self.curScreenIndex++;
+            if (self.curScreenIndex < self.screens.length){
+                self.screens[self.curScreenIndex].object.show(self.frame);
+            } else {
+                self.endExperiment();
+            }
+        } else if (result === "continue"){
+            // Continue with the same screen; nothing else to do here
+        }
+    };
+    
+    Experiment.prototype.processKeyup = function(e){
+        // TODO: implement checking for keydown AND keyup to ensure experiment
+        // advances only one step per keypress
+    };
 }
 
 Experiment.prototype.startExperiment = function(){
     this.startTime = Date.now();
-    document.body.addEventListener("keypress", this.processKeypress);
+    document.body.addEventListener("keydown", this.processKeydown);
+    // TODO: add keyup listener here
     window.focus();  // to make sure the window is listening for keypress events
     this.curScreenIndex = 0;
-    this.screens[curScreenIndex].object.show();
-};
-
-Experiment.prototype.processKeypress = function(e){
-    var elapsedTime = Date.now() - this.startTime;
-    var keyCode = e.keyCode;
-    var result = this.screens[curScreenIndex].processKeypress(keyCode, elapsedTime);
-    if (result === "end of screen"){
-        this.curScreenIndex++;
-    }
-    if (curScreenIndex < this.screens.length){
-        this.screens[curScreenIndex].show(this.frame);
-    } else {
-        this.endExperiment();
-    }
+    this.screens[this.curScreenIndex].object.show(this.frame);
 };
 
 Experiment.prototype.endExperiment = function(){
-    document.body.removeEventListener("keypress", processKeypress);
+    document.body.removeEventListener("keydown", this.processKeydown);
+    // TODO: remove keyup listener here
     this.frame.style.display = "none";
-    this.form.removeChild(this.frame);
+    document.body.removeChild(this.frame);
     // TODO: Optional data export to screen (so experimenter can copy-and-paste)?
     // TODO: Optional data export of experiment log?
 };
 
 Experiment.prototype.loadDesign = function(){
-    if (!this.designValidated){
+    if (this.designValidated){
+        // Create title screen
+        this.screens.push(this.loadTitleScreen(this.design));
         if (this.design["instruction-screens"]){
             // load pre-practice instructions
-            this.screens.concat(this.loadInstructions(this.design["instruction-screens"]));
+            this.screens = this.screens.concat(this.loadInstructions(this.design["instruction-screens"]));
         }
         if (this.design["practice-stimuli"]){
             // load practice stimuli
-            this.screens.concat(this.loadStimuliGroup(this.design["practice-stimuli"]));
+            this.screens = this.screens.concat(this.loadStimuliGroup(this.design["practice-stimuli"]));
         }
         if (this.design["post-practice-instruction-screens"]){
             // load post-practice instructions
-            this.screens.concat(this.loadInstructions(this.design["post-practice-instruction-screens"]));
+            this.screens = this.screens.concat(this.loadInstructions(this.design["post-practice-instruction-screens"]));
         }
         if (this.design["experiment-stimuli"]){
             // load stimulus sets
-            this.screens.concat(this.loadStimuliSets(this.design["experiment-stimuli"]));
+            this.screens = this.screens.concat(this.loadStimuliSets(this.design["experiment-stimuli"]));
         }
         if (this.design["instruction-screens"]){
             // load ending
-            this.screens.concat(this.loadInstructions(this.design["ending-screens"]));
+            this.screens = this.screens.concat(this.loadInstructions(this.design["ending-screens"]));
         }
+        sprLog("Loaded " + this.screens.length + " screens");
     } else {
         displayErrorMessage("Cannot load an unvalidated design: Run validateDesign() on Experiment object first.");
         sprLog("Cannot load an unvalidated design: Run validateDesign() on Experiment object first.");
     }
 };
 
+Experiment.prototype.loadTitleScreen = function(design){
+    var pi = [];
+    var oi = [];
+    for (var i=0; i<design["investigators"].length; i++){
+        if (design["investigators"][i]["primary"]){
+            pi.push(design["investigators"][i]["primary"]);
+        } else if (design["investigators"][i]["other"]){
+            oi.push(design["investigators"][i]["other"]);
+        }
+    }
+    var title = new Title(this.title, pi, oi);
+    var screen = new Screen("title", title);
+    return screen;
+};
+
 Experiment.prototype.loadInstructions = function(design){
     var screens = [];
     for (var i=0; i<design.length; i++){
-        var instructions = new Insructions(design[i]["instruction-screen"]);
+        var instructions = new Instructions(design[i]["instruction-screen"]);
         var screen = new Screen("instructions", instructions);
         screens.push(screen);
     }
     return screens;
 };
 
-Experiment.protoype.loadStimuliSets = function(design){
+Experiment.prototype.loadStimuliSets = function(design){
     var screens = [];
     var sets = [];
     var order = this.getOrder(design["order"]);
     var merge = this.getMerge(design["merge"]);
-    for (var i=0; i<design["stimuli-sets"]; i++){
+    for (var i=0; i<design["stimuli-sets"].length; i++){
         var setDesign =design["stimuli-sets"][i]["stimuli-set"];
-        sets.push(this.loadStimuliGroups(setDesign));;
+        sets.push(this.loadStimuliGroups(setDesign, order, merge));;
     }
-    if (order == "random") { shuffle(sets); }
+    if (order === "random") { shuffle(sets); }
     if (merge) {
-        screens.concat(mergeArrays(sets, "random")); // TODO: pass merge method value through
+        screens = mergeArrays(sets, "random"); // TODO: pass merge method value through
     } else {
         for (var k=0; k<sets.length; k++){
-            screens.concat(sets[k]);
+            screens = screens.concat(sets[k]);
         }
     }
     return screens;
 };
 
-Experiment.protoype.loadStimuliGroups = function(design){
+Experiment.prototype.loadStimuliGroups = function(design, ord, mrg){
     var set = [];
-    var order = this.getOrder(setDesign["order"], order);
-    var merge = this.getMerge(setDesign["merge"], merge)
+    var order = this.getOrder(design["order"], ord);
+    var merge = this.getMerge(design["merge"], mrg);
     var groups = [];
-    for (var j=0; j<design["groups"]; j++){
+    for (var j=0; j<design["groups"].length; j++){
         var groupDesign = design["groups"][j]["group"];
-        var group = loadStimuliGroup(groupDesign, order);
+        var group = this.loadStimuliGroup(groupDesign, order);
         groups.push(group);
     }
-    if (order == "random") {
+    if (order === "random") {
         shuffle(groups);
     }
     if (merge) {
-        set.concat(mergeArrays(groups, "random")); // TODO: pass merge method value through
+        set = mergeArrays(groups, "random"); // TODO: pass merge method value through
     } else {
         for (var k=0; k<groups.length; k++){
-            set.concat(groups[k]);
+            set = set.concat(groups[k]);
         }
     }
     return set;
 };
 
-Experiment.prototype.loadStimuliGroup = function(design, order){
+Experiment.prototype.loadStimuliGroup = function(design, ord){
     var screens = [];
-    var order = this.getOrder(design["order"], order);
+    var order = this.getOrder(design["order"], ord);
     // go through items array and create screenInfo object for each item
     for (var i=0; i<design["items"].length; i++){
         var id = design["items"][i]["item"]["id"];
         var text = design["items"][i]["item"]["string"];
         var orientation = typeof design["items"][i]["item"]["orientation"] !== 'undefined' ? design["items"][i]["item"]["orientation"] : this.orientation;
         // TODO: implement loading prompt and feedback
-        var item = new Item(id, text, orientation);
+        var item = new Item(id, text, orientation, this.fixationchar, this.maskchar, this.display);
         // Create the Screen object and push it to the sceens array
         var screen = new Screen("stimuli", item);
         screens.push(screen);
@@ -590,13 +634,13 @@ Experiment.prototype.loadStimuliGroup = function(design, order){
  * @param   object containing "order" key-value pair
  * @returns "fixed" or "random"
  */
-Experiment.protype.getOrder = function(order, default){
-    var result = typeof default !=== 'undefined' ? default : "fixed"; // default
+Experiment.prototype.getOrder = function(order, fallbackValue){
+    var result = typeof fallbackValue !== 'undefined' ? fallbackValue : "fixed"; // default
     if (typeof order !== 'undefined'){
-        if (order["order"] === "random"){
+        if (order === "random"){
             result = "random";
-        } else if (order["order"] !== "fixed"){
-            sprLog("Unexpected value for 'order'. Using default 'fixed'.");
+        } else if (order !== "fixed"){
+            sprLog("Unexpected value for 'order'. Using default/fallback value: '" + result + "'.");
         }
     }
     return result;
@@ -607,12 +651,12 @@ Experiment.protype.getOrder = function(order, default){
  * @param   object containing "order" key-value pair
  * @returns "fixed" or "random"
  */
-Experiment.protype.getOrder = function(merge, default){
-    var result = typeof default !=== 'undefined' ? default : true; // default
+Experiment.prototype.getMerge = function(merge, fallbackValue){
+    var result = typeof fallbackValue !== 'undefined' ? fallbackValue : true; // default
     if (typeof merge !== 'undefined'){
-        if (merge["merge"] === "false"){
+        if (merge === "false"){
             result = false;
-        } else if (merge["merge"] !== "true"){
+        } else if (merge !== "true"){
             sprLog("Unexpected value for 'merge'. Using default 'true'.");
         }
     }
@@ -626,6 +670,10 @@ Experiment.protype.getOrder = function(merge, default){
 Experiment.prototype.createFrame = function(){
   var frame = document.createElement("div");
   frame.className = "experiment-frame";
+  frame.style.backgroundColor = this.backgroundcolor;
+  frame.style.color = this.textcolor;
+  frame.style.fontFamily = this.fontname;
+  frame.style.fontSize = this.fontsize + "px";
   document.body.appendChild(frame);
   return frame;
 };
@@ -644,6 +692,7 @@ Experiment.prototype.validateDesign = function(){
     } else {
         sprLog("No pre-practice instruction screens");
     }
+    sprLog("Result = " + result);
     // Check structure of practice items
     sprLog("Checking practice stimuli");
     if (this.design["practice-stimuli"]){
@@ -653,6 +702,7 @@ Experiment.prototype.validateDesign = function(){
     } else {
         sprLog("No practice stimuli");
     }
+    sprLog("Result = " + result);
     // Check structure of post-practice instructions
     sprLog("Checking post-practice instruction screens");
     if (this.design["post-practice-instruction-screens"]){
@@ -662,6 +712,7 @@ Experiment.prototype.validateDesign = function(){
     } else {
         sprLog("No post-practice instruction screens");
     }
+    sprLog("Result = " + result);
     // Check structure of experimental stimuli
     sprLog("Checking experimental-stimuli");
     if (this.design["experiment-stimuli"]){
@@ -673,6 +724,7 @@ Experiment.prototype.validateDesign = function(){
         sprLog("No experimental stimuli section was found in the json object");
         result = false;
     }
+    sprLog("Result = " + result);
     this.designValidated = result;
     return result;
 };
@@ -693,7 +745,7 @@ Experiment.prototype.isValidExptStimuli = function(stimuli){
                 displayErrorMessage("Unknown name in stimuli: expected 'stimuli-set'");
                 sprLog("Unknown name in stimuli: expected 'stimuli-set'");
                 result = false;
-            } else if (!isValidStimuliSet(stimuli["stimuli-sets"][i]["stimuli-set"])){
+            } else if (!this.isValidStimuliSet(stimuli["stimuli-sets"][i]["stimuli-set"])){
                 result = false;
             }
         }
@@ -717,7 +769,7 @@ Experiment.prototype.isValidStimuliSet = function(stimuliSet){
                 displayErrorMessage("Unknown name in stimuli: expected 'group'");
                 sprLog("Unknown name in stimuli: expected 'group'");
                 result = false;
-            } else if (!isValidGroup(stimuliSet["groups"][i]["group"])){
+            } else if (!this.isValidGroup(stimuliSet["groups"][i]["group"])){
                 result = false;
             }
         }
@@ -757,7 +809,7 @@ Experiment.prototype.isValidGroup = function(group){
                 displayErrorMessage("Unknown name in items: expected 'item'");
                 sprLog("Unknown name in items: expected 'item'");
                 result = false;
-            } else if (!isValidItem(group["items"][i]["item"])){
+            } else if (!this.isValidItem(group["items"][i]["item"])){
                 result = false;
             }
         }
@@ -869,8 +921,8 @@ function shuffle(array) {
 function mergeArrays(arrays, method){
     var result = [];
     if (method === "random"){
-        result.concat(mergeArraysRandomly(arrays.slice(0)));
-    } else if (method == "sequential"){
+        result = mergeArraysRandomly(arrays.slice(0));
+    } else if (method === "sequential"){
         // merge arrays in a sequential manner
     }
     return result;
@@ -880,13 +932,13 @@ function mergeArraysRandomly(arrays){
     var result = [];
     if (arrays.length>1) {
         // get random array and take the top item and push to result
-        randomIndex = Math.floor(Math.random() * arrays.length);
+        var randomIndex = Math.floor(Math.random() * arrays.length);
         result.push(arrays[randomIndex].shift());
         return result.concat(mergeArraysRandomly(arrays.filter(function(arr){
             return arr.length > 0;
-        })))
-    } else if (arrays.length == 1){
-        // there's only one array left, concat the whole array and stop recursion
+        })));
+    } else if (arrays.length === 1){
+        // there's only one array left in arrays; return just it and stop recursion
         return arrays[0];
     } else {
         // something's wrong: we should never reach here...

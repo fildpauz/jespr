@@ -10,7 +10,8 @@ and open the template in the editor.
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-        <script src="self-paced-reading.js"></script>
+        <!--<script src="self-paced-reading.js"></script>-->
+        <script src="spr-objects.js"></script>
         <link href="self-paced-reading.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
@@ -44,16 +45,16 @@ and open the template in the editor.
                 }
             }
 
-            function start(experimentDesign) {
-                console.log(experimentDesign.title);
-                if (isValidDesign(experimentDesign)){
-                    loadExperiment(experimentDesign);
-                    doExperiment(); // Start and run the whole thing
-                } else {
-                    displayErrorMessage("Problem loading the json experiment design. Check it for errors and try again.");
-                    sprLog("Problem loading the json experiment design.");
-                }
-            }
+//            function start(experimentDesign) {
+//                console.log(experimentDesign.title);
+//                if (isValidDesign(experimentDesign)){
+//                    loadExperiment(experimentDesign);
+//                    doExperiment(); // Start and run the whole thing
+//                } else {
+//                    displayErrorMessage("Problem loading the json experiment design. Check it for errors and try again.");
+//                    sprLog("Problem loading the json experiment design.");
+//                }
+//            }
         </script>
     </body>
 </html>
