@@ -16,6 +16,18 @@
     "orientation": "horizontal",
     "masking-character": "*",
     "fixation-character": "X",
+    "feedback-options": [
+        {
+            "name": "correct",
+            "string": "That's correct",
+            "text-color": "green"
+        },
+        {
+            "name": "incorrect",
+            "string": "That's not correct",
+            "text-color": "red"
+        }
+    ],
     "instruction-screens": [
         {
             "instruction-screen": "blah1 blah1 blah1"
@@ -30,13 +42,35 @@
             {
                 "item": {
                     "id": "practice01",
-                    "string": "blah1|blah2|blah3|blah4|blah5"
+                    "string": "blah1|blah2|blah3|blah4|blah5",
+                    "prompt": "Whah blah bleeh bluh blah?",
+                    "options": [
+                        {
+                            "string": "bleh",
+                            "feedback-option": "correct"
+                        },
+                        {
+                            "string": "blih",
+                            "feedback-option": "incorrect"
+                        }
+                    ]
                 }
             },
             {
                 "item": {
                     "id": "practice02",
-                    "string": "blech1|blech2|blech3|blech4|blech5"
+                    "string": "blech1|blech2|blech3|blech4|blech5",
+                    "prompt": "Whach blach bleech bluch blach?",
+                    "options": [
+                        {
+                            "string": "blich",
+                            "feedback": "correct"
+                        },
+                        {
+                            "string": "blech",
+                            "feedback": "incorrect"
+                        }
+                    ]
                 }
             }
         ]

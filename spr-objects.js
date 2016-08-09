@@ -18,8 +18,9 @@
  * @param location - The location of this region relative to the region of interest
  * @param item - The experimental item that this region is a member of
  */
-function Region(id, text, index, location, item){
-    this.id = id;
+function Region(itemId, text, index, location, item){
+    this.id = itemId + "_" + index;
+    this.itemId = itemId;
     this.text = text;
     this.index = index;
     this.location = location;
@@ -54,7 +55,7 @@ Region.prototype.unmask = function(){
  */
 Region.prototype.createHtml = function(){
     var s = document.createElement("span");
-    s.id = this.id.concat(this.index);
+    s.id = this.id;
     s.className = "region";
     s.textContent = this.text;
     return s;
@@ -79,7 +80,7 @@ Region.prototype.lockWidth = function(){
  * are presented horizontally (i.e., one-sentence stimuli) or vertically (i.e.,
  * multi-sentence stimuli). [default=true]
  */
-function Item(id, text, orientation, fixationChar, maskChar, display){
+function Item(id, text, orientation, fixationChar, maskChar, display, prompt, options, feedbackOptions){
     this.id = id;
     this.text = text; // Is it useful to store this as plain text: .replace(/\|/g, ' ') ?
     if (orientation === 'horizontal' | orientation === 'vertical') {
@@ -90,11 +91,12 @@ function Item(id, text, orientation, fixationChar, maskChar, display){
     this.fixationChar = fixationChar;
     this.maskChar = maskChar;
     this.display = display;
+    this.feedbackOptions = feedbackOptions;
     this.regions = this.parseRegions();
     this.curRegionIndex = undefined;   // The index of the current SPR region being displayed
-    this.prompt = undefined;  // The prompt and options variables
-    this.options = undefined; // need to be explicitly set
-    this.optionOrder = "fixed";
+    this.prompt = prompt;
+    this.options = options;
+    this.optionOrder = "random"; // TODO: Implement a way for this to be set in json file
     this.feedback = undefined;
     this.condition = []; // An array of values representing the experimental conditions
     this.html = this.createHtml();
@@ -118,9 +120,9 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
     switch (keyCode){
         case 32: // space bar
             if (this.curRegionIndex === -1){ // fixation mark is showing
-                var fixationP = document.getElementById(this.id + "-fixation");
+                var fixationP = document.getElementById(this.id + "_fixation");
                 fixationP.style.display = "none";
-                var stimulusP = document.getElementById(this.id + "-stimulus");
+                var stimulusP = document.getElementById(this.id + "_stimulus");
                 stimulusP.style.display = "block";
                 for (var i=0; i<this.regions.length; i++){
                     this.regions[i].unmask();
@@ -130,7 +132,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
                 stimulusP.style.visibility = "visible";
                 this.curRegionIndex++;
                 this.regions[this.curRegionIndex].unmask();
-                this.saveData(this.id + "-fixation", elapsedTime, keyCode);
+                this.saveData(this.id + "_fixation", elapsedTime, keyCode);
             } else if (this.curRegionIndex < this.regions.length-1){ // non-final SPR region is showing
                 var curRegion = this.regions[this.curRegionIndex];
                 if (this.display === "moving window"){
@@ -145,9 +147,9 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
                 this.saveData(curRegion.id, elapsedTime, keyCode);
                 this.curRegionIndex++;
                 if (typeof this.prompt !== 'undefined'){
-                    var stimulusP = document.getElementById(this.id + "-stimulus");
+                    var stimulusP = document.getElementById(this.id + "_stimulus");
                     stimulusP.style.display = "none";
-                    var promptP = document.getElementById(this.id + "-prompt");
+                    var promptP = document.getElementById(this.id + "_prompt");
                     promptP.style.display = "block";
                 } else {
                     this.hide();
@@ -156,7 +158,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
             } else if (this.curRegionIndex === this.regions.length){ // prompt is showing
                 // prompt is showing, but non-answer key pressed -- ignore
             } else if (this.curRegionIndex === this.regions.length+1){ // feedback is showing
-                this.saveData(this.id + "-feedback", elapsedTime, keyCode);
+                this.saveData(this.id + "_feedback", elapsedTime, keyCode);
                 this.hide();
                 result = "end of screen";
             } else { // This case should never be reached.
@@ -167,11 +169,11 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
         case 113, 81: // q,Q
         case 97, 65:  // a,A
         case 122, 90: // z,Z
-            this.saveData(this.id + "-prompt", elapsedTime, keyCode);
+            this.saveData(this.id + "_prompt", elapsedTime, keyCode);
             if (typeof this.feedback !== 'undefined'){
-                var promptP = document.getElementById(this.id + "-prompt");
+                var promptP = document.getElementById(this.id + "_prompt");
                 promptP.style.display = "none";
-                var feedbackP = document.getElementById(this.id + "-feedback");
+                var feedbackP = document.getElementById(this.id + "_feedback");
                 // TODO: Check whether response is correct and update
                 // feedbackP textContent as appropriate
                 feedbackP.style.display = "block";
@@ -186,11 +188,11 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
         case 112, 80: // p,P
         case 108, 76: // l,L
         case 109, 77: // m,M
-            this.saveData(this.id + "-prompt", elapsedTime, keyCode);
+            this.saveData(this.id + "_prompt", elapsedTime, keyCode);
             if (typeof this.feedback !== 'undefined'){
-                var promptP = document.getElementById(this.id + "-prompt");
+                var promptP = document.getElementById(this.id + "_prompt");
                 promptP.style.display = "none";
-                var feedbackP = document.getElementById(this.id + "-feedback");
+                var feedbackP = document.getElementById(this.id + "_feedback");
                 // TODO: Check whether response is correct and update
                 // feedbackP textContent as appropriate
                 feedbackP.style.display = "block";
@@ -223,29 +225,80 @@ Item.prototype.createHtml = function(){
     itemDiv.className = "item";
     itemDiv.id = this.id;
     var fixationP = document.createElement("p");
-    fixationP.id = this.id.concat("-fixation");
+    fixationP.id = this.id + "_fixation";
     fixationP.className = "fixation";
     fixationP.textContent = this.fixationChar;
     itemDiv.appendChild(fixationP);
-    if (this.orientation === 'horizontal'){ // single-line SPR type
-        // split string into regions
-        var itemP = document.createElement("p"); // create p container for regions
-        itemP.id = this.id.concat("-stimulus");
-        itemP.className = "stimulus";
-        // for each region
-        for (var i=0; i<this.regions.length; i++){
-            // add span to div
-            if (i>0){
-                var space = document.createTextNode(" ");
-                itemP.appendChild(space);
+    // split string into regions
+    var itemP = document.createElement("p"); // create p container for regions
+    itemP.id = this.id + "_stimulus";
+    itemP.className = "stimulus";
+    // for each region
+    for (var i=0; i<this.regions.length; i++){
+        // add span to div
+        if (i>0){
+            if (this.orientation === 'horizontal'){ // single-line SPR type
+                var space1 = document.createTextNode(" ");
+                itemP.appendChild(space1);
+            } else if (this.orientation === 'vertical'){ // multi-line SPR type
+                var br1 = document.createElement("br");
+                itemP.appendChild(br1);
+            } else {
+                // Should never reach this point
             }
-            itemP.appendChild(this.regions[i].mask(this.maskChar).html);
         }
-        itemDiv.appendChild(itemP);
-    } else { // multi-line SPR type
-        // TODO: create a multi-line version
+        itemP.appendChild(this.regions[i].mask(this.maskChar).html);
     }
-    // TODO: Create and append the prompt and feedback <div>s, if any
+    itemDiv.appendChild(itemP);
+    if (typeof this.prompt !== 'undefined'){
+        // Add prompt and options
+        var promptP = document.createElement("p");
+        promptP.id = this.id + "_prompt";
+        promptP.className = "prompt";
+        var promptText = document.createTextNode(this.prompt);
+        promptP.appendChild(promptText);
+        var br2 = document.createElement("br");
+        promptP.appendChild(br2);
+        if (optionOrder === "random"){ shuffle(this.options); }
+        var leftOption = document.createElement("span");
+        leftOption.id = this.id + "_option_1";
+        leftOption.className = "option";
+        leftOption.textContent = this.options[0]["string"];
+        promptP.appendChild(leftOption);
+        var space2 = document.createTextNode(" ");
+        promptP.appendChild(space2);
+        var rightOption = document.createElement("span");
+        rightOption.id = this.id + "_option_2";
+        rightOption.className = "option";
+        rightOption.textContent = this.options[1]["string"];
+        promptP.appendChild(rightOption);
+        itemDiv.appendChild(promptP);
+        if (typeof this.options[0]["feedback"] !== 'undefined' || typeof this.options[0]["feedback-option"] !== 'undefined'){
+            // Add feedback element
+            var feedbackP = document.createElement("p");
+            feedbackP.id = this.id + "_feedback";
+            feedbackP.className = "feedback";
+            var leftFeedback = document.createElement("span");
+            leftFeeback.id = this.id + "_feedback_1";
+            leftFeedback.className = "feedback";
+            if (typeof this.options[0]["feedback-option"] !== 'undefined'){
+                leftFeedback.textContent = this.feedbackOptions[this.options[0]["feedback-option"]]["string"];
+            } else {
+                leftFeedback.textContent = this.options[0]["feedback"];
+            }
+            feedbackP.appendChild(leftFeedback);
+            var rightFeedback = document.createElement("span");
+            rightFeeback.id = this.id + "_feedback_1";
+            rightFeedback.className = "feedback";
+            if (typeof this.options[1]["feedback-option"] !== 'undefined'){
+                rightFeedback.textContent = this.feedbackOptions[this.options[1]["feedback-option"]]["string"];
+            } else {
+                rightFeedback.textContent = this.options[1]["feedback"];
+            }
+            feedbackP.appendChild(rightFeedback);
+            itemDiv.appendChild(feedbackP);
+        }
+    }
     return itemDiv;
 };
 
@@ -447,14 +500,15 @@ function Experiment(design, form){
     // General experiment settings and parameters
     this.title = typeof design["title"] !== 'undefined' ? design["title"].trim() : "A Self-paced Reading Experiment";
     this.fontname = typeof design["font-name"] !== 'undefined' ? design["font-name"].trim() : "Courier new";
-    this.fontsize = typeof design["font-size"] !== 'undefined' ? design["font-size"].trim() : "12"; // TODO: decide whether json must include units or not.
+    this.fontsize = typeof design["font-size"] !== 'undefined' ? Number(design["font-size"].trim()) : 12;
+    this.fontsize = !isNan(this.fontsize) ? this.fontsize : 12;
     // Following colors must be HTML supported color names; e.g., http://www.w3schools.com/colors/colors_names.asp
     this.textcolor = typeof design["text-color"] !== 'undefined' ? design["text-color"].trim() : "black";
     this.textcolor = validTextColour(this.textcolor) ? this.textcolor : "black";
     this.backgroundcolor = typeof design["background-color"] !== 'undefined' ? design["background-color"].trim() : "white";
     this.backgroundcolor = validTextColour(this.backgroundcolor) ? this.backgroundcolor : "white";
-    this.display = typeof design["display"] !== 'undefined' ? design["display"].trim() : "Moving window";
-    this.orientation = typeof design["orientation"] !== 'undefined' ? design["orientation"] : "horizontal";
+    this.display = this.getStringSetting("display", design["display"], ["moving window","cumulative"], "moving window");
+    this.orientation = this.getStringSetting("orientation", design["orientation"], ["horizontal","vertical"], "horizontal");
     // Following must be only one character in length
     this.fixationchar = typeof design["fixation-character"] !== 'undefined' ? design["fixation-character"].trim().substr(0,1) : "+";
     this.maskchar = typeof design["masking-character"] !== 'undefined' ? design["masking-character"].trim().substr(0,1) : "_";
@@ -462,6 +516,7 @@ function Experiment(design, form){
     // Info about json object containing experimental design
     this.design = design; // json object containing the design, stimuli, etc.
     this.designValidated = false;    // Boolean to indicate whether design file has been validated
+    this.feedbackOptions = this.parseFeedbackOptions(design["feedback-options"]);
 
     // variables for experiment flow and execution
     this.form = form;
@@ -508,6 +563,19 @@ Experiment.prototype.endExperiment = function(){
     document.body.removeChild(this.frame);
     // TODO: Optional data export to screen (so experimenter can copy-and-paste)?
     // TODO: Optional data export of experiment log?
+};
+
+Experiment.prototype.parseFeedbackOptions = function(design){
+    var result;
+    for (var i=0; i<design.length; i++){
+        result[design[i]["name"]]["string"] = design[i]["string"];
+        if (typeof design[i]["color"] !== 'undefined'){
+            result[design[i]["name"]]["color"] = design[i]["color"];
+        } else {
+            result[design[i]["name"]]["color"] = this.textcolor;
+        }
+    }
+    return result;
 };
 
 Experiment.prototype.loadDesign = function(){
@@ -614,11 +682,13 @@ Experiment.prototype.loadStimuliGroup = function(design, ord){
     var order = this.getOrder(design["order"], ord);
     // go through items array and create screenInfo object for each item
     for (var i=0; i<design["items"].length; i++){
-        var id = design["items"][i]["item"]["id"];
-        var text = design["items"][i]["item"]["string"];
-        var orientation = typeof design["items"][i]["item"]["orientation"] !== 'undefined' ? design["items"][i]["item"]["orientation"] : this.orientation;
-        // TODO: implement loading prompt and feedback
-        var item = new Item(id, text, orientation, this.fixationchar, this.maskchar, this.display);
+        var item = design["items"][i]["item"];
+        var id = item["id"];
+        var text = item["string"];
+//        var orientation = typeof item["orientation"] !== 'undefined' ? design["items"][i]["item"]["orientation"] : this.orientation;
+        var prompt = item["prompt"];
+        var options = item["options"];
+        var item = new Item(id, text, this.orientation, this.fixationchar, this.maskchar, this.display, prompt, options, this.feedbackOptions);
         // Create the Screen object and push it to the sceens array
         var screen = new Screen("stimuli", item);
         screens.push(screen);
@@ -673,9 +743,21 @@ Experiment.prototype.createFrame = function(){
   frame.style.backgroundColor = this.backgroundcolor;
   frame.style.color = this.textcolor;
   frame.style.fontFamily = this.fontname;
-  frame.style.fontSize = this.fontsize + "px";
+  frame.style.fontSize = this.fontsize + "pt";
   document.body.appendChild(frame);
   return frame;
+};
+
+Experiment.prototype.getStringSetting = function(name, value, options, fallback){
+    var result = fallback;
+    if (typeof value === 'undefined') {
+        sprLog("No value for " + name + " setting. Using default value: '" + fallback + "'");
+    } else if (options.some(function(o){ return value.toLowerCase() === o; })){
+        result = value.toLowerCase().trim();
+    } else {
+        sprLog("Invalid value for " + name + " setting. Using default value: '" + fallback + "'");
+    }
+    return result;
 };
 
 // Helper functions for validating design
@@ -944,4 +1026,8 @@ function mergeArraysRandomly(arrays){
         // something's wrong: we should never reach here...
     }
     return;
+}
+
+function isValidId(id){
+    return id.match(/^[A-Za-z][A-Za-z0-9\.\_\-]*[A-Za-z0-9]$/g) != null;
 }
