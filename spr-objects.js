@@ -18,12 +18,12 @@
  * @param location - The location of this region relative to the region of interest
  * @param item - The experimental item that this region is a member of
  */
-function Region(itemId, text, index, location, item){
+function Region(itemId, text, index, roiRelPosition, item){
     this.id = itemId + "_" + index;
     this.itemId = itemId;
     this.text = text;
     this.index = index;
-    this.location = location;
+    this.roiRelPosition = roiRelPosition;
     this.item = item;
     this.html = this.createHtml();
 }
@@ -97,7 +97,7 @@ function Item(id, text, orientation, fixationChar, maskChar, display, prompt, op
     this.prompt = prompt;
     this.options = options;
     this.optionOrder = "random"; // TODO: Implement a way for this to be set in json file
-    this.feedback = undefined;
+    this.showFeedback = false;
     this.condition = []; // An array of values representing the experimental conditions
     this.html = this.createHtml();
     this.timeData = [];
@@ -113,6 +113,7 @@ Item.prototype.show = function(frame){
 Item.prototype.hide = function(){
     this.html.style.display = "none";  // hide it
     this.frame.removeChild(this.html); // remove from DOM
+    // TODO: Add data to hidden field in form (?)
 };
 
 Item.prototype.processKeydown = function(keyCode, elapsedTime){
@@ -120,6 +121,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
     switch (keyCode){
         case 32: // space bar
             if (this.curRegionIndex === -1){ // fixation mark is showing
+                this.saveData(this.id + "_fixation", "NA", elapsedTime, keyCode, this.fixationChar);
                 var fixationP = document.getElementById(this.id + "_fixation");
                 fixationP.style.display = "none";
                 var stimulusP = document.getElementById(this.id + "_stimulus");
@@ -132,19 +134,18 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
                 stimulusP.style.visibility = "visible";
                 this.curRegionIndex++;
                 this.regions[this.curRegionIndex].unmask();
-                this.saveData(this.id + "_fixation", elapsedTime, keyCode);
             } else if (this.curRegionIndex < this.regions.length-1){ // non-final SPR region is showing
                 var curRegion = this.regions[this.curRegionIndex];
+                this.saveData(curRegion.id, curRegionIndex, elapsedTime, keyCode, curRegion.textContent);
                 if (this.display === "moving window"){
                     curRegion.mask(this.maskChar);
                 }
                 var nextRegion = this.regions[this.curRegionIndex+1];
                 nextRegion.unmask();
                 this.curRegionIndex++;
-                this.saveData(curRegion.id, elapsedTime, keyCode);
             } else if (this.curRegionIndex === this.regions.length-1){ // final SPR region is showing
                 var curRegion = this.regions[this.curRegionIndex];
-                this.saveData(curRegion.id, elapsedTime, keyCode);
+                this.saveData(curRegion.id, curRegionIndex, elapsedTime, keyCode, curRegion.textContent);
                 this.curRegionIndex++;
                 if (typeof this.prompt !== 'undefined'){
                     var stimulusP = document.getElementById(this.id + "_stimulus");
@@ -158,7 +159,8 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
             } else if (this.curRegionIndex === this.regions.length){ // prompt is showing
                 // prompt is showing, but non-answer key pressed -- ignore
             } else if (this.curRegionIndex === this.regions.length+1){ // feedback is showing
-                this.saveData(this.id + "_feedback", elapsedTime, keyCode);
+                var feedbackP = document.getElementById(this.id + "_feedback");
+                this.saveData(this.id + "_feedback", "NA", elapsedTime, keyCode, feedbackP.dataset.feedback);
                 this.hide();
                 result = "end of screen";
             } else { // This case should never be reached.
@@ -169,14 +171,15 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
         case 113, 81: // q,Q
         case 97, 65:  // a,A
         case 122, 90: // z,Z
-            this.saveData(this.id + "_prompt", elapsedTime, keyCode);
+            var promptP = document.getElementById(this.id + "_prompt");
+            this.saveData(this.id + "_prompt", "NA", elapsedTime, keyCode, promptP.dataset.string);
             if (typeof this.feedback !== 'undefined'){
-                var promptP = document.getElementById(this.id + "_prompt");
                 promptP.style.display = "none";
                 var feedbackP = document.getElementById(this.id + "_feedback");
-                // TODO: Check whether response is correct and update
-                // feedbackP textContent as appropriate
+                var feedbackSpan = document.getElementById(this.id + "_feedback_left");
+                feedbackSpan.style.display = "inline-block";
                 feedbackP.style.display = "block";
+                feedbackP.dataset.feedback = feedbackSpan.dataset.string;
                 curRegionIndex++;
             } else {
                 this.hide();
@@ -188,14 +191,15 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
         case 112, 80: // p,P
         case 108, 76: // l,L
         case 109, 77: // m,M
-            this.saveData(this.id + "_prompt", elapsedTime, keyCode);
+            var promptP = document.getElementById(this.id + "_prompt");
+            this.saveData(this.id + "_prompt", "NA", elapsedTime, keyCode, promptP.dataset.string);
             if (typeof this.feedback !== 'undefined'){
-                var promptP = document.getElementById(this.id + "_prompt");
                 promptP.style.display = "none";
                 var feedbackP = document.getElementById(this.id + "_feedback");
-                // TODO: Check whether response is correct and update
-                // feedbackP textContent as appropriate
+                var feedbackSpan = document.getElementById(this.id + "_feedback_right");
+                feedbackSpan.style.display = "inline-block";
                 feedbackP.style.display = "block";
+                feedbackP.dataset.feedback = feedbackSpan.dataset.string;
                 curRegionIndex++;
             } else {
                 this.hide();
@@ -208,10 +212,14 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
     return result;
 };
 
-Item.prototype.saveData = function(regionId, elapsedTime, keyCode){
+Item.prototype.saveData = function(regionId, index, elapsedTime, keyCode, string){
+    var roiRelPosition = typeof index === 'number' ? this.regions[index].roiRelLocation : "NA";
+    roiRelPosition = typeof roiRelPosition === 'undefined' ? "NA" : roiRelPosition;
     var data = { "regionId": regionId,
                  "elapsedTime": elapsedTime,
-                 "keyCode": keyCode };
+                 "keyCode": keyCode,
+                 "string": string,
+                 "roi-relative-position": roiRelPosition };
     this.timeData.push(data);
 };
 
@@ -272,6 +280,7 @@ Item.prototype.createHtml = function(){
         rightOption.className = "option";
         rightOption.textContent = this.options[1]["string"];
         promptP.appendChild(rightOption);
+        promptP.dataset.string = this.prompt + "|" + this.options[0]["string"] + "|" + this.options[1]["string"];
         itemDiv.appendChild(promptP);
         if (typeof this.options[0]["feedback"] !== 'undefined' || typeof this.options[0]["feedback-option"] !== 'undefined'){
             // Add feedback element
@@ -279,23 +288,40 @@ Item.prototype.createHtml = function(){
             feedbackP.id = this.id + "_feedback";
             feedbackP.className = "feedback";
             var leftFeedback = document.createElement("span");
-            leftFeeback.id = this.id + "_feedback_1";
+            leftFeedback.id = this.id + "_feedback_left";
             leftFeedback.className = "feedback";
             if (typeof this.options[0]["feedback-option"] !== 'undefined'){
                 leftFeedback.textContent = this.feedbackOptions[this.options[0]["feedback-option"]]["string"];
+                if (this.feedbackOptions[this.options[0]["feedback-option"]]["text-color"] !== 'undefined'){
+                    leftFeedback.style.color = this.feedbackOptions[this.options[0]["feedback-option"]]["text-color"];
+                }
+                leftFeedback.dataset.string = this.options[0]["feedback-option"];
             } else {
                 leftFeedback.textContent = this.options[0]["feedback"];
+                if (this.options[0]["text-color"] !== 'undefined'){
+                    leftFeedback.style.color = this.options[0]["text-color"];
+                }
+                leftFeedback.dataset.string = this.options[0]["feedback"];
             }
             feedbackP.appendChild(leftFeedback);
             var rightFeedback = document.createElement("span");
-            rightFeeback.id = this.id + "_feedback_1";
+            rightFeedback.id = this.id + "_feedback_right";
             rightFeedback.className = "feedback";
             if (typeof this.options[1]["feedback-option"] !== 'undefined'){
                 rightFeedback.textContent = this.feedbackOptions[this.options[1]["feedback-option"]]["string"];
+                if (this.feedbackOptions[this.options[1]["feedback-option"]]["text-color"] !== 'undefined'){
+                    leftFeedback.style.color = this.feedbackOptions[this.options[1]["feedback-option"]]["text-color"];
+                }
+                leftFeedback.dataset.string = this.options[1]["feedback-option"];
             } else {
                 rightFeedback.textContent = this.options[1]["feedback"];
+                if (this.options[1]["text-color"] !== 'undefined'){
+                    leftFeedback.style.color = this.options[1]["text-color"];
+                }
+                leftFeedback.dataset.string = this.options[1]["feedback"];
             }
             feedbackP.appendChild(rightFeedback);
+            this.showFeedback = true;
             itemDiv.appendChild(feedbackP);
         }
     }
@@ -317,7 +343,7 @@ Item.prototype.parseRegions = function(){
         regions[roiIndex] = regions[roiIndex].replace('{','').replace('}','');
     }
     for (var i=0; i<regions.length; i++){
-        var region = new Region(this.id, regions[i], i+1, roiIndex, this);
+        var region = new Region(this.id, regions[i], i+1, regions.length - roiIndex, this);
         regionArr.push(region);
     }
     return regionArr;
