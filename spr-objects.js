@@ -136,7 +136,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
                 this.regions[this.curRegionIndex].unmask();
             } else if (this.curRegionIndex < this.regions.length-1){ // non-final SPR region is showing
                 var curRegion = this.regions[this.curRegionIndex];
-                this.saveData(curRegion.id, curRegionIndex, elapsedTime, keyCode, curRegion.textContent);
+                this.saveData(curRegion.id, this.curRegionIndex, elapsedTime, keyCode, curRegion.textContent);
                 if (this.display === "moving window"){
                     curRegion.mask(this.maskChar);
                 }
@@ -145,13 +145,14 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
                 this.curRegionIndex++;
             } else if (this.curRegionIndex === this.regions.length-1){ // final SPR region is showing
                 var curRegion = this.regions[this.curRegionIndex];
-                this.saveData(curRegion.id, curRegionIndex, elapsedTime, keyCode, curRegion.textContent);
+                this.saveData(curRegion.id, this.curRegionIndex, elapsedTime, keyCode, curRegion.textContent);
                 this.curRegionIndex++;
                 if (typeof this.prompt !== 'undefined'){
                     var stimulusP = document.getElementById(this.id + "_stimulus");
                     stimulusP.style.display = "none";
                     var promptP = document.getElementById(this.id + "_prompt");
                     promptP.style.display = "block";
+                    promptP.style.visibility = "visible";
                 } else {
                     this.hide();
                     result = "end of screen";
@@ -163,7 +164,11 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
                 this.saveData(this.id + "_feedback", "NA", elapsedTime, keyCode, feedbackP.dataset.feedback);
                 this.hide();
                 result = "end of screen";
-            } else { // This case should never be reached.
+            } else {
+                // This case should never be reached, but if it is, end item
+                // to prevent getting stuck in an infinite loop
+                this.hide();
+                result = "end of screen";
             }
             break;
         // Option 1 buttons (on left-hand side of keyboard)
@@ -173,14 +178,15 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
         case 122, 90: // z,Z
             var promptP = document.getElementById(this.id + "_prompt");
             this.saveData(this.id + "_prompt", "NA", elapsedTime, keyCode, promptP.dataset.string);
-            if (typeof this.feedback !== 'undefined'){
+            if (this.showFeedback){
                 promptP.style.display = "none";
                 var feedbackP = document.getElementById(this.id + "_feedback");
                 var feedbackSpan = document.getElementById(this.id + "_feedback_left");
                 feedbackSpan.style.display = "inline-block";
                 feedbackP.style.display = "block";
+                feedbackP.style.visibility = "visible";
                 feedbackP.dataset.feedback = feedbackSpan.dataset.string;
-                curRegionIndex++;
+                this.curRegionIndex++;
             } else {
                 this.hide();
                 result = "end of screen";
@@ -193,14 +199,15 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
         case 109, 77: // m,M
             var promptP = document.getElementById(this.id + "_prompt");
             this.saveData(this.id + "_prompt", "NA", elapsedTime, keyCode, promptP.dataset.string);
-            if (typeof this.feedback !== 'undefined'){
+            if (this.showFeedback){
                 promptP.style.display = "none";
                 var feedbackP = document.getElementById(this.id + "_feedback");
                 var feedbackSpan = document.getElementById(this.id + "_feedback_right");
                 feedbackSpan.style.display = "inline-block";
                 feedbackP.style.display = "block";
+                feedbackP.style.visibility = "visible";
                 feedbackP.dataset.feedback = feedbackSpan.dataset.string;
-                curRegionIndex++;
+                this.curRegionIndex++;
             } else {
                 this.hide();
                 result = "end of screen";
@@ -267,7 +274,7 @@ Item.prototype.createHtml = function(){
         promptP.appendChild(promptText);
         var br2 = document.createElement("br");
         promptP.appendChild(br2);
-        if (optionOrder === "random"){ shuffle(this.options); }
+        if (this.optionOrder === "random"){ shuffle(this.options); }
         var leftOption = document.createElement("span");
         leftOption.id = this.id + "_option_1";
         leftOption.className = "option";
@@ -312,13 +319,13 @@ Item.prototype.createHtml = function(){
                 if (this.feedbackOptions[this.options[1]["feedback-option"]]["text-color"] !== 'undefined'){
                     leftFeedback.style.color = this.feedbackOptions[this.options[1]["feedback-option"]]["text-color"];
                 }
-                leftFeedback.dataset.string = this.options[1]["feedback-option"];
+                rightFeedback.dataset.string = this.options[1]["feedback-option"];
             } else {
                 rightFeedback.textContent = this.options[1]["feedback"];
                 if (this.options[1]["text-color"] !== 'undefined'){
                     leftFeedback.style.color = this.options[1]["text-color"];
                 }
-                leftFeedback.dataset.string = this.options[1]["feedback"];
+                rightFeedback.dataset.string = this.options[1]["feedback"];
             }
             feedbackP.appendChild(rightFeedback);
             this.showFeedback = true;
@@ -527,7 +534,7 @@ function Experiment(design, form){
     this.title = typeof design["title"] !== 'undefined' ? design["title"].trim() : "A Self-paced Reading Experiment";
     this.fontname = typeof design["font-name"] !== 'undefined' ? design["font-name"].trim() : "Courier new";
     this.fontsize = typeof design["font-size"] !== 'undefined' ? Number(design["font-size"].trim()) : 12;
-    this.fontsize = !isNan(this.fontsize) ? this.fontsize : 12;
+    this.fontsize = !isNaN(this.fontsize) ? this.fontsize : 12;
     // Following colors must be HTML supported color names; e.g., http://www.w3schools.com/colors/colors_names.asp
     this.textcolor = typeof design["text-color"] !== 'undefined' ? design["text-color"].trim() : "black";
     this.textcolor = validTextColour(this.textcolor) ? this.textcolor : "black";
@@ -592,8 +599,9 @@ Experiment.prototype.endExperiment = function(){
 };
 
 Experiment.prototype.parseFeedbackOptions = function(design){
-    var result;
+    var result = {};
     for (var i=0; i<design.length; i++){
+        result[design[i]["name"]] = {};
         result[design[i]["name"]]["string"] = design[i]["string"];
         if (typeof design[i]["color"] !== 'undefined'){
             result[design[i]["name"]]["color"] = design[i]["color"];

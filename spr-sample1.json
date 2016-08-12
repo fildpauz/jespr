@@ -13,7 +13,7 @@
     "text-color": "green",
     "background-color": "black",
     "display": "cumulative",
-    "orientation": "horizontal",
+    "orientation": "vertical",
     "masking-character": "*",
     "fixation-character": "X",
     "feedback-options": [
@@ -42,7 +42,7 @@
             {
                 "item": {
                     "id": "practice01",
-                    "string": "blah1|blah2|blah3|blah4|blah5",
+                    "string": "blah1|blah2|blah3|{blah4}|blah5",
                     "prompt": "Whah blah bleeh bluh blah?",
                     "options": [
                         {
@@ -59,16 +59,16 @@
             {
                 "item": {
                     "id": "practice02",
-                    "string": "blech1|blech2|blech3|blech4|blech5",
+                    "string": "blech1|{blech2}|blech3|blech4|blech5",
                     "prompt": "Whach blach bleech bluch blach?",
                     "options": [
                         {
                             "string": "blich",
-                            "feedback": "correct"
+                            "feedback": "Correct"
                         },
                         {
                             "string": "blech",
-                            "feedback": "incorrect"
+                            "feedback": "Incorrect"
                         }
                     ]
                 }
@@ -97,19 +97,19 @@
                                     {
                                         "item": {
                                             "id": "item01",
-                                            "string": "The|quick|brown|fox|jumped|over|the|lazy|dogs."
+                                            "string": "The|quick|brown|fox|jumped|{over}|the|lazy|dogs."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item02",
-                                            "string": "Those|who|believe|in|telekinetics,|raise|my|hand."
+                                            "string": "Those|who|believe|in|telekinetics,|{raise}|my|hand."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item03",
-                                            "string": "I'd|rather|live|with|a|good|question|than|a|bad|answer."
+                                            "string": "I'd|rather|{live}|with|a|good|question|than|a|bad|answer."
                                         }
                                     }
                                 ]
