@@ -13,7 +13,7 @@
     "text-color": "green",
     "background-color": "black",
     "display": "cumulative",
-    "orientation": "vertical",
+    "orientation": "horizontal",
     "masking-character": "*",
     "fixation-character": "X",
     "feedback-options": [
@@ -92,31 +92,44 @@
                     "groups": [
                         {
                             "group": {
+                                "name": "my test group",
                                 "order": "random",
                                 "items": [
                                     {
                                         "item": {
                                             "id": "item01",
+                                            "tags": [ "tag_a", "tag_x" ],
                                             "string": "The|quick|brown|fox|jumped|{over}|the|lazy|dogs."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item02",
+                                            "tags": [ "tag_a", "tag_y" ],
                                             "string": "Those|who|believe|in|telekinetics,|{raise}|my|hand."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item03",
+                                            "tags": [ "tag_b", "tag_x" ],
                                             "string": "I'd|rather|{live}|with|a|good|question|than|a|bad|answer."
                                         }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "item04",
+                                            "tags": [ "tag_b", "tag_7" ],
+                                            "string": "If|the|facts|don't|fit|the|{theory,}|change|the|facts."
+                                        }
                                     }
+
                                 ]
                             }
                         },
                         {
                             "group": {
+                                "name": "my filler group",
                                 "order": "fixed",
                                 "items": [
                                     {

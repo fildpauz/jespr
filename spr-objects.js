@@ -80,7 +80,7 @@ Region.prototype.lockWidth = function(){
  * are presented horizontally (i.e., one-sentence stimuli) or vertically (i.e.,
  * multi-sentence stimuli). [default=true]
  */
-function Item(id, text, orientation, fixationChar, maskChar, display, prompt, options, feedbackOptions){
+function Item(id, text, orientation, fixationChar, maskChar, display, prompt, options, feedbackOptions, setName, groupName, tags){
     this.id = id;
     this.text = text; // Is it useful to store this as plain text: .replace(/\|/g, ' ') ?
     if (orientation === 'horizontal' | orientation === 'vertical') {
@@ -98,7 +98,9 @@ function Item(id, text, orientation, fixationChar, maskChar, display, prompt, op
     this.options = options;
     this.optionOrder = "random"; // TODO: Implement a way for this to be set in json file
     this.showFeedback = false;
-    this.condition = []; // An array of values representing the experimental conditions
+    this.setName = setName; // Name of stimulus set as given in json design object
+    this.groupName = groupName; // Name of stimulus group as given in json design object
+    this.tags = tags; // An array of strings which tag the item (e.g., experimental condition)
     this.html = this.createHtml();
     this.timeData = [];
 }
@@ -220,7 +222,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
 };
 
 Item.prototype.saveData = function(regionId, index, elapsedTime, keyCode, string){
-    var roiRelPosition = typeof index === 'number' ? this.regions[index].roiRelLocation : "NA";
+    var roiRelPosition = typeof index === 'number' ? this.regions[index].roiRelPosition : "NA";
     roiRelPosition = typeof roiRelPosition === 'undefined' ? "NA" : roiRelPosition;
     var data = { "regionId": regionId,
                  "elapsedTime": elapsedTime,
@@ -228,6 +230,28 @@ Item.prototype.saveData = function(regionId, index, elapsedTime, keyCode, string
                  "string": string,
                  "roi-relative-position": roiRelPosition };
     this.timeData.push(data);
+};
+
+Item.protytpe.getData = function(startTime, maxTags){
+    //var result = "\"timeId\",\"itemId\",\"elapsedTime\",\"keyCode\",\"string\",\"setName\",\"groupName\"";
+    var result = "";
+    for (var i=0; i<this.timeData.length; i++){
+        var data = this.timeData[i];
+        var line = "\"" + startTime + "\",\"" + this.id + "\"";
+        line = line + ",\"" + data["regionId"] + "\"," + data["roiRelPosition"];
+        line = line + "," + data["elapsedTime"] + "," + data["keyCode"];
+        line = line + ",\"" + data["string"] + "\",\"" + this.setName + "\"";
+        line = line + ",\"" + this.groupName + "\"";
+        for (var j=0; j<this.tags.length; j++){
+            line = line + ",\"" + this.tags[j] + "\"";
+        }
+        for (var k=this.tags.length; j<maxTags; j++){ line = line + ",NA"; }
+        line = line + "\n";
+    }
+    return result;
+};
+
+Item.prototype.getData = function(){
 };
 
 /*
@@ -386,6 +410,8 @@ function Title(text, primaryInvestigators, otherInvestigators){
     this.otherInvestigators = otherInvestigators;
     this.html = this.createHtml();
     this.frame = undefined;
+    this.elapsedTime;
+    this.keyCode;
 }
 
 Title.prototype.show = function(frame){
@@ -400,6 +426,8 @@ Title.prototype.hide = function(){
 };
 
 Title.prototype.processKeydown = function(keyCode, elapsedTime){
+    this.elapsedTime = elapsedTime;
+    this.keyCode = keyCode;
     var result = "continue";
     switch (keyCode){
         case 32: // space bar
@@ -409,6 +437,13 @@ Title.prototype.processKeydown = function(keyCode, elapsedTime){
         default:
             // Pressed other key -- do nothing
     }
+    return result;
+};
+
+Title.protype.getData = function(startTime, maxTags){
+    var result = "\"" + startTime + "\",\"Title\",NA,NA,\"" + this.elapsedTime + "\",\"" + this.keyCode + "\",\"" + this.text.substr(0,40) + "...\",NA,NA";
+    for (var i=0; i<this.maxTags; i++){ result = result + ",NA"; }
+    result = result + "\n";
     return result;
 };
 
@@ -460,6 +495,8 @@ function Instructions(text){
     this.text = text;
     this.html = this.createHtml();
     this.frame = undefined;
+    this.elapsedTime;
+    this.keyCode;
 }
 
 /*
@@ -481,6 +518,8 @@ Instructions.prototype.hide = function(){
 };
 
 Instructions.prototype.processKeydown = function(keyCode, elapsedTime){
+    this.elapsedTime = elapsedTime;
+    this.keyCode = keyCode;
     var result = "continue";
     switch (keyCode){
         case 32: // space bar
@@ -504,6 +543,13 @@ Instructions.prototype.createHtml = function(){
     return instructionsDiv;
 };
 
+Instructions.protype.getData = function(startTime, maxTags){
+    var result = "\"" + startTime + "\",\"Instructions\",NA,NA,\"" + this.elapsedTime + "\",\"" + this.keyCode + "\",\"" + this.text.substr(0,20) + "\",NA,NA";
+    for (var i=0; i<this.maxTags; i++){ result = result + ",NA"; }
+    result = result + "\n";
+    return result;
+};
+
 /*
  * The Screen object corresponds to one screen in the experimental process,
  * including a title screen, an instructions screen or a stimulus item screen.
@@ -518,6 +564,10 @@ function Screen(type, object){
 
 Screen.prototype.processKeydown = function(keyCode, elapsedTime){
     return this.object.processKeydown(keyCode, elapsedTime);
+};
+
+Screen.prototype.getData = function(startTime, maxTags){
+    return this.object.getData(startTime, maxTags);
 };
 
 /*
@@ -550,6 +600,7 @@ function Experiment(design, form){
     this.design = design; // json object containing the design, stimuli, etc.
     this.designValidated = false;    // Boolean to indicate whether design file has been validated
     this.feedbackOptions = this.parseFeedbackOptions(design["feedback-options"]);
+    this.maxTags = 0; // The largest number of tags in any item; needed to ensure number of columns in data output
 
     // variables for experiment flow and execution
     this.form = form;
@@ -594,8 +645,19 @@ Experiment.prototype.endExperiment = function(){
     // TODO: remove keyup listener here
     this.frame.style.display = "none";
     document.body.removeChild(this.frame);
+    var data = this.getData();
     // TODO: Optional data export to screen (so experimenter can copy-and-paste)?
     // TODO: Optional data export of experiment log?
+};
+
+Experiment.protytpe.getData = function(){
+    var result = "\"timeId\",\"itemId\",\"regionId\",\"roiRelPosition\",\"elapsedTime\",\"keyCode\",\"string\",\"setName\",\"groupName\"";
+    for (var i=1; i<=this.maxTags; i++){ result = result + ",\"tag" + i + "\""; }
+    result = result + "\n";
+    for (var j=0; j<this.screens.length; j++){
+        result = result + this.screens[j].getData(this.startTime, this.maxTags);
+    }
+    return result;
 };
 
 Experiment.prototype.parseFeedbackOptions = function(design){
@@ -671,11 +733,12 @@ Experiment.prototype.loadInstructions = function(design){
 Experiment.prototype.loadStimuliSets = function(design){
     var screens = [];
     var sets = [];
+    var setName = typeof design["name"] !== 'undefined' ? design["name"] : "NA";
     var order = this.getOrder(design["order"]);
     var merge = this.getMerge(design["merge"]);
     for (var i=0; i<design["stimuli-sets"].length; i++){
         var setDesign =design["stimuli-sets"][i]["stimuli-set"];
-        sets.push(this.loadStimuliGroups(setDesign, order, merge));;
+        sets.push(this.loadStimuliGroups(setDesign, setName, order, merge));;
     }
     if (order === "random") { shuffle(sets); }
     if (merge) {
@@ -688,14 +751,15 @@ Experiment.prototype.loadStimuliSets = function(design){
     return screens;
 };
 
-Experiment.prototype.loadStimuliGroups = function(design, ord, mrg){
+Experiment.prototype.loadStimuliGroups = function(design, setName, ord, mrg){
     var set = [];
+    var groupName = typeof design["name"] !== 'undefined' ? design["name"] : "NA";
     var order = this.getOrder(design["order"], ord);
     var merge = this.getMerge(design["merge"], mrg);
     var groups = [];
     for (var j=0; j<design["groups"].length; j++){
         var groupDesign = design["groups"][j]["group"];
-        var group = this.loadStimuliGroup(groupDesign, order);
+        var group = this.loadStimuliGroup(groupDesign, setName, groupName, order);
         groups.push(group);
     }
     if (order === "random") {
@@ -711,18 +775,20 @@ Experiment.prototype.loadStimuliGroups = function(design, ord, mrg){
     return set;
 };
 
-Experiment.prototype.loadStimuliGroup = function(design, ord){
+Experiment.prototype.loadStimuliGroup = function(design, setName, groupName, ord){
     var screens = [];
     var order = this.getOrder(design["order"], ord);
     // go through items array and create screenInfo object for each item
     for (var i=0; i<design["items"].length; i++){
         var item = design["items"][i]["item"];
         var id = item["id"];
+        var tags = typeof design["tags"] !== 'undefined' ? design["tags"] : [];
+        if (tags.length > this.maxTags){ this.maxTags = tags.length; } // update maxTags, if necessary
         var text = item["string"];
 //        var orientation = typeof item["orientation"] !== 'undefined' ? design["items"][i]["item"]["orientation"] : this.orientation;
         var prompt = item["prompt"];
         var options = item["options"];
-        var item = new Item(id, text, this.orientation, this.fixationchar, this.maskchar, this.display, prompt, options, this.feedbackOptions);
+        var item = new Item(id, text, this.orientation, this.fixationchar, this.maskchar, this.display, prompt, options, this.feedbackOptions, setName, groupName, tags);
         // Create the Screen object and push it to the sceens array
         var screen = new Screen("stimuli", item);
         screens.push(screen);
@@ -1063,5 +1129,5 @@ function mergeArraysRandomly(arrays){
 }
 
 function isValidId(id){
-    return id.match(/^[A-Za-z][A-Za-z0-9\.\_\-]*[A-Za-z0-9]$/g) != null;
+    return id.match(/^[A-Za-z][A-Za-z0-9\.\_\-]*[A-Za-z0-9]$/g) !== null;
 }
