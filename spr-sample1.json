@@ -119,7 +119,7 @@
                                     {
                                         "item": {
                                             "id": "item04",
-                                            "tags": [ "tag_b", "tag_7" ],
+                                            "tags": [ "tag_b", "tag_y" ],
                                             "string": "If|the|facts|don't|fit|the|{theory,}|change|the|facts."
                                         }
                                     }

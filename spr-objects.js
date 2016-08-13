@@ -18,13 +18,12 @@
  * @param location - The location of this region relative to the region of interest
  * @param item - The experimental item that this region is a member of
  */
-function Region(itemId, text, index, roiRelPosition, item){
+function Region(itemId, text, index, roiIndex){
     this.id = itemId + "_" + index;
     this.itemId = itemId;
     this.text = text;
     this.index = index;
-    this.roiRelPosition = roiRelPosition;
-    this.item = item;
+    this.roiRelPosition = roiIndex ==="NA" ? "NA" : index - roiIndex;
     this.html = this.createHtml();
 }
 
@@ -138,7 +137,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
                 this.regions[this.curRegionIndex].unmask();
             } else if (this.curRegionIndex < this.regions.length-1){ // non-final SPR region is showing
                 var curRegion = this.regions[this.curRegionIndex];
-                this.saveData(curRegion.id, this.curRegionIndex, elapsedTime, keyCode, curRegion.textContent);
+                this.saveData(curRegion.id, this.curRegionIndex, elapsedTime, keyCode, curRegion.text);
                 if (this.display === "moving window"){
                     curRegion.mask(this.maskChar);
                 }
@@ -147,7 +146,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
                 this.curRegionIndex++;
             } else if (this.curRegionIndex === this.regions.length-1){ // final SPR region is showing
                 var curRegion = this.regions[this.curRegionIndex];
-                this.saveData(curRegion.id, this.curRegionIndex, elapsedTime, keyCode, curRegion.textContent);
+                this.saveData(curRegion.id, this.curRegionIndex, elapsedTime, keyCode, curRegion.text);
                 this.curRegionIndex++;
                 if (typeof this.prompt !== 'undefined'){
                     var stimulusP = document.getElementById(this.id + "_stimulus");
@@ -228,16 +227,16 @@ Item.prototype.saveData = function(regionId, index, elapsedTime, keyCode, string
                  "elapsedTime": elapsedTime,
                  "keyCode": keyCode,
                  "string": string,
-                 "roi-relative-position": roiRelPosition };
+                 "roiRelPosition": roiRelPosition };
     this.timeData.push(data);
 };
 
-Item.protytpe.getData = function(startTime, maxTags){
+Item.prototype.getData = function(participant, maxTags){
     //var result = "\"timeId\",\"itemId\",\"elapsedTime\",\"keyCode\",\"string\",\"setName\",\"groupName\"";
     var result = "";
     for (var i=0; i<this.timeData.length; i++){
         var data = this.timeData[i];
-        var line = "\"" + startTime + "\",\"" + this.id + "\"";
+        var line = "\"" + participant + "\",\"" + this.id + "\"";
         line = line + ",\"" + data["regionId"] + "\"," + data["roiRelPosition"];
         line = line + "," + data["elapsedTime"] + "," + data["keyCode"];
         line = line + ",\"" + data["string"] + "\",\"" + this.setName + "\"";
@@ -247,11 +246,9 @@ Item.protytpe.getData = function(startTime, maxTags){
         }
         for (var k=this.tags.length; j<maxTags; j++){ line = line + ",NA"; }
         line = line + "\n";
+        result = result + line;
     }
     return result;
-};
-
-Item.prototype.getData = function(){
 };
 
 /*
@@ -370,11 +367,11 @@ Item.prototype.parseRegions = function(){
     var regionArr = [];
     var regions = this.text.split("|");
     var roiIndex = this.getRoi(regions);
-    if (roiIndex !== -1){
+    if (roiIndex !== "NA"){
         regions[roiIndex] = regions[roiIndex].replace('{','').replace('}','');
     }
     for (var i=0; i<regions.length; i++){
-        var region = new Region(this.id, regions[i], i+1, regions.length - roiIndex, this);
+        var region = new Region(this.id, regions[i], i, roiIndex, this);
         regionArr.push(region);
     }
     return regionArr;
@@ -387,12 +384,12 @@ Item.prototype.parseRegions = function(){
  * as the region of interest (with curly braces {}), or -1 if not found
  */
 Item.prototype.getRoi = function(regions){
-    var result = -1;
+    var result = "NA";
     for (var i=0; i<regions.length; i++){
         var r = regions[i].trim();
         if (r.charAt(0) === '{' && r.charAt(r.length-1) === '}'){
             result = i;
-            break;
+            break; // assumes only one ROI per item
         }
     }
     return result;
@@ -440,9 +437,9 @@ Title.prototype.processKeydown = function(keyCode, elapsedTime){
     return result;
 };
 
-Title.protype.getData = function(startTime, maxTags){
-    var result = "\"" + startTime + "\",\"Title\",NA,NA,\"" + this.elapsedTime + "\",\"" + this.keyCode + "\",\"" + this.text.substr(0,40) + "...\",NA,NA";
-    for (var i=0; i<this.maxTags; i++){ result = result + ",NA"; }
+Title.prototype.getData = function(participant, maxTags){
+    var result = "\"" + participant + "\",\"Title\",NA,NA,\"" + this.elapsedTime + "\",\"" + this.keyCode + "\",\"" + truncateText(this.text, 40) + "\",NA,NA";
+    for (var i=0; i<maxTags; i++){ result = result + ",NA"; }
     result = result + "\n";
     return result;
 };
@@ -543,9 +540,9 @@ Instructions.prototype.createHtml = function(){
     return instructionsDiv;
 };
 
-Instructions.protype.getData = function(startTime, maxTags){
-    var result = "\"" + startTime + "\",\"Instructions\",NA,NA,\"" + this.elapsedTime + "\",\"" + this.keyCode + "\",\"" + this.text.substr(0,20) + "\",NA,NA";
-    for (var i=0; i<this.maxTags; i++){ result = result + ",NA"; }
+Instructions.prototype.getData = function(participant, maxTags){
+    var result = "\"" + participant + "\",\"Instructions\",NA,NA,\"" + this.elapsedTime + "\",\"" + this.keyCode + "\",\"" + truncateText(this.text, 20) + "\",NA,NA";
+    for (var i=0; i<maxTags; i++){ result = result + ",NA"; }
     result = result + "\n";
     return result;
 };
@@ -566,8 +563,8 @@ Screen.prototype.processKeydown = function(keyCode, elapsedTime){
     return this.object.processKeydown(keyCode, elapsedTime);
 };
 
-Screen.prototype.getData = function(startTime, maxTags){
-    return this.object.getData(startTime, maxTags);
+Screen.prototype.getData = function(participant, maxTags){
+    return this.object.getData(participant, maxTags);
 };
 
 /*
@@ -608,6 +605,7 @@ function Experiment(design, form){
     this.screens = [];  // List of all screen divs in the experiment: title, instructions, stimulus items
     this.curScreenIndex;   // The index of the current screen in screenInfo array being displayed.
     this.startTime;     // The start time of the experiment. Timing results are relative to this.
+    this.participant;   // A string to identify the experimental participant, defaults to startTime
 
     Experiment.prototype.processKeydown = function(e){
         var elapsedTime = Date.now() - self.startTime;
@@ -633,6 +631,7 @@ function Experiment(design, form){
 
 Experiment.prototype.startExperiment = function(){
     this.startTime = Date.now();
+    this.participant = this.setParticipant();
     document.body.addEventListener("keydown", this.processKeydown);
     // TODO: add keyup listener here
     window.focus();  // to make sure the window is listening for keypress events
@@ -646,17 +645,36 @@ Experiment.prototype.endExperiment = function(){
     this.frame.style.display = "none";
     document.body.removeChild(this.frame);
     var data = this.getData();
+    var resultsDisplay = document.createElement("textarea");
+    resultsDisplay.id = "resultsDisplay";
+    resultsDisplay.name = "SPR_Results";
+    resultsDisplay.className = "results";
+    resultsDisplay.value = data;
+//    resultsDisplay.cols = 40;
+    resultsDisplay.rows = 12;
+    resultsDisplay.readonly = true;
+    resultsDisplay.wrap = "soft";
+    this.form.appendChild(resultsDisplay);
     // TODO: Optional data export to screen (so experimenter can copy-and-paste)?
     // TODO: Optional data export of experiment log?
 };
 
-Experiment.protytpe.getData = function(){
-    var result = "\"timeId\",\"itemId\",\"regionId\",\"roiRelPosition\",\"elapsedTime\",\"keyCode\",\"string\",\"setName\",\"groupName\"";
+Experiment.prototype.getData = function(){
+    var result = "\"participant\",\"itemId\",\"regionId\",\"roiRelPosition\",\"elapsedTime\",\"keyCode\",\"string\",\"setName\",\"groupName\"";
     for (var i=1; i<=this.maxTags; i++){ result = result + ",\"tag" + i + "\""; }
     result = result + "\n";
     for (var j=0; j<this.screens.length; j++){
-        result = result + this.screens[j].getData(this.startTime, this.maxTags);
+        result = result + this.screens[j].getData(this.participant, this.maxTags);
     }
+    return result;
+};
+
+Experiment.prototype.setParticipant = function(){
+    var d = new Date();
+    d.setTime(this.startTime);
+    var result = d.toISOString();
+    // TODO Give user chance to provide an identifier via Experiment constructor
+    // or to input an identifier via a popup input box.
     return result;
 };
 
@@ -782,7 +800,7 @@ Experiment.prototype.loadStimuliGroup = function(design, setName, groupName, ord
     for (var i=0; i<design["items"].length; i++){
         var item = design["items"][i]["item"];
         var id = item["id"];
-        var tags = typeof design["tags"] !== 'undefined' ? design["tags"] : [];
+        var tags = typeof item["tags"] !== 'undefined' ? item["tags"] : [];
         if (tags.length > this.maxTags){ this.maxTags = tags.length; } // update maxTags, if necessary
         var text = item["string"];
 //        var orientation = typeof item["orientation"] !== 'undefined' ? design["items"][i]["item"]["orientation"] : this.orientation;
@@ -1130,4 +1148,12 @@ function mergeArraysRandomly(arrays){
 
 function isValidId(id){
     return id.match(/^[A-Za-z][A-Za-z0-9\.\_\-]*[A-Za-z0-9]$/g) !== null;
+}
+
+function truncateText(text, len){
+    var result = text;
+    if (text.length > len){
+        result = text.substr(0,57) + "...";
+    }
+    return result;
 }

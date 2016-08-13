@@ -81,8 +81,8 @@ span.feedback {
     font-size: inherit;
     display: none;
     text-align: center;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
 }
 
 .primary-investigators {
@@ -101,4 +101,8 @@ span.feedback {
     font-family: inherit;
     font-size: inherit;
     color: inherit;
+}
+
+textarea.results {
+    width: 80%;
 }
