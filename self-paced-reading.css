@@ -105,4 +105,7 @@ span.feedback {
 
 textarea.results {
     width: 80%;
+    font-family: monospace;
+    font-size: 9pt;
+    display: none;
 }

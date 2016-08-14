@@ -177,20 +177,22 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
         case 113, 81: // q,Q
         case 97, 65:  // a,A
         case 122, 90: // z,Z
-            var promptP = document.getElementById(this.id + "_prompt");
-            this.saveData(this.id + "_prompt", "NA", elapsedTime, keyCode, promptP.dataset.string);
-            if (this.showFeedback){
-                promptP.style.display = "none";
-                var feedbackP = document.getElementById(this.id + "_feedback");
-                var feedbackSpan = document.getElementById(this.id + "_feedback_left");
-                feedbackSpan.style.display = "inline-block";
-                feedbackP.style.display = "block";
-                feedbackP.style.visibility = "visible";
-                feedbackP.dataset.feedback = feedbackSpan.dataset.string;
-                this.curRegionIndex++;
-            } else {
-                this.hide();
-                result = "end of screen";
+            if (this.curRegionIndex === this.regions.length){
+                var promptP = document.getElementById(this.id + "_prompt");
+                this.saveData(this.id + "_prompt", "NA", elapsedTime, keyCode, promptP.dataset.string);
+                if (this.showFeedback){
+                    promptP.style.display = "none";
+                    var feedbackP = document.getElementById(this.id + "_feedback");
+                    var feedbackSpan = document.getElementById(this.id + "_feedback_left");
+                    feedbackSpan.style.display = "inline-block";
+                    feedbackP.style.display = "block";
+                    feedbackP.style.visibility = "visible";
+                    feedbackP.dataset.feedback = feedbackSpan.dataset.string;
+                    this.curRegionIndex++;
+                } else {
+                    this.hide();
+                    result = "end of screen";
+                }
             }
             break;
         // Option 2 buttons (on right-hand side of keyboard)
@@ -198,20 +200,22 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
         case 112, 80: // p,P
         case 108, 76: // l,L
         case 109, 77: // m,M
-            var promptP = document.getElementById(this.id + "_prompt");
-            this.saveData(this.id + "_prompt", "NA", elapsedTime, keyCode, promptP.dataset.string);
-            if (this.showFeedback){
-                promptP.style.display = "none";
-                var feedbackP = document.getElementById(this.id + "_feedback");
-                var feedbackSpan = document.getElementById(this.id + "_feedback_right");
-                feedbackSpan.style.display = "inline-block";
-                feedbackP.style.display = "block";
-                feedbackP.style.visibility = "visible";
-                feedbackP.dataset.feedback = feedbackSpan.dataset.string;
-                this.curRegionIndex++;
-            } else {
-                this.hide();
-                result = "end of screen";
+            if (this.curRegionIndex === this.regions.length){
+                var promptP = document.getElementById(this.id + "_prompt");
+                this.saveData(this.id + "_prompt", "NA", elapsedTime, keyCode, promptP.dataset.string);
+                if (this.showFeedback){
+                    promptP.style.display = "none";
+                    var feedbackP = document.getElementById(this.id + "_feedback");
+                    var feedbackSpan = document.getElementById(this.id + "_feedback_right");
+                    feedbackSpan.style.display = "inline-block";
+                    feedbackP.style.display = "block";
+                    feedbackP.style.visibility = "visible";
+                    feedbackP.dataset.feedback = feedbackSpan.dataset.string;
+                    this.curRegionIndex++;
+                } else {
+                    this.hide();
+                    result = "end of screen";
+                }
             }
             break;
         default:
@@ -338,13 +342,13 @@ Item.prototype.createHtml = function(){
             if (typeof this.options[1]["feedback-option"] !== 'undefined'){
                 rightFeedback.textContent = this.feedbackOptions[this.options[1]["feedback-option"]]["string"];
                 if (this.feedbackOptions[this.options[1]["feedback-option"]]["text-color"] !== 'undefined'){
-                    leftFeedback.style.color = this.feedbackOptions[this.options[1]["feedback-option"]]["text-color"];
+                    rightFeedback.style.color = this.feedbackOptions[this.options[1]["feedback-option"]]["text-color"];
                 }
                 rightFeedback.dataset.string = this.options[1]["feedback-option"];
             } else {
                 rightFeedback.textContent = this.options[1]["feedback"];
                 if (this.options[1]["text-color"] !== 'undefined'){
-                    leftFeedback.style.color = this.options[1]["text-color"];
+                    rightFeedback.style.color = this.options[1]["text-color"];
                 }
                 rightFeedback.dataset.string = this.options[1]["feedback"];
             }
@@ -584,14 +588,15 @@ function Experiment(design, form){
     this.fontsize = !isNaN(this.fontsize) ? this.fontsize : 12;
     // Following colors must be HTML supported color names; e.g., http://www.w3schools.com/colors/colors_names.asp
     this.textcolor = typeof design["text-color"] !== 'undefined' ? design["text-color"].trim() : "black";
-    this.textcolor = validTextColour(this.textcolor) ? this.textcolor : "black";
+    this.textcolor = isValidColor(this.textcolor) ? this.textcolor : "black";
     this.backgroundcolor = typeof design["background-color"] !== 'undefined' ? design["background-color"].trim() : "white";
-    this.backgroundcolor = validTextColour(this.backgroundcolor) ? this.backgroundcolor : "white";
+    this.backgroundcolor = isValidColor(this.backgroundcolor) ? this.backgroundcolor : "white";
     this.display = this.getStringSetting("display", design["display"], ["moving window","cumulative"], "moving window");
     this.orientation = this.getStringSetting("orientation", design["orientation"], ["horizontal","vertical"], "horizontal");
     // Following must be only one character in length
     this.fixationchar = typeof design["fixation-character"] !== 'undefined' ? design["fixation-character"].trim().substr(0,1) : "+";
     this.maskchar = typeof design["masking-character"] !== 'undefined' ? design["masking-character"].trim().substr(0,1) : "_";
+    this.itemIds = []; // Used during validation to ensure that all IDs are unique
     
     // Info about json object containing experimental design
     this.design = design; // json object containing the design, stimuli, etc.
@@ -605,27 +610,31 @@ function Experiment(design, form){
     this.screens = [];  // List of all screen divs in the experiment: title, instructions, stimulus items
     this.curScreenIndex;   // The index of the current screen in screenInfo array being displayed.
     this.startTime;     // The start time of the experiment. Timing results are relative to this.
+    this.keystate = "up"; // for monitoring keyup/keydown and ensuring one-step-at-a-time process
     this.participant;   // A string to identify the experimental participant, defaults to startTime
+    this.showResultsDisplay = typeof design["show-results-display"] !== 'undefined' ? design["show-results-display"] : false;
 
     Experiment.prototype.processKeydown = function(e){
         var elapsedTime = Date.now() - self.startTime;
-        var keyCode = e.keyCode;
-        var result = self.screens[self.curScreenIndex].processKeydown(keyCode, elapsedTime);
-        if (result === "end of screen"){
-            self.curScreenIndex++;
-            if (self.curScreenIndex < self.screens.length){
-                self.screens[self.curScreenIndex].object.show(self.frame);
-            } else {
-                self.endExperiment();
+        if (this.keystate !== "down"){
+            this.keystate = "down";
+            var keyCode = e.keyCode;
+            var result = self.screens[self.curScreenIndex].processKeydown(keyCode, elapsedTime);
+            if (result === "end of screen"){
+                self.curScreenIndex++;
+                if (self.curScreenIndex < self.screens.length){
+                    self.screens[self.curScreenIndex].object.show(self.frame);
+                } else {
+                    self.endExperiment();
+                }
+            } else if (result === "continue"){
+                // Continue with the same screen; nothing else to do here
             }
-        } else if (result === "continue"){
-            // Continue with the same screen; nothing else to do here
         }
     };
     
     Experiment.prototype.processKeyup = function(e){
-        // TODO: implement checking for keydown AND keyup to ensure experiment
-        // advances only one step per keypress
+        this.keystate = "up";
     };
 }
 
@@ -633,7 +642,7 @@ Experiment.prototype.startExperiment = function(){
     this.startTime = Date.now();
     this.participant = this.setParticipant();
     document.body.addEventListener("keydown", this.processKeydown);
-    // TODO: add keyup listener here
+    document.body.addEventListener("keyup", this.processKeyup);
     window.focus();  // to make sure the window is listening for keypress events
     this.curScreenIndex = 0;
     this.screens[this.curScreenIndex].object.show(this.frame);
@@ -641,21 +650,23 @@ Experiment.prototype.startExperiment = function(){
 
 Experiment.prototype.endExperiment = function(){
     document.body.removeEventListener("keydown", this.processKeydown);
-    // TODO: remove keyup listener here
+    document.body.removeEventListener("keyup", this.processKeyup);
     this.frame.style.display = "none";
     document.body.removeChild(this.frame);
     var data = this.getData();
+    // Data export to screen for verification
     var resultsDisplay = document.createElement("textarea");
     resultsDisplay.id = "resultsDisplay";
     resultsDisplay.name = "SPR_Results";
     resultsDisplay.className = "results";
     resultsDisplay.value = data;
-//    resultsDisplay.cols = 40;
     resultsDisplay.rows = 12;
-    resultsDisplay.readonly = true;
+    resultsDisplay.readOnly = true;
     resultsDisplay.wrap = "soft";
+    if (this.showResultsDisplay){
+        resultsDisplay.style.display = "inline-block";
+    }
     this.form.appendChild(resultsDisplay);
-    // TODO: Optional data export to screen (so experimenter can copy-and-paste)?
     // TODO: Optional data export of experiment log?
 };
 
@@ -683,10 +694,11 @@ Experiment.prototype.parseFeedbackOptions = function(design){
     for (var i=0; i<design.length; i++){
         result[design[i]["name"]] = {};
         result[design[i]["name"]]["string"] = design[i]["string"];
-        if (typeof design[i]["color"] !== 'undefined'){
-            result[design[i]["name"]]["color"] = design[i]["color"];
-        } else {
-            result[design[i]["name"]]["color"] = this.textcolor;
+        result[design[i]["name"]]["text-color"] = this.textcolor;
+        if (typeof design[i]["text-color"] !== 'undefined'){
+            if (isValidColor(design[i]["text-color"])){
+                result[design[i]["name"]]["text-color"] = design[i]["text-color"];
+            }
         }
     }
     return result;
@@ -702,7 +714,7 @@ Experiment.prototype.loadDesign = function(){
         }
         if (this.design["practice-stimuli"]){
             // load practice stimuli
-            this.screens = this.screens.concat(this.loadStimuliGroup(this.design["practice-stimuli"]));
+            this.screens = this.screens.concat(this.loadStimuliGroup(this.design["practice-stimuli"], "NA"));
         }
         if (this.design["post-practice-instruction-screens"]){
             // load post-practice instructions
@@ -751,12 +763,11 @@ Experiment.prototype.loadInstructions = function(design){
 Experiment.prototype.loadStimuliSets = function(design){
     var screens = [];
     var sets = [];
-    var setName = typeof design["name"] !== 'undefined' ? design["name"] : "NA";
     var order = this.getOrder(design["order"]);
     var merge = this.getMerge(design["merge"]);
     for (var i=0; i<design["stimuli-sets"].length; i++){
         var setDesign =design["stimuli-sets"][i]["stimuli-set"];
-        sets.push(this.loadStimuliGroups(setDesign, setName, order, merge));;
+        sets.push(this.loadStimuliGroups(setDesign, order, merge));;
     }
     if (order === "random") { shuffle(sets); }
     if (merge) {
@@ -769,15 +780,15 @@ Experiment.prototype.loadStimuliSets = function(design){
     return screens;
 };
 
-Experiment.prototype.loadStimuliGroups = function(design, setName, ord, mrg){
+Experiment.prototype.loadStimuliGroups = function(design, ord, mrg){
     var set = [];
-    var groupName = typeof design["name"] !== 'undefined' ? design["name"] : "NA";
+    var setName = typeof design["name"] !== 'undefined' ? design["name"] : "NA";
     var order = this.getOrder(design["order"], ord);
     var merge = this.getMerge(design["merge"], mrg);
     var groups = [];
     for (var j=0; j<design["groups"].length; j++){
         var groupDesign = design["groups"][j]["group"];
-        var group = this.loadStimuliGroup(groupDesign, setName, groupName, order);
+        var group = this.loadStimuliGroup(groupDesign, setName, order);
         groups.push(group);
     }
     if (order === "random") {
@@ -793,8 +804,9 @@ Experiment.prototype.loadStimuliGroups = function(design, setName, ord, mrg){
     return set;
 };
 
-Experiment.prototype.loadStimuliGroup = function(design, setName, groupName, ord){
+Experiment.prototype.loadStimuliGroup = function(design, setName, ord){
     var screens = [];
+    var groupName = typeof design["name"] !== 'undefined' ? design["name"] : "NA";
     var order = this.getOrder(design["order"], ord);
     // go through items array and create screenInfo object for each item
     for (var i=0; i<design["items"].length; i++){
@@ -870,7 +882,7 @@ Experiment.prototype.getStringSetting = function(name, value, options, fallback)
     var result = fallback;
     if (typeof value === 'undefined') {
         sprLog("No value for " + name + " setting. Using default value: '" + fallback + "'");
-    } else if (options.some(function(o){ return value.toLowerCase() === o; })){
+    } else if (options.some(function(o){ return value.trim().toLowerCase() === o.trim().toLowerCase(); })){
         result = value.toLowerCase().trim();
     } else {
         sprLog("Invalid value for " + name + " setting. Using default value: '" + fallback + "'");
@@ -883,6 +895,13 @@ Experiment.prototype.validateDesign = function(){
     this.designValidated = false;
     sprLog("Validating design");
     var result = true;
+    // Check structure of feedback-options
+    if (this.design["feedback-options"]){
+        sprLog("Checking feedback-options");
+        if (!this.isValidFeedbackOptions(this.design["feedback-options"])){
+            result = false;
+        }
+    }
     // Check structure of pre-practice instructions
     sprLog("Checking pre-practice instruction screens");
     if (this.design["instruction-screens"]){
@@ -929,6 +948,31 @@ Experiment.prototype.validateDesign = function(){
     return result;
 };
 
+Experiment.prototype.isValidFeedbackOptions = function(design){
+   var result = true;
+   for (var i=0; i<design.length; i++){
+       var feedbackOption = design[i];
+       if (typeof feedbackOption["name"] === 'undefined'){
+           displayErrorMessage("No 'name' value found for feedback-option");
+           sprLog("No 'name' value found for feedback-option");
+           result = false;
+       }
+       if (typeof feedbackOption["string"] === 'undefined'){
+           displayErrorMessage("No 'string' value found for feedback-option");
+           sprLog("No 'string' value found for feedback-option");
+           result = false;
+       }
+       if (typeof feedbackOption["text-color"] !== 'undefined'){
+            if (!isValidColor(feedbackOption["text-color"])){
+                displayErrorMessage("Invalid color name for feedback-option: " + feedbackOption["text-color"]);
+                sprLog("Invalid color name for feedback-option: " + feedbackOption["text-color"]);
+                result = false;
+            }
+       }
+   }
+   return result;
+};
+
 Experiment.prototype.isValidExptStimuli = function(stimuli){
     var result = true;
     if (!stimuli["stimuli-sets"]){
@@ -938,6 +982,14 @@ Experiment.prototype.isValidExptStimuli = function(stimuli){
     } else if (stimuli["stimuli-sets"].length < 1){
         displayErrorMessage("No 'stimuli-set' found in experimental stimuli sets section");
         sprLog("No 'stimuli-set' found in experimental stimuli sets section");
+        result = false;
+    } else if (!this.isValidStringSetting(stimuli["order"], ["fixed","random"])){
+        displayErrorMessage("Incorrect setting for 'order' in stimuli: " + stimuli["order"]);
+        sprLog("Incorrect setting for 'order' in stimuli: " + stimuli["order"]);
+        result = false;
+    } else if (!this.isValidStringSetting(stimuli["merge"], ["true","false"])){
+        displayErrorMessage("Incorrect setting for 'merge' in stimuli: " + stimuli["merge"]);
+        sprLog("Incorrect setting for 'merge' in stimuli: " + stimuli["merge"]);
         result = false;
     } else {
         for (var i=0; i<stimuli["stimuli-sets"].length; i++){
@@ -962,6 +1014,14 @@ Experiment.prototype.isValidStimuliSet = function(stimuliSet){
     } else if (stimuliSet["groups"].length < 1){
         displayErrorMessage("No stimuli 'group' found in experimental stimuli section");
         sprLog("No stimuli 'group' found in experimental stimuli section");
+        result = false;
+    } else if (!this.isValidStringSetting(stimuliSet["order"], ["fixed","random"])){
+        displayErrorMessage("Incorrect setting for 'order' in stimuli-set: " + stimuliSet["order"]);
+        sprLog("Incorrect setting for 'order' in stimuli-set: " + stimuliSet["order"]);
+        result = false;
+    } else if (!this.isValidStringSetting(stimuliSet["merge"], ["true","false"])){
+        displayErrorMessage("Incorrect setting for 'merge' in stimuli-set: " + stimuliSet["merge"]);
+        sprLog("Incorrect setting for 'merge' in stimuli-set: " + stimuliSet["merge"]);
         result = false;
     } else {
         for (var i=0; i<stimuliSet["groups"].length; i++){
@@ -1003,6 +1063,10 @@ Experiment.prototype.isValidGroup = function(group){
         displayErrorMessage("No 'item' found in items list");
         sprLog("No 'item' found in items list");
         result = false;
+    } else if (!this.isValidStringSetting(group["order"], ["fixed","random"])){
+        displayErrorMessage("Incorrect setting for 'order' in group: " + group["order"]);
+        sprLog("Incorrect setting for 'order' in group: " + group["order"]);
+        result = false;
     } else {
         for (var i=0; i<group["items"].length; i++){
             if (typeof(group["items"][i]["item"]) === 'undefined'){
@@ -1024,32 +1088,36 @@ Experiment.prototype.isValidItem = function(item){
         sprLog("Stimulus item has no id");
         result = false;
     } else {
-        sprLog("Checking item: " + item["id"]);
-        if (!item["strings"]){
-            if (!item["string"]){
-                displayErrorMessage("Item has no string(s)!");
-                sprLog("Item has no string(s)!");
-                result = false;
-            } else if (item["string"].length < 1){
-                displayErrorMessage("Empty string found!");
-                sprLog("Empty string found!");
-                result = false;
-            }
+        if (!isValidId(item["id"])){
+            displayErrorMessage("Item id is not valid: " + item["id"]);
+            sprLog("Item id is not valid: " + item["id"]);
+            result = false;
+        }
+        if (this.itemIds.some(function(id){ return item["id"] === id; })){
+            displayErrorMessage("Item id is not unique: " + item["id"]);
+            sprLog("Item id is not unique: " + item["id"]);
+            result = false;
         } else {
-            for (i=0; i<item["strings"].length; i++){
-                if (typeof(item["strings"][i]["string"]) === 'undefined'){
-                    displayErrorMessage("Unknown name in strings: expected 'string'");
-                    sprLog("Unknown name in strings: expected 'string'");
-                    result = false;
-                } else if (item["strings"][i]["string"].length < 1) {
-                    displayErrorMessage("Empty string found!");
-                    sprLog("Empty string found!");
-                    result = false;
-                }
-            }
+            this.itemIds.push(item["id"]);
+        }
+        sprLog("Checking item: " + item["id"]);
+        if (!item["string"]){
+            displayErrorMessage("Item " + item["id"] + " has no string!");
+            sprLog("Item " + item["id"] + " has no string!");
+            result = false;
+        } else if (item["string"].length < 1){
+            displayErrorMessage("Empty string found!");
+            sprLog("Empty string found!");
+            result = false;
         }
     }
     return result;
+};
+
+Experiment.prototype.isValidStringSetting = function(string, settings){
+    return settings.some(function(s){
+        return string.trim().toLowerCase() === s.trim().toLowerCase();
+    });
 };
 
 //// Logging and error reporting
@@ -1078,7 +1146,7 @@ function displayErrorMessage(message){
  * @param stringToTest - the string to be tested for validity (e.g., black, red)
  * @returns true if string is a valid color name; false otherwise
  */
-function validTextColour(stringToTest) {
+function isValidColor(stringToTest) {
     //Alter the following conditions according to your need.
     if (stringToTest === "") { return false; }
     if (stringToTest === "inherit") { return false; }

@@ -1,3 +1,4 @@
+var sprExperimentDesign =
 {
     "title": "My self-paced reading experiment",
     "investigators": [
@@ -9,9 +10,9 @@
         }
     ],
     "font-name": "Arial",
-    "font-size": "14",
-    "text-color": "green",
-    "background-color": "black",
+    "font-size": "15",
+    "text-color": "black",
+    "background-color": "lightgray",
     "display": "cumulative",
     "orientation": "horizontal",
     "masking-character": "*",
@@ -157,4 +158,4 @@
             "instruction-screen": "This is the end of the self-paced-reading experiment. Thank you for participating!"
         }
     ]
-}
+};

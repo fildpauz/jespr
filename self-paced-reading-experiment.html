@@ -9,28 +9,19 @@ and open the template in the editor.
         <title>Self-paced reading experiment using self-paced-reading.js</title>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-        <!--<script src="self-paced-reading.js"></script>-->
+        <script src="spr-sample1.js"></script>
         <script src="spr-objects.js"></script>
         <link href="self-paced-reading.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
         <form id="frmSPR" name="SPRForm" method="POST"></form>
         <script>
-            var designFileURL = "https://raw.githubusercontent.com/fildpauz/self-paced-reading.js/master/spr-sample1.json";
-            $.getJSON(designFileURL, function (json) {
-                console.log("success");
-                start(json);
-            })
-//                    .done(function () {
-//                        console.log("second success");
-//                    })
-//                    .always(function () {
-//                        console.log("complete");
-//                    })
-                    .fail(function () {
-                        console.log("error");
-                    });
+            if (typeof sprExperimentDesign !== 'undefined'){
+                start(sprExperimentDesign);
+            } else {
+                displayErrorMessage("The sprExperimentDesign object could not be found. Experiment cannot start");
+                sprLog("Failed to find the sprExperimentDesign object");
+            }
             
             function start(experimentDesign){
                 console.log(experimentDesign.title);
@@ -44,17 +35,6 @@ and open the template in the editor.
                     sprLog("Failed to validate the json experiment design.");
                 }
             }
-
-//            function start(experimentDesign) {
-//                console.log(experimentDesign.title);
-//                if (isValidDesign(experimentDesign)){
-//                    loadExperiment(experimentDesign);
-//                    doExperiment(); // Start and run the whole thing
-//                } else {
-//                    displayErrorMessage("Problem loading the json experiment design. Check it for errors and try again.");
-//                    sprLog("Problem loading the json experiment design.");
-//                }
-//            }
         </script>
     </body>
 </html>
