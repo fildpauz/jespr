@@ -426,17 +426,19 @@ Title.prototype.hide = function(){
     this.frame.removeChild(this.html); // remove from DOM
 };
 
-Title.prototype.processKeydown = function(keyCode, elapsedTime){
-    this.elapsedTime = elapsedTime;
-    this.keyCode = keyCode;
+Title.prototype.processKeydown = function(keyCode, elapsedTime, minTime){
     var result = "continue";
-    switch (keyCode){
-        case 32: // space bar
-            this.hide();
-            result = "end of screen";
-            break;
-        default:
-            // Pressed other key -- do nothing
+    if (elapsedTime > minTime){
+        switch (keyCode){
+            case 32: // space bar
+                this.elapsedTime = elapsedTime;
+                this.keyCode = keyCode;
+                this.hide();
+                result = "end of screen";
+                break;
+            default:
+                // Pressed other key -- do nothing
+        }
     }
     return result;
 };
@@ -518,17 +520,19 @@ Instructions.prototype.hide = function(){
     this.frame.removeChild(this.html); // remove from DOM
 };
 
-Instructions.prototype.processKeydown = function(keyCode, elapsedTime){
-    this.elapsedTime = elapsedTime;
-    this.keyCode = keyCode;
+Instructions.prototype.processKeydown = function(keyCode, elapsedTime, minTime){
     var result = "continue";
-    switch (keyCode){
-        case 32: // space bar
-            this.hide();
-            result = "end of screen";
-            break;
-        default:
-            // Pressed other key -- do nothing
+    if (elapsedTime > minTime){ // delay any further action for 
+        switch (keyCode){
+            case 32: // space bar
+                this.elapsedTime = elapsedTime;
+                this.keyCode = keyCode;
+                this.hide();
+                result = "end of screen";
+                break;
+            default:
+                // Pressed other key -- do nothing
+        }
     }
     return result;
 };
@@ -540,7 +544,7 @@ Instructions.prototype.processKeydown = function(keyCode, elapsedTime){
 Instructions.prototype.createHtml = function(){
     var instructionsDiv = document.createElement("div");
     instructionsDiv.className = "instructions";
-    instructionsDiv.textContent = this.text;
+    instructionsDiv.innerHTML = this.text;
     return instructionsDiv;
 };
 
@@ -563,8 +567,8 @@ function Screen(type, object){
     this.object = object;
 }
 
-Screen.prototype.processKeydown = function(keyCode, elapsedTime){
-    return this.object.processKeydown(keyCode, elapsedTime);
+Screen.prototype.processKeydown = function(keyCode, elapsedTime, minTime){
+    return this.object.processKeydown(keyCode, elapsedTime, minTime);
 };
 
 Screen.prototype.getData = function(participant, maxTags){
@@ -596,6 +600,7 @@ function Experiment(design, form){
     // Following must be only one character in length
     this.fixationchar = typeof design["fixation-character"] !== 'undefined' ? design["fixation-character"].trim().substr(0,1) : "+";
     this.maskchar = typeof design["masking-character"] !== 'undefined' ? design["masking-character"].trim().substr(0,1) : "_";
+    this.minInstructionTime = typeof design["min-instruction-time"] !== 'undefined' ? design["min-instruction-time"] : 3000;
     this.itemIds = []; // Used during validation to ensure that all IDs are unique
     
     // Info about json object containing experimental design
@@ -619,7 +624,7 @@ function Experiment(design, form){
         if (this.keystate !== "down"){
             this.keystate = "down";
             var keyCode = e.keyCode;
-            var result = self.screens[self.curScreenIndex].processKeydown(keyCode, elapsedTime);
+            var result = self.screens[self.curScreenIndex].processKeydown(keyCode, elapsedTime, self.minInstructionTime);
             if (result === "end of screen"){
                 self.curScreenIndex++;
                 if (self.curScreenIndex < self.screens.length){

@@ -17,6 +17,7 @@ var sprExperimentDesign =
     "orientation": "horizontal",
     "masking-character": "*",
     "fixation-character": "X",
+    "min-instruction-time": "5000",
     "feedback-options": [
         {
             "name": "correct",

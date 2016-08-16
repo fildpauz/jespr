@@ -3,15 +3,15 @@ A javascript library for conducting browser-based self-paced reading experiments
 
 ## Overview
 
-JESPR is a javascript library that is designed to help language researchers to conduct self-paced reading experiments (i.e., as described in Just and Carpenter 19??) through a browser interface. JESPR is compatible with all modern browsers that can process javascript and can be set up to run on a local machine, or remotely, enabling the possibility of gathering data through crowd-sourcing services. The experimental procedure and interface is highly customizable and data output can be easily imported into analysis applications such as Excel or R. Development is ongoing, and future plans include adding capability for touch-enabled and small form-factor screens.
+JESPR is a javascript library that is designed to help language researchers to conduct self-paced reading experiments (i.e., as described in Just, Carpenter, and Woolley 1982 [1][]) through a browser interface. JESPR is compatible with all modern browsers that can process javascript and can be set up to run on a local machine, or remotely, enabling the possibility of gathering data through crowd-sourcing services. The experimental procedure and interface is highly customizable and data output can be easily imported into analysis applications such as Excel or R. Development is ongoing, and future plans include adding capability for touch-enabled and small form-factor screens.
 
 ## Motivation
 
-There are already a wide variety of powerful applications for conducting self-paced reading experiments. Many of these will interface with high-resolution hardware keypads for highly sensitive reaction-time measurements. But not all self-paced reading experiments require such high resolution. Furthermore, these applications typically require local installation and active management by the experimenter for each experimental participant. Recently, though, linguists are finding it useful to conduct experiments and gather data through on-line web-forms and applications or through crowd-sourcing services.
+There are already a wide variety of powerful applications for conducting self-paced reading experiments (e.g., [2][] [3][] [4][]). Many of these will interface with high-resolution hardware keypads for highly sensitive reaction-time measurements. But not all self-paced reading experiments require such high resolution. Furthermore, these applications typically require local installation and active management by the experimenter for each experimental participant. Recently, though, linguists are finding it useful to conduct experiments and gather data through on-line web-forms and applications or through crowd-sourcing services.
 
-Recent work by ???? has even shown that self-paced reading experiments can be conducted via Amazon's Mechanical Turk crowd-sourcing service and can generate reliable observations of some well-known experimental effects. As yet, however, there are very few Javascript-based solutions for conducting self-paced reading experiments via a web browser (????'s work used ?Flash? technology, which now, unfortunately, is being phased out of use by many browser developers). JESPR is therefore my contribution to this developing area.
+Recent work [5][] has even shown that self-paced reading experiments can be conducted via Amazon's Mechanical Turk crowd-sourcing service and can generate reliable observations of some well-known experimental effects. As yet, however, there are very few Javascript-based solutions for conducting self-paced reading experiments via a web browser (but see [6][] for one solution) ([5][]'s work used Flash technology, which is seeing [waning support][https://en.wikipedia.org/wiki/Adobe_Flash#Criticisms] by browser developers), but with the advent of HTML5, Javascript-based solutions are becoming commonplace. JESPR is my attempt to contribute to a Javascript solution for conducting self-paced reading experiments.
 
-JESPR stands for "Javascript-Enabled Self-Paced Reading".
+Hence, JESPR stands for "Javascript-Enabled Self-Paced Reading".
 
 ## Getting started with JESPR
 
@@ -89,6 +89,10 @@ This is the character that will be used to mask each region, by substituting the
 
 At the beginning of each stimulus item, a fixation character will be displayed as is typical in self-paced reading experiments. The selected fixation character will be presented at a font-size approximately 5 times the normal font size.
 
+### min-instruction-time (default: `3000` milliseconds)
+
+In order to prevent participants from accidentally jumping pasts instruction screens that they need to read, this value sets a minimum amount of time that the screen must remain visible before the experiment may proceed. Hence, it effectively disables the advancement of the experiment for the specified number of milliseconds.  This might also be set to a much higher number (e.g., `60000` for one minute) in order to ensure that participants spend enough time on the instructions.
+
 ### feedback-options
 
 Feedback to the experimental participant may be given during the experiment regarding their responses to optional post-stimulus prompts (e.g., comprehension questions). `feedback-options` is the place to define one or more generic feedback options that may be used through the experiment. Each option has three parameters, as follows.
@@ -112,12 +116,41 @@ The following sections explain how each of these items are described in the desi
 
 ### Title screen *
 
+As explained above, the title screen will be constructed automatically from the values give for `title` and the list of values for `investigators`.
+
 ### Instruction screens
 
-### Practice item screens
+Instruction screens are screens of static text which are displayed at the beginning of the experiment immediately after the title screen. In the design file, the screens are listed as an array of objects. Each object has just one reference, `instruction-screen`, the value of which is to be displayed as one screen. The value will be inserted into the screen exactly as is and may therefore contain minimal `html` mark-up. For example, `<p>`  can be used to mark paragraphs and `<br>` for line breaks. Furthermore, styling can be done with `<b>` for bold, `<i>` for italicized, and `<u>` for underlined text. [Note: At the moment, other `html` tags can be used, but this will be locked down in future versions of JESPR for security purposes.]
+
+Instruction screens will be visible for the minimum amount of time specified in the `min-instruction-time` setting.
+
+### Practice stimuli screens
+
+Optionally, experimenters may want participants to go through a certain number of practice items before beginning the experiment. The `practice-stimuli` reference is the place to format these. The `order` value takes two options, either `fixed` or `random` and determines whether the set of practice stimuli will be presented in the order given, or randomized for each participant. The `items` value is simply an array of `item` objects, each describing one experimental stimulus item. Each item has the following settings (obligatory items marked with asterisk (*)).
+
+* `id` -- an identifier for this experimental item. The identifier must be unique and have the the following structure: (i) starts with a letter, (ii) ends with a letter or number, (iii) and has zero or more letters or numbers of symbols (`_`, `.`, `-` only) in the middle. For example, `item.5`, `s8`, and `my_Filler` are all valid. These identifiers will be used in the data output for quick identification of results.
+* `string` -- The stimulus to be presented on screen. Regions should be separated by a vertical bar; for example, `Every|good|boy|does|fine.` or `John hit Matt.|He was angry.` Most experiments have a particular region of interest.
+* `prompt`
+* `options`
+* `tags`
 
 ### Post-practice instruction screens
 
-### Experimental item screens *
+After the practice items, there may be one or more further instructions before the experiment proper begins. These follow the same format and display conditions as _Instruction screens_ above.
+
+### Experimental stimuli screens *
 
 ### Post-experiment instruction screens
+
+After the experiment, there may be one or more final instructions or information to give the participants. These follow the same format and display conditions as _Instruction screens_ above.
+
+## Data output
+
+## References
+
+[1]: http://www.ncbi.nlm.nih.gov/pubmed/6213735 "Just, M. A., Carpenter, P. A., & Woolley, J. D. 1982. Paradigms and processes in reading comprehension. _Journal of Experimental Psychology: General_, Vol 111: 228-238."
+[2]: http://www.superlab.com/ "Superlab by Cedrus Corporation"
+[3]: https://www.pstnet.com/eprime.cfm "E-Prime by Psychology Software Tools, Inc."
+[4]: http://www.u.arizona.edu/~kforster/dmdx/dmdx.htm "DMDX Display Software by Kenneth Forster"
+[5]: http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0116946 "Enochson K, Culbertson J (2015) Collecting Psycholinguistic Response Time Data Using Amazon Mechanical Turk. _PLoS ONE_ 10(3): e0116946. doi:10.1371/journal.pone.0116946"
+[6]: https://github.com/hlplab/hlpspr1 "Ibex self paced reading experiment by Human Language Processing Lab"
