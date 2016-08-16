@@ -857,7 +857,7 @@ Experiment.prototype.getOrder = function(order, fallbackValue){
  * @returns "fixed" or "random"
  */
 Experiment.prototype.getMerge = function(merge, fallbackValue){
-    var result = typeof fallbackValue !== 'undefined' ? fallbackValue : true; // default
+    var result = typeof fallbackValue !== 'undefined' ? fallbackValue : false; // default
     if (typeof merge !== 'undefined'){
         if (merge === "false"){
             result = false;

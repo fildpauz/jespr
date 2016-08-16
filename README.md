@@ -3,13 +3,13 @@ A javascript library for conducting browser-based self-paced reading experiments
 
 ## Overview
 
-JESPR is a javascript library that is designed to help language researchers to conduct self-paced reading experiments (i.e., as described in Just, Carpenter, and Woolley 1982 [1][]) through a browser interface. JESPR is compatible with all modern browsers that can process javascript and can be set up to run on a local machine, or remotely, enabling the possibility of gathering data through crowd-sourcing services. The experimental procedure and interface is highly customizable and data output can be easily imported into analysis applications such as Excel or R. Development is ongoing, and future plans include adding capability for touch-enabled and small form-factor screens.
+JESPR is a javascript library that is designed to help language researchers to conduct self-paced reading experiments (i.e., as described in Just, Carpenter, and Woolley 1982 [[1][]]) through a browser interface. JESPR is compatible with all modern browsers that can process javascript and can be set up to run on a local machine, or remotely, enabling the possibility of gathering data through crowd-sourcing services. The experimental procedure and interface is highly customizable and data output can be easily imported into analysis applications such as Excel or R. Development is ongoing, and future plans include adding capability for touch-enabled and small form-factor screens.
 
 ## Motivation
 
-There are already a wide variety of powerful applications for conducting self-paced reading experiments (e.g., [2][] [3][] [4][]). Many of these will interface with high-resolution hardware keypads for highly sensitive reaction-time measurements. But not all self-paced reading experiments require such high resolution. Furthermore, these applications typically require local installation and active management by the experimenter for each experimental participant. Recently, though, linguists are finding it useful to conduct experiments and gather data through on-line web-forms and applications or through crowd-sourcing services.
+There are already a wide variety of powerful applications for conducting self-paced reading experiments (e.g., [[2][]], [[3][]], [[4][]]). Many of these will interface with high-resolution hardware keypads for highly sensitive reaction-time measurements. But not all self-paced reading experiments require such high resolution. Furthermore, these applications typically require local installation and active management by the experimenter for each experimental participant. Recently, though, linguists are finding it useful to conduct experiments and gather data through on-line web-forms and applications or through crowd-sourcing services.
 
-Recent work [5][] has even shown that self-paced reading experiments can be conducted via Amazon's Mechanical Turk crowd-sourcing service and can generate reliable observations of some well-known experimental effects. As yet, however, there are very few Javascript-based solutions for conducting self-paced reading experiments via a web browser (but see [6][] for one solution) ([5][]'s work used Flash technology, which is seeing [waning support][https://en.wikipedia.org/wiki/Adobe_Flash#Criticisms] by browser developers), but with the advent of HTML5, Javascript-based solutions are becoming commonplace. JESPR is my attempt to contribute to a Javascript solution for conducting self-paced reading experiments.
+Recent work [[5][]] has even shown that self-paced reading experiments can be conducted via Amazon's Mechanical Turk crowd-sourcing service and can generate reliable observations of some well-known experimental effects. As yet, however, there are very few Javascript-based solutions for conducting self-paced reading experiments via a web browser (but see [[6][]] for one solution) ([[5][]]'s work used Flash technology, which is seeing [waning support](https://en.wikipedia.org/wiki/Adobe_Flash#Criticisms) by browser developers), but with the advent of HTML5, Javascript-based solutions are becoming commonplace. JESPR is my attempt to contribute to a Javascript solution for conducting self-paced reading experiments.
 
 Hence, JESPR stands for "Javascript-Enabled Self-Paced Reading".
 
@@ -128,17 +128,28 @@ Instruction screens will be visible for the minimum amount of time specified in 
 
 Optionally, experimenters may want participants to go through a certain number of practice items before beginning the experiment. The `practice-stimuli` reference is the place to format these. The `order` value takes two options, either `fixed` or `random` and determines whether the set of practice stimuli will be presented in the order given, or randomized for each participant. The `items` value is simply an array of `item` objects, each describing one experimental stimulus item. Each item has the following settings (obligatory items marked with asterisk (*)).
 
-* `id` -- an identifier for this experimental item. The identifier must be unique and have the the following structure: (i) starts with a letter, (ii) ends with a letter or number, (iii) and has zero or more letters or numbers of symbols (`_`, `.`, `-` only) in the middle. For example, `item.5`, `s8`, and `my_Filler` are all valid. These identifiers will be used in the data output for quick identification of results.
-* `string` -- The stimulus to be presented on screen. Regions should be separated by a vertical bar; for example, `Every|good|boy|does|fine.` or `John hit Matt.|He was angry.` Most experiments have a particular region of interest.
-* `prompt`
-* `options`
-* `tags`
+* `id` * -- an identifier for this experimental item. The identifier must be unique and have the the following structure: (i) starts with a letter, (ii) ends with a letter or number, (iii) and has zero or more letters or numbers of symbols (`_`, `.`, `-` only) in the middle. For example, `item.5`, `s8`, and `my_Filler` are all valid. These identifiers will be used in the data output for quick identification of results.
+* `string` * -- The stimulus to be presented on screen. Regions should be separated by a vertical bar; for example, `Every|good|boy|does|fine.` or `John hit Matt.|He was angry.` Most experiments have a particular region of interest. This can be highlighted in the design file with curly braces: `Every|good|boy|[does]|fine.` This has no effect on the presentation of the stimulus, but the position of all regions relative to the region of interest (i.e., an integer: 0 for the region of interest, negative integers for preceding regions and positive integers for following regions) will be included in the output results for easy analysis of results.
+* `prompt` -- After each stimulus item, it is possible to give a follow-up prompt (e.g., a comprehension question or linguistic judgment). The prompt text will be displayed as plain text.
+* `options` -- Together with the prompt, two response options will be presented. The `options` reference is an array of these option objects with the following parameters: `string` is the option to be displayed; `feedback-option` is the `name` value of the experiment-wide feedback-option defined earlier in the design file. The specified feedback-option will be shown when the respective option is selected by the participant. As an alternative to the experiment-wide feedback-option, feedback specific to the current item may be specified with `feedback` instead of `feedback-option`. In this case, the `text-color` may also be specified. If both a `feedback-option` and `feedback` are specified, the `feedback-option` will take precedence.
+* `tags` -- An array of tags can be provided to each specific stimulus item. These tags are not displayed to participants, but are output in the results and can be used afterward for data analysis. For instance, the tags may identify certain experimental conditions or variables for post-hoc analysis.
 
 ### Post-practice instruction screens
 
 After the practice items, there may be one or more further instructions before the experiment proper begins. These follow the same format and display conditions as _Instruction screens_ above.
 
 ### Experimental stimuli screens *
+
+The experimental stimuli items can be defined as described above for the practice stimuli. However, these items can be organized into groups and then stimulus sets. For example, one experiment might might contain different stimuli sets that test different hypotheses.  And then each set may contain different groups that test different experimental conditions. For both the stimuli as a whole and for stimuli sets, the following options can be specified.
+
+* `order` -- specifies whether the sets/groups should be presented in either a `random` or `fixed` order. The default value is `fixed*`.
+* `merge` -- specifies whether the sets/groups should be merged or not. The default value is `false`. If `true` is specified, the given sets/groups will be merged with each other in a random manner.
+
+The `order` and `merge` settings cascade downward.  That is, if only the stimuli-sets `order` setting is `random`, and none of the sets or groups are specified, `random` will be taken as the specified value.
+
+Both `stimuli-set` and `group` should specify a `name` value. This name is not displayed to participants, but is output with the results. Thus, the name can specify certain experimental conditions or stimuli types (e.g., `filler`, etc.).  Thus, these names, in combination with the individual item `tags` make it possible to categorize the results clearly beforehand and enable rapid analysis of results afterward.
+
+The specification for individual groups is as described for practice-stimuli above.
 
 ### Post-experiment instruction screens
 
