@@ -17,10 +17,10 @@ Hence, JESPR stands for "Javascript-Enabled Self-Paced Reading".
 
 In order to use JESPR, there are four files you will need to be aware of.
 
-* `jesper-lib.js` -- This is the main library file. If you just want to run experiments, then you should never even have to open this file; just make the appropriate references to it in the `html` file.
+* `jespr-lib.js` -- This is the main library file. If you just want to run experiments, then you should never even have to open this file; just make the appropriate references to it in the `html` file.
 * `jespr-experiment.html` -- This is the file that would be loaded into the browser and contains the appropriate references to the JESPR library, stylesheet, and design file, and also contains the code to launch the experiment. The body of this file may be edited to add some pre-experiment or post-experiment content, as desired; say, a consent form, or a post-experiment debriefing text.
-* `jesper.css` -- This is the stylesheet for the design and layout of various elements in the operation of JESPR. This should probably not be edited unless you know what you're doing.
-* `jesper-sample1.js` -- This is the core of the experiment and the most important file for the experimenter. This file sets the global parameters of the experiment as well as lists all of the experimental stimuli.
+* `jespr.css` -- This is the stylesheet for the design and layout of various elements in the operation of JESPR. This should probably not be edited unless you know what you're doing.
+* `jespr-sample1.js` -- This is the core of the experiment and the most important file for the experimenter. This file sets the global parameters of the experiment as well as lists all of the experimental stimuli.
 
 In `jespr-experiment.html`, the other three files are referenced in the `<HEAD>` section as follows.
 
@@ -30,12 +30,12 @@ In `jespr-experiment.html`, the other three files are referenced in the `<HEAD>`
 <link href="jespr.css" rel="stylesheet" type="text/css"/>
 ```
 
-When running an experiment locally, the four files could be placed in the same directory and the `jesper-experiment.html` file could be opened in a browser and run without any Internet connection. However, for a remote administration, some changes may be necessary depending on the situation. Following are a couple of likely scenarios.
+When running an experiment locally, the four files could be placed in the same directory and the `jespr-experiment.html` file could be opened in a browser and run without any Internet connection. However, for a remote administration, some changes may be necessary depending on the situation. Following are a couple of likely scenarios.
 
 * _Host all the files on a web server._ Actually, this is pretty easy -- Put all the files in the same directory on the web server and then leave the references as above.
 * _Conduct an experiment via Mechanical Turk._ MT does not allow the uploading of additional files, so they would have to be hosted on a separate server. In this case, the `<HEAD>` references above would need to be updated to give the full URI path to where the files are located. An alternative solution would be to copy the contents of the three files into the source `html` of the MT HIT. This should be attempted only by those who know what they are doing.
 
-Inside of the `jesper-experiment.html` file, the following code is needed to get the experiment started.
+Inside of the `jespr-experiment.html` file, the following code is needed to get the experiment started.
 
 ```
 <form id="jesprForm" name="jesprForm" method="POST"></form>
@@ -57,7 +57,7 @@ Finally, it is necessary to run `validateDesign()` on the `Experiment` object be
 
 ## Designing a JESPR experiment
 
-The main task of getting a JESPR experiment ready is to create the design file (e.g., `jesper-sample1.js` above). The design file must be laid out using the JSON (JavaScript Object Notation) data format. If this is not familiar to you, a gentle introduction can be found at the W3C Schools. For those not confident with how to construct and error-check JSON format, it may be useful to use an editor. A search for "json editor" or "json online editor" will yield several good options.
+The main task of getting a JESPR experiment ready is to create the design file (e.g., `jespr-sample1.js` above). The design file must be laid out using the JSON (JavaScript Object Notation) data format. If this is not familiar to you, a gentle introduction can be found at the W3C Schools. For those not confident with how to construct and error-check JSON format, it may be useful to use an editor. A search for "json editor" or "json online editor" will yield several good options.
 
 An important point to make at the outset, though, is that the entire purpose of the design file is to define the experiment object using JSON format and then assign it to the `jesprExperimentDesign` variable.
 
@@ -65,7 +65,7 @@ An important point to make at the outset, though, is that the entire purpose of 
 var jesprExperimentDesign =
 {
   // Design definition here...
-}
+};
 ```
 
 ===
@@ -203,8 +203,8 @@ The data that JESPR returns at the end of the experiment is a csv-formatted tabl
 * `elapsedTime` -- This is the elapsed time in milliseconds since the immediately preceding successful event (or start of experiment for the title screen).
 * `keyCode` -- This is an integer representing the [UTF-8 character code](http://www.w3schools.com/charsets/ref_utf_basic_latin.asp) of the key which the participant pressed (e.g., `32` for space bar, `97` for `a`).
 * `string` -- This is the displayed string that is relevant to the current event. For a region, it would be the text of that region, for a prompt, it would be the prompt plus its options. Long strings (such as instruction screens) will be truncated to a length of 60 characters.
-* `setName` -- 
-* `groupName` --
+* `setName` -- This is the name of the stimulus set which the current item belongs to. If no set name is defined, the output will be `NA`.
+* `groupName` --  This is the name of the group which the current item belongs to. If no group name is defined, the output will be `NA`.
 
 In addition to these 9 columns, additional columns may be added for any `tags` identified in the design file. Columns will be added to match the largest number of tags given on an item, using column headers `tag1`, `tag2`, `tag3`, and so on. The tags for an item will be output in the data table in the order defined for that item. If no tags are defined for an item, the output value will be `NA`, as for title and instruction screens. If it is desired that an item have no value for its first tags, then enter an empty string (`""`). This will be rendered as `NA` in the data output. For example, in a design where three tags have been defined somewhere, then an item with `"tags": ["","pronoun"]` will have `NA,"pronoun",NA` output for the `tags` columns.
 

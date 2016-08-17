@@ -237,15 +237,23 @@ Item.prototype.saveData = function(regionId, index, elapsedTime, keyCode, string
 };
 
 Item.prototype.getData = function(participant, maxTags){
-    //var result = "\"timeId\",\"itemId\",\"elapsedTime\",\"keyCode\",\"string\",\"setName\",\"groupName\"";
     var result = "";
     for (var i=0; i<this.timeData.length; i++){
         var data = this.timeData[i];
         var line = "\"" + participant + "\",\"" + this.id + "\"";
         line = line + ",\"" + data["regionId"] + "\"," + data["roiRelPosition"];
         line = line + "," + data["elapsedTime"] + "," + data["keyCode"];
-        line = line + ",\"" + data["string"] + "\",\"" + this.setName + "\"";
-        line = line + ",\"" + this.groupName + "\"";
+        line = line + ",\"" + data["string"] + "\"";
+        if (this.setName === "NA"){
+            line = line + ",NA";
+        } else {
+            line = line + ",\"" + this.setName + "\"";
+        }
+        if (this.groupName === "NA"){
+            line = line + ",NA";
+        } else {
+            line = line + ",\"" + this.groupName + "\"";
+        }
         for (var j=0; j<this.tags.length; j++){
             if (this.tags[j].length > 0){
                 line = line + ",\"" + this.tags[j] + "\"";
@@ -411,19 +419,22 @@ Item.prototype.getRoi = function(regions){
  * @param otherInvestigators - An array of names of other investigators
  */
 function Title(text, primaryInvestigators, otherInvestigators){
+    this.id = "title";
     this.text = text;
     this.primaryInvestigators = primaryInvestigators;
     this.otherInvestigators = otherInvestigators;
     this.html = this.createHtml();
     this.frame = undefined;
+    this.showTime;
     this.elapsedTime;
     this.keyCode;
 }
 
-Title.prototype.show = function(frame){
+Title.prototype.show = function(frame, elapsedTime){
     this.frame = frame;
     this.frame.appendChild(this.html); // add to DOM
     this.html.style.display = "block"; // show it
+    this.showTime = elapsedTime;
 };
 
 Title.prototype.hide = function(){
@@ -433,7 +444,7 @@ Title.prototype.hide = function(){
 
 Title.prototype.processKeydown = function(keyCode, elapsedTime, minTime){
     var result = "continue";
-    if (elapsedTime > minTime){
+    if (elapsedTime - this.showTime > minTime){
         switch (keyCode){
             case 32: // space bar
                 this.elapsedTime = elapsedTime;
@@ -449,7 +460,7 @@ Title.prototype.processKeydown = function(keyCode, elapsedTime, minTime){
 };
 
 Title.prototype.getData = function(participant, maxTags){
-    var result = "\"" + participant + "\",\"Title\",NA,NA,\"" + this.elapsedTime + "\",\"" + this.keyCode + "\",\"" + truncateText(this.text, 40) + "\",NA,NA";
+    var result = "\"" + participant + "\",\"" + this.id + "\",NA,NA,\"" + this.elapsedTime + "\",\"" + this.keyCode + "\",\"" + truncateText(this.text, 40) + "\",NA,NA";
     for (var i=0; i<maxTags; i++){ result = result + ",NA"; }
     result = result + "\n";
     return result;
@@ -499,10 +510,12 @@ Title.prototype.createHtml = function(){
  * The Instructions object merely defines the parameters related to an instructions screen
  * @param text - The instructions text (with html allowed)
  */
-function Instructions(text){
+function Instructions(id, text){
+    this.id = id;
     this.text = text;
     this.html = this.createHtml();
     this.frame = undefined;
+    this.showTime;
     this.elapsedTime;
     this.keyCode;
 }
@@ -511,10 +524,11 @@ function Instructions(text){
  * Shows the Instructions element
  * @param {type} frame - the DOM element inside which the Instructions will be shown
  */
-Instructions.prototype.show = function(frame){
+Instructions.prototype.show = function(frame, elapsedTime){
     this.frame = frame;
     this.frame.appendChild(this.html); // add to DOM
     this.html.style.display = "block"; // show it
+    this.showTime = elapsedTime;
 };
 
 /*
@@ -527,7 +541,7 @@ Instructions.prototype.hide = function(){
 
 Instructions.prototype.processKeydown = function(keyCode, elapsedTime, minTime){
     var result = "continue";
-    if (elapsedTime > minTime){ // delay any further action for 
+    if (elapsedTime - this.showTime > minTime){
         switch (keyCode){
             case 32: // space bar
                 this.elapsedTime = elapsedTime;
@@ -554,7 +568,7 @@ Instructions.prototype.createHtml = function(){
 };
 
 Instructions.prototype.getData = function(participant, maxTags){
-    var result = "\"" + participant + "\",\"Instructions\",NA,NA,\"" + this.elapsedTime + "\",\"" + this.keyCode + "\",\"" + truncateText(this.text, 20) + "\",NA,NA";
+    var result = "\"" + participant + "\",\"" + this.id + "\",NA,NA,\"" + this.elapsedTime + "\",\"" + this.keyCode + "\",\"" + truncateText(this.text, 20) + "\",NA,NA";
     for (var i=0; i<maxTags; i++){ result = result + ",NA"; }
     result = result + "\n";
     return result;
@@ -606,7 +620,7 @@ function Experiment(design, form){
     this.fixationchar = typeof design["fixation-character"] !== 'undefined' ? design["fixation-character"].trim().substr(0,1) : "+";
     this.maskchar = typeof design["masking-character"] !== 'undefined' ? design["masking-character"].trim().substr(0,1) : "_";
     this.minInstructionTime = typeof design["min-instruction-time"] !== 'undefined' ? design["min-instruction-time"] : 3000;
-    this.itemIds = []; // Used during validation to ensure that all IDs are unique
+    this.idList = []; // Used during validation to ensure that all IDs are unique
     
     // Info about json object containing experimental design
     this.design = design; // json object containing the design, stimuli, etc.
@@ -635,7 +649,8 @@ function Experiment(design, form){
             if (result === "end of screen"){
                 self.curScreenIndex++;
                 if (self.curScreenIndex < self.screens.length){
-                    self.screens[self.curScreenIndex].object.show(self.frame);
+                    self.screens[self.curScreenIndex].object.show(self.frame, elapsedTime);
+                    self.jesprLog("Starting screen: " + self.screens[self.curScreenIndex].object.id);
                 } else {
                     self.endExperiment();
                 }
@@ -657,7 +672,8 @@ Experiment.prototype.startExperiment = function(){
     document.body.addEventListener("keyup", this.processKeyup);
     window.focus();  // to make sure the window is listening for keypress events
     this.curScreenIndex = 0;
-    this.screens[this.curScreenIndex].object.show(this.frame);
+    this.screens[this.curScreenIndex].object.show(this.frame, 0);
+    this.jesprLog("Starting screen: " + this.screens[this.curScreenIndex].object.id);
 };
 
 Experiment.prototype.endExperiment = function(){
@@ -783,7 +799,7 @@ Experiment.prototype.loadTitleScreen = function(design){
 Experiment.prototype.loadInstructions = function(design){
     var screens = [];
     for (var i=0; i<design.length; i++){
-        var instructions = new Instructions(design[i]["instruction-screen"]);
+        var instructions = new Instructions(design[i]["id"], design[i]["string"]);
         var screen = new Screen("instructions", instructions);
         screens.push(screen);
     }
@@ -1070,11 +1086,29 @@ Experiment.prototype.isValidStimuliSet = function(stimuliSet){
 Experiment.prototype.isValidInstructionScreen = function(instructions){
     var result = true;
     for (var i=0; i<instructions.length; i++){
-        if (typeof(instructions[i]["instruction-screen"]) === 'undefined'){
-            this.displayErrorMessage("Unknown name in instructions: expected 'instruction-screen'");
-            this.jesprLog("Unknown name in instructions: expected 'instruction-screen'");
+        var instruction = instructions[i];
+        // Check ID validity
+        if (!instruction["id"]){
+            this.displayErrorMessage("Instruction has no id");
+            this.jesprLog("Instruction has no id");
             result = false;
-        } else if (instructions[i].length < 1){ // Will this allow an array?
+        } else if (!isValidId(instruction["id"])){
+            this.displayErrorMessage("Instruction id is not valid: " + instruction["id"]);
+            this.jesprLog("Instruction id is not valid: " + instruction["id"]);
+            result = false;
+        } else if (this.idList.some(function(id){ return instruction["id"] === id; })){
+            this.displayErrorMessage("Instruction id is not unique: " + instruction["id"]);
+            this.jesprLog("Instruction id is not unique: " + instruction["id"]);
+            result = false;
+        } else {
+            this.idList.push(instruction["id"]);
+        }
+        // Check string validity
+        if (typeof(instruction["string"]) === 'undefined'){
+            this.displayErrorMessage("No `string` element found in instruction screen");
+            this.jesprLog("No `string` element found in instruction screen");
+            result = false;
+        } else if (instruction["string"].length < 1){ // Will this allow an array?
             this.displayErrorMessage("Empty string in instructions");
             this.jesprLog("Empty string in instructions");
             result = false;
@@ -1123,12 +1157,12 @@ Experiment.prototype.isValidItem = function(item){
             this.jesprLog("Item id is not valid: " + item["id"]);
             result = false;
         }
-        if (this.itemIds.some(function(id){ return item["id"] === id; })){
+        if (this.idList.some(function(id){ return item["id"] === id; })){
             this.displayErrorMessage("Item id is not unique: " + item["id"]);
             this.jesprLog("Item id is not unique: " + item["id"]);
             result = false;
         } else {
-            this.itemIds.push(item["id"]);
+            this.idList.push(item["id"]);
         }
         this.jesprLog("Checking item: " + item["id"]);
         if (!item["string"]){

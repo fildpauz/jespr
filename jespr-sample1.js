@@ -26,7 +26,7 @@ var jesprExperimentDesign =
     "orientation": "horizontal",
     "masking-character": "*",
     "fixation-character": "X",
-    "min-instruction-time": "5000",
+    "min-instruction-time": "3000",
     "show-results-display": "true",
     "show-log-display": "true",
     "feedback-options": [
@@ -43,10 +43,12 @@ var jesprExperimentDesign =
     ],
     "instruction-screens": [
         {
-            "instruction-screen": "blah1 blah1 blah1"
+            "id": "instruction1",
+            "string": "blah1 blah1 blah1"
         },
         {
-            "instruction-screen": "blah2 blah2 blah2"
+            "id": "instruction2",
+            "string": "blah2 blah2 blah2"
         }
     ],
     "practice-stimuli": {
@@ -90,7 +92,8 @@ var jesprExperimentDesign =
     },
     "post-practice-instruction-screens": [
         {
-            "instruction-screen": "blah3 blah3 blah3"
+            "id": "instruction3",
+            "string": "blah3 blah3 blah3"
         }
     ],
     "experiment-stimuli": {
@@ -167,7 +170,8 @@ var jesprExperimentDesign =
     },
     "ending-screens": [
         {
-            "instruction-screen": "This is the end of the self-paced-reading experiment. Thank you for participating!"
+            "id": "instruction4",
+            "string": "This is the end of the self-paced-reading experiment.<br/>Thank you for participating!"
         }
     ]
 };
