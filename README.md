@@ -17,27 +17,56 @@ Hence, JESPR stands for "Javascript-Enabled Self-Paced Reading".
 
 In order to use JESPR, there are four files you will need to be aware of.
 
-* `jesper-library.js` -- This is the main library file. If you just want to run experiments, then you should never even have to open this file; just make the appropriate references to it in the `html` file.
-* `jespr.html` -- This is the file that would be loaded into the browser and contains the appropriate references to the JESPR library, stylesheet, and design file, and also contains the code to launch the experiment. The body of this file may be edited to add some pre-experiment or post-experiment content, as desired; say, a consent form, or a post-experiment debriefing text.
+* `jesper-lib.js` -- This is the main library file. If you just want to run experiments, then you should never even have to open this file; just make the appropriate references to it in the `html` file.
+* `jespr-experiment.html` -- This is the file that would be loaded into the browser and contains the appropriate references to the JESPR library, stylesheet, and design file, and also contains the code to launch the experiment. The body of this file may be edited to add some pre-experiment or post-experiment content, as desired; say, a consent form, or a post-experiment debriefing text.
 * `jesper.css` -- This is the stylesheet for the design and layout of various elements in the operation of JESPR. This should probably not be edited unless you know what you're doing.
 * `jesper-sample1.js` -- This is the core of the experiment and the most important file for the experimenter. This file sets the global parameters of the experiment as well as lists all of the experimental stimuli.
 
-In `jespr.html`, the other three files are referenced in the `<HEAD>` section as follows.
+In `jespr-experiment.html`, the other three files are referenced in the `<HEAD>` section as follows.
 
 ```
 <script src="jespr-sample1.js"></script>
-<script src="jespr-library.js"></script>
-<link href="jesper.css" rel="stylesheet" type="text/css"/>
+<script src="jespr-lib.js"></script>
+<link href="jespr.css" rel="stylesheet" type="text/css"/>
 ```
 
-When running an experiment locally, the four files could be placed in the same directory and the `jesper.html` file could be opened in a browser and run without any Internet connection. However, for a remote administration, some changes may be necessary depending on the situation. Following are a couple of likely scenarios.
+When running an experiment locally, the four files could be placed in the same directory and the `jesper-experiment.html` file could be opened in a browser and run without any Internet connection. However, for a remote administration, some changes may be necessary depending on the situation. Following are a couple of likely scenarios.
 
 * _Host all the files on a web server._ Actually, this is pretty easy -- Put all the files in the same directory on the web server and then leave the references as above.
 * _Conduct an experiment via Mechanical Turk._ MT does not allow the uploading of additional files, so they would have to be hosted on a separate server. In this case, the `<HEAD>` references above would need to be updated to give the full URI path to where the files are located. An alternative solution would be to copy the contents of the three files into the source `html` of the MT HIT. This should be attempted only by those who know what they are doing.
 
+Inside of the `jesper-experiment.html` file, the following code is needed to get the experiment started.
+
+```
+<form id="jesprForm" name="jesprForm" method="POST"></form>
+<script>
+  var form = document.getElementById("jesprForm");
+  var experiment = new Experiment(jesprExperimentDesign, form);
+  if (experiment.validateDesign()){
+    experiment.loadDesign();
+    experiment.startExperiment();
+  }
+</script>
+```
+
+The form name here is arbitrary and can be named as desired. However, if using the Amazon Mechanical Turk system, then the form name is already defined (usually as `mturk_form`). This, then should be the name used to determine the `form` variable.
+
+The `jesprExperimentDesign` variable is defined in the design file which is loaded in the `<HEAD>` element as noted above. The structure of that file is defined below.
+
+Finally, it is necessary to run `validateDesign()` on the `Experiment` object before loading and then starting the experiment. This will check that the design object contains all necessary settings and parameter options. This is a useful way to check your design file for any problems. Of course, it does not check the theoretical design of the experiment! That responsibility is still left to the user.
+
 ## Designing a JESPR experiment
 
 The main task of getting a JESPR experiment ready is to create the design file (e.g., `jesper-sample1.js` above). The design file must be laid out using the JSON (JavaScript Object Notation) data format. If this is not familiar to you, a gentle introduction can be found at the W3C Schools. For those not confident with how to construct and error-check JSON format, it may be useful to use an editor. A search for "json editor" or "json online editor" will yield several good options.
+
+An important point to make at the outset, though, is that the entire purpose of the design file is to define the experiment object using JSON format and then assign it to the `jesprExperimentDesign` variable.
+
+```
+var jesprExperimentDesign =
+{
+  // Design definition here...
+}
+```
 
 ===
 
@@ -101,6 +130,14 @@ Feedback to the experimental participant may be given during the experiment rega
 * `string` * -- the actual feedback to be given to the participant (e.g., _That's correct_, _That's not correct_).
 * `text-color` -- The (optional) color in which the feedback text will be displayed (e.g., `red` for _That's not correct_). Colors are limited to one of the 147 HTML valid color names (e.g., http://www.w3schools.com/colors/colors_hex.asp).
 
+### show-results-display (default: `false`)
+
+After the experiment is completed, the results will be stored in a form variable, `jesprResults`. If the form is submitted the results will thus be submitted as form data. However, there may reasons the experimenter wishes to display the results before submission (or to extract results without submitting at all). Thus, if the `show-results-display` variable is set to `true`, a textarea will appear in the browser window after the experiment containing the csv-formatted results (see below for detailed description).
+
+### show-log-display (default: `false`)
+
+After the experiment is completed, JESPR log information will be stored in a form variable, `jesprLog`. If desired, the log information may be displayed to the browser screen by setting `show-log-display` to `true`. This may be useful when debugging the design file.
+
 ===
 
 The procedure of a JESPR experiment is as follows, where the obligatory items are marked with an asterisk (*).
@@ -157,7 +194,29 @@ After the experiment, there may be one or more final instructions or information
 
 ## Data output
 
+The data that JESPR returns at the end of the experiment is a csv-formatted table with a minimum of 9 columns. Each row represents the data on one successful step of the experiment, where successful means an advancement of the experiment in response to an acceptable action by the participant; hence, pressing a button after reading an instruction screen. pressing a button to reveal the next region, or pressing a button to respond to a prompt. Unexpected button-presses would be ignored and not registered in the data output. The 9 columns contain data as follows.
 
+* `participant` -- This is an identifier for the participant. In one experimental output, this identifier will be the same for all rows, and hence not of much use. However, when concatenating data across many participants, the identifier is useful to conduct certain analyses like repeated measures or mixed effects. As a default, the identifier is simply the time-stamp of the start time of the experiment to the nearest millisecond.
+* `itemId` -- The id of the current stimulus item (e.g., `item21`). For title and instruction screens, this value is `Title` and `Instruction`, respectively.
+* `regionId` -- The id of the current region. This is simply a concatenation of the itemId, an underscore (`_`), and an index number of the region (e.g., `item21_6`). For a fixation mark, prompt, or feedback, the region index is replaced with `fixation`, `prompt`, or `feedback`, respectively. For title and instruction screens, the value is `NA`.
+* `roiRelPosition` -- An integer number representing the position of the current region relative to the region of interest: 0 for the region of interest, negative integers for preceding regions, positive integers for following regions. If no region of interest is specified for an item, the output is `NA`; and similarly for title and instruction screens.
+* `elapsedTime` -- This is the elapsed time in milliseconds since the immediately preceding successful event (or start of experiment for the title screen).
+* `keyCode` -- This is an integer representing the [UTF-8 character code](http://www.w3schools.com/charsets/ref_utf_basic_latin.asp) of the key which the participant pressed (e.g., `32` for space bar, `97` for `a`).
+* `string` -- This is the displayed string that is relevant to the current event. For a region, it would be the text of that region, for a prompt, it would be the prompt plus its options. Long strings (such as instruction screens) will be truncated to a length of 60 characters.
+* `setName` -- 
+* `groupName` --
+
+In addition to these 9 columns, additional columns may be added for any `tags` identified in the design file. Columns will be added to match the largest number of tags given on an item, using column headers `tag1`, `tag2`, `tag3`, and so on. The tags for an item will be output in the data table in the order defined for that item. If no tags are defined for an item, the output value will be `NA`, as for title and instruction screens. If it is desired that an item have no value for its first tags, then enter an empty string (`""`). This will be rendered as `NA` in the data output. For example, in a design where three tags have been defined somewhere, then an item with `"tags": ["","pronoun"]` will have `NA,"pronoun",NA` output for the `tags` columns.
+
+## Participant input
+
+Currently, JESPR is enabled to accept input only from the keyboard in the following manner.
+
+* space-bar -- to advance the experiment through title and instruction screens and through regions
+* `1`/`q`/`a`/`z` -- to select the left-hand option in response to a prompt
+* `0`/`p`/`l`/`m` -- to select the right-hand option in response to a prompt
+
+[Near-future development will make it possible for the investigator to customize these as well as to have the option to use mouse clicks or touch-screen presses to advance the experiment.]
 
 ## References
 

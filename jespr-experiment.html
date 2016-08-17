@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Self-paced reading experiment using JESPR</title>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        
+        <!-- The following three lines are needed to run a JESPR experiment -->
+        <script src="jespr-sample1.js"></script>
+        <script src="jespr-lib.js"></script>
+        <link href="jespr.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+        <!-- The form to which results and log data will be attached -->
+        <form id="jesprForm" name="jesprForm" method="POST"></form>
+        <script>
+            // The jesprExperimentDesign variable is defined in the
+            // design file and defined above in the <head> section.
+            if (typeof jesprExperimentDesign !== 'undefined'){
+                start(jesprExperimentDesign);
+            } else {
+                alert("The jesprExperimentDesign object could not be found. Experiment cannot start");
+            }
+            
+            function start(experimentDesign){
+                var form = document.getElementById("jesprForm");
+                var experiment = new Experiment(experimentDesign, form);
+                if (experiment.validateDesign()){ // Must validate before
+                    experiment.loadDesign();      // loading and then
+                    experiment.startExperiment(); // starting an experiment
+                } else {
+                    alert("The json experiment design seems to be invalid. Check it for errors and try again.");
+                }
+            }
+        </script>
+    </body>
+</html>

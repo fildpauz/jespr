@@ -1,4 +1,13 @@
-var sprExperimentDesign =
+/* 
+ * Title: jespr-sample1.js
+ * Author: Ralph L. ROSE
+ * E-mail address: rose@waseda.jp
+ * Description: This file defines an experimental design to be used in a
+ * JESPR experiment.
+ * License: The MIT License (MIT)
+ */
+
+var jesprExperimentDesign =
 {
     "title": "My self-paced reading experiment",
     "investigators": [
@@ -18,6 +27,8 @@ var sprExperimentDesign =
     "masking-character": "*",
     "fixation-character": "X",
     "min-instruction-time": "5000",
+    "show-results-display": "true",
+    "show-log-display": "true",
     "feedback-options": [
         {
             "name": "correct",

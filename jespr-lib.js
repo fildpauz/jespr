@@ -1,10 +1,11 @@
 /* 
- * Title: spr-objects.js
+ * Title: jespr-lib.js
  * Author: Ralph L. ROSE
  * E-mail address: rose@waseda.jp
  * Description: This javascript library defines prototypes that may be used
  * to support the execution of a self-paced-reading experiment. It is designed
  * to be used by self-paced-reading.js 
+ * License: The MIT License (MIT)
  */
 
 "use strict";
@@ -246,7 +247,11 @@ Item.prototype.getData = function(participant, maxTags){
         line = line + ",\"" + data["string"] + "\",\"" + this.setName + "\"";
         line = line + ",\"" + this.groupName + "\"";
         for (var j=0; j<this.tags.length; j++){
-            line = line + ",\"" + this.tags[j] + "\"";
+            if (this.tags[j].length > 0){
+                line = line + ",\"" + this.tags[j] + "\"";
+            } else {
+                line = line + ",NA";
+            }
         }
         for (var k=this.tags.length; j<maxTags; j++){ line = line + ",NA"; }
         line = line + "\n";
@@ -612,18 +617,20 @@ function Experiment(design, form){
     // variables for experiment flow and execution
     this.form = form;
     this.frame = this.createFrame();
+    this.log = "";  // For keeping track of messages sent to jesprLog();
     this.screens = [];  // List of all screen divs in the experiment: title, instructions, stimulus items
     this.curScreenIndex;   // The index of the current screen in screenInfo array being displayed.
     this.startTime;     // The start time of the experiment. Timing results are relative to this.
     this.keystate = "up"; // for monitoring keyup/keydown and ensuring one-step-at-a-time process
     this.participant;   // A string to identify the experimental participant, defaults to startTime
     this.showResultsDisplay = typeof design["show-results-display"] !== 'undefined' ? design["show-results-display"] : false;
+    this.showLogDisplay = typeof design["show-log-display"] !== 'undefined' ? design["show-log-display"] : false;
 
     Experiment.prototype.processKeydown = function(e){
         var elapsedTime = Date.now() - self.startTime;
         if (this.keystate !== "down"){
             this.keystate = "down";
-            var keyCode = e.keyCode;
+            var keyCode = e.which || e.keyCode;
             var result = self.screens[self.curScreenIndex].processKeydown(keyCode, elapsedTime, self.minInstructionTime);
             if (result === "end of screen"){
                 self.curScreenIndex++;
@@ -658,11 +665,15 @@ Experiment.prototype.endExperiment = function(){
     document.body.removeEventListener("keyup", this.processKeyup);
     this.frame.style.display = "none";
     document.body.removeChild(this.frame);
+    this.createResults();
+    this.createLog();
+};
+
+Experiment.prototype.createResults = function(){
     var data = this.getData();
-    // Data export to screen for verification
     var resultsDisplay = document.createElement("textarea");
     resultsDisplay.id = "resultsDisplay";
-    resultsDisplay.name = "SPR_Results";
+    resultsDisplay.name = "jesprResults";
     resultsDisplay.className = "results";
     resultsDisplay.value = data;
     resultsDisplay.rows = 12;
@@ -672,7 +683,21 @@ Experiment.prototype.endExperiment = function(){
         resultsDisplay.style.display = "inline-block";
     }
     this.form.appendChild(resultsDisplay);
-    // TODO: Optional data export of experiment log?
+};
+
+Experiment.prototype.createLog = function(){
+    var logDisplay = document.createElement("textarea");
+    logDisplay.id = "logDisplay";
+    logDisplay.name = "jesprLog";
+    logDisplay.className = "log";
+    logDisplay.value = this.log;
+    logDisplay.rows = 12;
+    logDisplay.readOnly = true;
+    logDisplay.wrap = "soft";
+    if (this.showLogDisplay){
+        logDisplay.style.display = "inline-block";
+    }
+    this.form.appendChild(logDisplay);
 };
 
 Experiment.prototype.getData = function(){
@@ -733,10 +758,10 @@ Experiment.prototype.loadDesign = function(){
             // load ending
             this.screens = this.screens.concat(this.loadInstructions(this.design["ending-screens"]));
         }
-        sprLog("Loaded " + this.screens.length + " screens");
+        this.jesprLog("Loaded " + this.screens.length + " screens");
     } else {
-        displayErrorMessage("Cannot load an unvalidated design: Run validateDesign() on Experiment object first.");
-        sprLog("Cannot load an unvalidated design: Run validateDesign() on Experiment object first.");
+        this.displayErrorMessage("Cannot load an unvalidated design: Run validateDesign() on Experiment object first.");
+        this.jesprLog("Cannot load an unvalidated design: Run validateDesign() on Experiment object first.");
     }
 };
 
@@ -845,7 +870,7 @@ Experiment.prototype.getOrder = function(order, fallbackValue){
         if (order === "random"){
             result = "random";
         } else if (order !== "fixed"){
-            sprLog("Unexpected value for 'order'. Using default/fallback value: '" + result + "'.");
+            this.jesprLog("Unexpected value for 'order'. Using default/fallback value: '" + result + "'.");
         }
     }
     return result;
@@ -862,7 +887,7 @@ Experiment.prototype.getMerge = function(merge, fallbackValue){
         if (merge === "false"){
             result = false;
         } else if (merge !== "true"){
-            sprLog("Unexpected value for 'merge'. Using default 'true'.");
+            this.jesprLog("Unexpected value for 'merge'. Using default 'true'.");
         }
     }
     return result;
@@ -886,11 +911,11 @@ Experiment.prototype.createFrame = function(){
 Experiment.prototype.getStringSetting = function(name, value, options, fallback){
     var result = fallback;
     if (typeof value === 'undefined') {
-        sprLog("No value for " + name + " setting. Using default value: '" + fallback + "'");
+        this.jesprLog("No value for " + name + " setting. Using default value: '" + fallback + "'");
     } else if (options.some(function(o){ return value.trim().toLowerCase() === o.trim().toLowerCase(); })){
         result = value.toLowerCase().trim();
     } else {
-        sprLog("Invalid value for " + name + " setting. Using default value: '" + fallback + "'");
+        this.jesprLog("Invalid value for " + name + " setting. Using default value: '" + fallback + "'");
     }
     return result;
 };
@@ -898,57 +923,57 @@ Experiment.prototype.getStringSetting = function(name, value, options, fallback)
 // Helper functions for validating design
 Experiment.prototype.validateDesign = function(){
     this.designValidated = false;
-    sprLog("Validating design");
+    this.jesprLog("Validating design");
     var result = true;
     // Check structure of feedback-options
     if (this.design["feedback-options"]){
-        sprLog("Checking feedback-options");
+        this.jesprLog("Checking feedback-options");
         if (!this.isValidFeedbackOptions(this.design["feedback-options"])){
             result = false;
         }
     }
     // Check structure of pre-practice instructions
-    sprLog("Checking pre-practice instruction screens");
+    this.jesprLog("Checking pre-practice instruction screens");
     if (this.design["instruction-screens"]){
         if (!this.isValidInstructionScreen(this.design["instruction-screens"])){
             result = false;
         }
     } else {
-        sprLog("No pre-practice instruction screens");
+        this.jesprLog("No pre-practice instruction screens");
     }
-    sprLog("Result = " + result);
+    this.jesprLog("Result = " + result);
     // Check structure of practice items
-    sprLog("Checking practice stimuli");
+    this.jesprLog("Checking practice stimuli");
     if (this.design["practice-stimuli"]){
         if (!this.isValidGroup(this.design["practice-stimuli"])){
             result = false;
         }
     } else {
-        sprLog("No practice stimuli");
+        this.jesprLog("No practice stimuli");
     }
-    sprLog("Result = " + result);
+    this.jesprLog("Result = " + result);
     // Check structure of post-practice instructions
-    sprLog("Checking post-practice instruction screens");
+    this.jesprLog("Checking post-practice instruction screens");
     if (this.design["post-practice-instruction-screens"]){
         if (!this.isValidInstructionScreen(this.design["post-practice-instruction-screens"])){
             result = false;
         }
     } else {
-        sprLog("No post-practice instruction screens");
+        this.jesprLog("No post-practice instruction screens");
     }
-    sprLog("Result = " + result);
+    this.jesprLog("Result = " + result);
     // Check structure of experimental stimuli
-    sprLog("Checking experimental-stimuli");
+    this.jesprLog("Checking experimental-stimuli");
     if (this.design["experiment-stimuli"]){
         if (!this.isValidExptStimuli(this.design["experiment-stimuli"])){
             result = false;
         }
     } else {
-        displayErrorMessage("No experimental stimuli section was found in the json object");
-        sprLog("No experimental stimuli section was found in the json object");
+        this.displayErrorMessage("No experimental stimuli section was found in the json object");
+        this.jesprLog("No experimental stimuli section was found in the json object");
         result = false;
     }
-    sprLog("Result = " + result);
+    this.jesprLog("Result = " + result);
     this.designValidated = result;
     return result;
 };
@@ -958,19 +983,19 @@ Experiment.prototype.isValidFeedbackOptions = function(design){
    for (var i=0; i<design.length; i++){
        var feedbackOption = design[i];
        if (typeof feedbackOption["name"] === 'undefined'){
-           displayErrorMessage("No 'name' value found for feedback-option");
-           sprLog("No 'name' value found for feedback-option");
+           this.displayErrorMessage("No 'name' value found for feedback-option");
+           this.jesprLog("No 'name' value found for feedback-option");
            result = false;
        }
        if (typeof feedbackOption["string"] === 'undefined'){
-           displayErrorMessage("No 'string' value found for feedback-option");
-           sprLog("No 'string' value found for feedback-option");
+           this.displayErrorMessage("No 'string' value found for feedback-option");
+           this.jesprLog("No 'string' value found for feedback-option");
            result = false;
        }
        if (typeof feedbackOption["text-color"] !== 'undefined'){
             if (!isValidColor(feedbackOption["text-color"])){
-                displayErrorMessage("Invalid color name for feedback-option: " + feedbackOption["text-color"]);
-                sprLog("Invalid color name for feedback-option: " + feedbackOption["text-color"]);
+                this.displayErrorMessage("Invalid color name for feedback-option: " + feedbackOption["text-color"]);
+                this.jesprLog("Invalid color name for feedback-option: " + feedbackOption["text-color"]);
                 result = false;
             }
        }
@@ -981,26 +1006,26 @@ Experiment.prototype.isValidFeedbackOptions = function(design){
 Experiment.prototype.isValidExptStimuli = function(stimuli){
     var result = true;
     if (!stimuli["stimuli-sets"]){
-        displayErrorMessage("No 'stimuli-sets' name-value pair in experimental stimuli section");
-        sprLog("No 'stimuli-sets' name-value pair in experimental stimuli section");
+        this.displayErrorMessage("No 'stimuli-sets' name-value pair in experimental stimuli section");
+        this.jesprLog("No 'stimuli-sets' name-value pair in experimental stimuli section");
         result = false;
     } else if (stimuli["stimuli-sets"].length < 1){
-        displayErrorMessage("No 'stimuli-set' found in experimental stimuli sets section");
-        sprLog("No 'stimuli-set' found in experimental stimuli sets section");
+        this.displayErrorMessage("No 'stimuli-set' found in experimental stimuli sets section");
+        this.jesprLog("No 'stimuli-set' found in experimental stimuli sets section");
         result = false;
     } else if (!this.isValidStringSetting(stimuli["order"], ["fixed","random"])){
-        displayErrorMessage("Incorrect setting for 'order' in stimuli: " + stimuli["order"]);
-        sprLog("Incorrect setting for 'order' in stimuli: " + stimuli["order"]);
+        this.displayErrorMessage("Incorrect setting for 'order' in stimuli: " + stimuli["order"]);
+        this.jesprLog("Incorrect setting for 'order' in stimuli: " + stimuli["order"]);
         result = false;
     } else if (!this.isValidStringSetting(stimuli["merge"], ["true","false"])){
-        displayErrorMessage("Incorrect setting for 'merge' in stimuli: " + stimuli["merge"]);
-        sprLog("Incorrect setting for 'merge' in stimuli: " + stimuli["merge"]);
+        this.displayErrorMessage("Incorrect setting for 'merge' in stimuli: " + stimuli["merge"]);
+        this.jesprLog("Incorrect setting for 'merge' in stimuli: " + stimuli["merge"]);
         result = false;
     } else {
         for (var i=0; i<stimuli["stimuli-sets"].length; i++){
             if (typeof(stimuli["stimuli-sets"][i]["stimuli-set"]) === 'undefined') {
-                displayErrorMessage("Unknown name in stimuli: expected 'stimuli-set'");
-                sprLog("Unknown name in stimuli: expected 'stimuli-set'");
+                this.displayErrorMessage("Unknown name in stimuli: expected 'stimuli-set'");
+                this.jesprLog("Unknown name in stimuli: expected 'stimuli-set'");
                 result = false;
             } else if (!this.isValidStimuliSet(stimuli["stimuli-sets"][i]["stimuli-set"])){
                 result = false;
@@ -1013,26 +1038,26 @@ Experiment.prototype.isValidExptStimuli = function(stimuli){
 Experiment.prototype.isValidStimuliSet = function(stimuliSet){
     var result = true;
     if (!stimuliSet["groups"]){
-        displayErrorMessage("No 'group' name-value pair in experimental stimuli section");
-        sprLog("No 'group' name-value pair in experimental stimuli section");
+        this.displayErrorMessage("No 'group' name-value pair in experimental stimuli section");
+        this.jesprLog("No 'group' name-value pair in experimental stimuli section");
         result = false;
     } else if (stimuliSet["groups"].length < 1){
-        displayErrorMessage("No stimuli 'group' found in experimental stimuli section");
-        sprLog("No stimuli 'group' found in experimental stimuli section");
+        this.displayErrorMessage("No stimuli 'group' found in experimental stimuli section");
+        this.jesprLog("No stimuli 'group' found in experimental stimuli section");
         result = false;
     } else if (!this.isValidStringSetting(stimuliSet["order"], ["fixed","random"])){
-        displayErrorMessage("Incorrect setting for 'order' in stimuli-set: " + stimuliSet["order"]);
-        sprLog("Incorrect setting for 'order' in stimuli-set: " + stimuliSet["order"]);
+        this.displayErrorMessage("Incorrect setting for 'order' in stimuli-set: " + stimuliSet["order"]);
+        this.jesprLog("Incorrect setting for 'order' in stimuli-set: " + stimuliSet["order"]);
         result = false;
     } else if (!this.isValidStringSetting(stimuliSet["merge"], ["true","false"])){
-        displayErrorMessage("Incorrect setting for 'merge' in stimuli-set: " + stimuliSet["merge"]);
-        sprLog("Incorrect setting for 'merge' in stimuli-set: " + stimuliSet["merge"]);
+        this.displayErrorMessage("Incorrect setting for 'merge' in stimuli-set: " + stimuliSet["merge"]);
+        this.jesprLog("Incorrect setting for 'merge' in stimuli-set: " + stimuliSet["merge"]);
         result = false;
     } else {
         for (var i=0; i<stimuliSet["groups"].length; i++){
             if (typeof(stimuliSet["groups"][i]["group"]) === 'undefined') {
-                displayErrorMessage("Unknown name in stimuli: expected 'group'");
-                sprLog("Unknown name in stimuli: expected 'group'");
+                this.displayErrorMessage("Unknown name in stimuli: expected 'group'");
+                this.jesprLog("Unknown name in stimuli: expected 'group'");
                 result = false;
             } else if (!this.isValidGroup(stimuliSet["groups"][i]["group"])){
                 result = false;
@@ -1046,12 +1071,12 @@ Experiment.prototype.isValidInstructionScreen = function(instructions){
     var result = true;
     for (var i=0; i<instructions.length; i++){
         if (typeof(instructions[i]["instruction-screen"]) === 'undefined'){
-            displayErrorMessage("Unknown name in instructions: expected 'instruction-screen'");
-            sprLog("Unknown name in instructions: expected 'instruction-screen'");
+            this.displayErrorMessage("Unknown name in instructions: expected 'instruction-screen'");
+            this.jesprLog("Unknown name in instructions: expected 'instruction-screen'");
             result = false;
         } else if (instructions[i].length < 1){ // Will this allow an array?
-            displayErrorMessage("Empty string in instructions");
-            sprLog("Empty string in instructions");
+            this.displayErrorMessage("Empty string in instructions");
+            this.jesprLog("Empty string in instructions");
             result = false;
         }
     }
@@ -1061,22 +1086,22 @@ Experiment.prototype.isValidInstructionScreen = function(instructions){
 Experiment.prototype.isValidGroup = function(group){
     var result = true;
     if (!group["items"]){
-        displayErrorMessage("No 'items' name-value pair in stimuli");
-        sprLog("No 'items' name-value pair in stimuli");
+        this.displayErrorMessage("No 'items' name-value pair in stimuli");
+        this.jesprLog("No 'items' name-value pair in stimuli");
         result = false;
     } else if (group["items"].length < 1){
-        displayErrorMessage("No 'item' found in items list");
-        sprLog("No 'item' found in items list");
+        this.displayErrorMessage("No 'item' found in items list");
+        this.jesprLog("No 'item' found in items list");
         result = false;
     } else if (!this.isValidStringSetting(group["order"], ["fixed","random"])){
-        displayErrorMessage("Incorrect setting for 'order' in group: " + group["order"]);
-        sprLog("Incorrect setting for 'order' in group: " + group["order"]);
+        this.displayErrorMessage("Incorrect setting for 'order' in group: " + group["order"]);
+        this.jesprLog("Incorrect setting for 'order' in group: " + group["order"]);
         result = false;
     } else {
         for (var i=0; i<group["items"].length; i++){
             if (typeof(group["items"][i]["item"]) === 'undefined'){
-                displayErrorMessage("Unknown name in items: expected 'item'");
-                sprLog("Unknown name in items: expected 'item'");
+                this.displayErrorMessage("Unknown name in items: expected 'item'");
+                this.jesprLog("Unknown name in items: expected 'item'");
                 result = false;
             } else if (!this.isValidItem(group["items"][i]["item"])){
                 result = false;
@@ -1089,30 +1114,30 @@ Experiment.prototype.isValidGroup = function(group){
 Experiment.prototype.isValidItem = function(item){
     var result = true;
     if (!item["id"]){
-        displayErrorMessage("Stimulus item has no id");
-        sprLog("Stimulus item has no id");
+        this.displayErrorMessage("Stimulus item has no id");
+        this.jesprLog("Stimulus item has no id");
         result = false;
     } else {
         if (!isValidId(item["id"])){
-            displayErrorMessage("Item id is not valid: " + item["id"]);
-            sprLog("Item id is not valid: " + item["id"]);
+            this.displayErrorMessage("Item id is not valid: " + item["id"]);
+            this.jesprLog("Item id is not valid: " + item["id"]);
             result = false;
         }
         if (this.itemIds.some(function(id){ return item["id"] === id; })){
-            displayErrorMessage("Item id is not unique: " + item["id"]);
-            sprLog("Item id is not unique: " + item["id"]);
+            this.displayErrorMessage("Item id is not unique: " + item["id"]);
+            this.jesprLog("Item id is not unique: " + item["id"]);
             result = false;
         } else {
             this.itemIds.push(item["id"]);
         }
-        sprLog("Checking item: " + item["id"]);
+        this.jesprLog("Checking item: " + item["id"]);
         if (!item["string"]){
-            displayErrorMessage("Item " + item["id"] + " has no string!");
-            sprLog("Item " + item["id"] + " has no string!");
+            this.displayErrorMessage("Item " + item["id"] + " has no string!");
+            this.jesprLog("Item " + item["id"] + " has no string!");
             result = false;
         } else if (item["string"].length < 1){
-            displayErrorMessage("Empty string found!");
-            sprLog("Empty string found!");
+            this.displayErrorMessage("Empty string found!");
+            this.jesprLog("Empty string found!");
             result = false;
         }
     }
@@ -1130,17 +1155,18 @@ Experiment.prototype.isValidStringSetting = function(string, settings){
 /*
  * Log administrative messages about experiment operation
  */
-function sprLog(message){
-    console.log(Date() + ": " + message);
-    // TODO: Store the messages in a variable and submit together with expt data
-}
+Experiment.prototype.jesprLog = function(message){
+    var msg = Date() + ": " + message;
+    console.log(msg);
+    this.log = this.log + msg + "\n";
+};
 
 /*
  * Display an error box with an error message
  */
-function displayErrorMessage(message){
+Experiment.prototype.displayErrorMessage = function(message){
     alert(message);
-}
+};
 
 //// General Helper Functions
 
