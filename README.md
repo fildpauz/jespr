@@ -157,7 +157,16 @@ After the experiment, there may be one or more final instructions or information
 
 ## Data output
 
+
+
 ## References
+
+1. Just, M. A., Carpenter, P. A., & Woolley, J. D. 1982. [Paradigms and processes in reading comprehension](http://www.ncbi.nlm.nih.gov/pubmed/6213735). _Journal of Experimental Psychology: General_, Vol 111: 228-238.
+2. [Superlab](http://www.superlab.com/) by Cedrus Corporation
+3. [E-Prime](https://www.pstnet.com/eprime.cfm) by Psychology Software Tools, Inc.
+4. [DMDX Display Software](http://www.u.arizona.edu/~kforster/dmdx/dmdx.htm) by Kenneth Forster
+5. Enochson K, Culbertson J (2015) [Collecting Psycholinguistic Response Time Data Using Amazon Mechanical Turk](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0116946). _PLoS ONE_ 10(3): e0116946. doi:10.1371/journal.pone.0116946
+6. [Ibex self paced reading experiment](https://github.com/hlplab/hlpspr1) by Human Language Processing Lab
 
 [1]: http://www.ncbi.nlm.nih.gov/pubmed/6213735 "Just, M. A., Carpenter, P. A., & Woolley, J. D. 1982. Paradigms and processes in reading comprehension. _Journal of Experimental Psychology: General_, Vol 111: 228-238."
 [2]: http://www.superlab.com/ "Superlab by Cedrus Corporation"
