@@ -35,6 +35,10 @@ div.title,
     color: inherit;
 }
 
+div.instructions p {
+    text-align: left;
+}
+
 p.title {
     font-size: 250%;
 }
