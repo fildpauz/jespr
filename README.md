@@ -157,7 +157,10 @@ As explained above, the title screen will be constructed automatically from the 
 
 ### Instruction screens
 
-Instruction screens are screens of static text which are displayed at the beginning of the experiment immediately after the title screen. In the design file, the screens are listed as an array of objects. Each object has just one reference, `instruction-screen`, the value of which is to be displayed as one screen. The value will be inserted into the screen exactly as is and may therefore contain minimal `html` mark-up. For example, `<p>`  can be used to mark paragraphs and `<br>` for line breaks. Furthermore, styling can be done with `<b>` for bold, `<i>` for italicized, and `<u>` for underlined text. [Note: At the moment, other `html` tags can be used, but this will be locked down in future versions of JESPR for security purposes.]
+Instruction screens are screens of static text which are displayed at the beginning of the experiment immediately after the title screen. In the design file, the screens are listed as an array of objects where each object has the following settings.
+
+* `id` -- An identifier that will be used to identify the screen in the output file. The id must have a valid format (see specification further below) and be unique in the design file.
+* `string` -- The text which is to be displayed as one screen. The text will be inserted into the screen exactly as is and may therefore contain minimal `html` mark-up. For example, `<p>`  can be used to mark paragraphs and `<br>` for line breaks. Furthermore, styling can be done with `<b>` for bold, `<i>` for italicized, and `<u>` for underlined text. [Note: At the moment, other `html` tags can be used, but this will be locked down in future versions of JESPR for security purposes.]
 
 Instruction screens will be visible for the minimum amount of time specified in the `min-instruction-time` setting.
 
@@ -217,6 +220,10 @@ Currently, JESPR is enabled to accept input only from the keyboard in the follow
 * `0`/`p`/`l`/`m` -- to select the right-hand option in response to a prompt
 
 [Near-future development will make it possible for the investigator to customize these as well as to have the option to use mouse clicks or touch-screen presses to advance the experiment.]
+
+## Note on timing
+
+In self-paced reading experiments, the timing of stimulus display and participant response is crucial to data reliability. At the moment, though I do not have any reasonable estimate on either the accuracy or precision of data gathered using JESPR. Future work will involve benchmarking trials in order to provide this information to researchers. I would suggest, though, that JESPR would be an option for researchers who have access to a large number of participants (e.g., via crowd-sourcing methods) or in experimental designs where millisecond resolution is not crucial (e.g., when regions contain many words or even a full sentence).
 
 ## References
 
