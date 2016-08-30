@@ -25,8 +25,8 @@
         </div>
         <div id="content">
             <p class="buttons">
-                <button type="button" onclick="checkNGo();">Click here to start<br/>the JESPR Demo</button>
-                <button type="button" onclick="window.location.assign('https://github.com/fildpauz/jespr')">Click here to go to the<br/>JESPR GitHub page</button>
+                <button type="button" onclick="checkNGo();" id="btnStartDemo">Click here to start<br/>the JESPR Demo</button>
+                <button type="button" onclick="window.location.assign('https://github.com/fildpauz/jespr')" id="btnGotoJesprHP">Click here to go to the<br/>JESPR GitHub page</button>
             </p>
         </div>
         <!-- The form to which results and log data will be attached -->
@@ -50,11 +50,26 @@
                 var experiment = new Experiment(experimentDesign, form);
                 if (experiment.validateDesign()){ // Must validate before
                     experiment.loadDesign();      // loading and then
-                    experiment.startExperiment(); // starting an experiment
+                    setButtonState("disabled");
+                    experiment.startExperiment(setButtonState); // starting an experiment
                 } else {
                     alert("The json experiment design seems to be invalid. Check it for errors and try again.");
                 }
             }
+            
+            function setButtonState(state){
+                if (state === "enabled"){
+                    document.getElementById("btnStartDemo").disabled = false;
+                    document.getElementById("btnGotoJesprHP").disabled = false;
+                } else if (state === "disabled"){
+                    document.getElementById("btnStartDemo").disabled = true;
+                    document.getElementById("btnGotoJesprHP").disabled = true;
+                } else {
+                    // do nothing
+                }
+            }
+            
+            setButtonState("enabled");
         </script>
     </body>
 </html>
