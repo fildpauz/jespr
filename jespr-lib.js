@@ -705,7 +705,7 @@ Experiment.prototype.createResults = function(){
     if (this.showResultsDisplay){
         resultsDisplay.style.display = "block";
     }
-    container.appendChild(logDisplay);
+    container.appendChild(resultsDisplay);
     this.form.appendChild(container);
 };
 
