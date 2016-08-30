@@ -694,8 +694,8 @@ Experiment.prototype.createResults = function(){
     var container = document.createElement("div");
     container.className = "center";
     var hdr = document.createElement("h2");
-    h2.textContent = "Experimental results";
-    container.appendChild(h2);
+    hdr.textContent = "Experimental results";
+    container.appendChild(hdr);
     var data = this.getData();
     var resultsDisplay = document.createElement("textarea");
     resultsDisplay.id = "resultsDisplay";
@@ -716,8 +716,8 @@ Experiment.prototype.createLog = function(){
     var container = document.createElement("div");
     container.className = "center";
     var hdr = document.createElement("h2");
-    h2.textContent = "JESPR log";
-    container.appendChild(h2);
+    hdr.textContent = "JESPR log";
+    container.appendChild(hdr);
     var logDisplay = document.createElement("textarea");
     logDisplay.id = "logDisplay";
     logDisplay.name = "jesprLog";

@@ -21,9 +21,9 @@ var jesprExperimentDesign =
     "background-color": "lightgray",
     "display": "cumulative",
     "orientation": "horizontal",
-    "masking-character": "_",
+    "masking-character": "*",
     "fixation-character": "+",
-    "min-instruction-time": "2000",
+    "min-instruction-time": "1500",
     "show-results-display": "true",
     "show-log-display": "true",
     "feedback-options": [
