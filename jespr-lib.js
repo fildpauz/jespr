@@ -666,9 +666,10 @@ function Experiment(design, form){
     };
 }
 
-Experiment.prototype.startExperiment = function(){
+Experiment.prototype.startExperiment = function(callback){
     this.startTime = Date.now();
     this.participant = this.setParticipant();
+    this.callbackFunction = callback;
     document.body.addEventListener("keydown", this.processKeydown);
     document.body.addEventListener("keyup", this.processKeyup);
     window.focus();  // to make sure the window is listening for keypress events
@@ -684,6 +685,9 @@ Experiment.prototype.endExperiment = function(){
     document.body.removeChild(this.frame);
     this.createResults();
     this.createLog();
+    if (typeof this.callbackFunction === "function"){
+        this.callbackFunction();
+    }
 };
 
 Experiment.prototype.createResults = function(){
