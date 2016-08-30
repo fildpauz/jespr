@@ -668,8 +668,8 @@ function Experiment(design, form){
 
 Experiment.prototype.startExperiment = function(callback){
     this.startTime = Date.now();
-    this.callbackFunction = callback;
     this.participant = this.setParticipant();
+    this.callbackFunction = callback;
     document.body.addEventListener("keydown", this.processKeydown);
     document.body.addEventListener("keyup", this.processKeyup);
     window.focus();  // to make sure the window is listening for keypress events
