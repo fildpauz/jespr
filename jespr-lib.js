@@ -902,7 +902,9 @@ Experiment.prototype.getOrder = function(order, fallbackValue){
     if (typeof order !== 'undefined'){
         if (order === "random"){
             result = "random";
-        } else if (order !== "fixed"){
+        } else if (order === "fixed"){
+            order = "fixed";
+        } else {
             this.jesprLog("Unexpected value for 'order'. Using default/fallback value: '" + result + "'.");
         }
     }
@@ -919,8 +921,10 @@ Experiment.prototype.getMerge = function(merge, fallbackValue){
     if (typeof merge !== 'undefined'){
         if (merge === "false"){
             result = false;
-        } else if (merge !== "true"){
-            this.jesprLog("Unexpected value for 'merge'. Using default 'true'.");
+        } else if (merge === "true"){
+            result = true;
+        } else {
+            this.jesprLog("Unexpected value for 'merge'. Using default/fallback value: '" + result + "'.");
         }
     }
     return result;
