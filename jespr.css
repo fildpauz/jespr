@@ -109,7 +109,7 @@ span.feedback {
 
 textarea.results,
 textarea.log {
-    width: 80%;
+    width: 90%;
     font-family: monospace;
     font-size: 9pt;
     margin: 1em;
