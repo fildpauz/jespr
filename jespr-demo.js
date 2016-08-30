@@ -41,11 +41,11 @@ var jesprExperimentDesign =
     "instruction-screens": [
         {
             "id": "instruction1",
-            "string": "<p>JESPR stands for Javascript-Enabled Self-Paced Reading and is a library for conducting self-paced reading experiments via a web browser. This short demo should give you a quick introduction to the main capabilities that JESPR provides while letting you experience how a JESPR-based experiment proceeds.</p><p>Proceed through the demo by pressing the [space] bar on your keyboard.</p>"
+            "string": "<p><b>JESPR</b> stands for <i>Javascript-Enabled Self-Paced Reading</i> and is a library for conducting self-paced reading experiments via a web browser. This short demo should give you a quick introduction to the main capabilities that JESPR provides while letting you experience how a JESPR-based experiment proceeds.</p><p>Proceed through the demo by pressing the <b>[space]</b> bar on your keyboard.</p>"
         },
         {
             "id": "instruction2",
-            "string": "<p>The previous screen and this screen illustrate <b>instruction</b> screens which can display relatively free-form text to the participant for the purpose of explanation or guidance.</p><p>Some minimal formatting can of these screens can be done using html mark-up to make paragraphs, line breaks, or <b>bold</b>, <i>italicized</i>, or <u>underlined</u> text.</p><p>Press the [space] bar again to continue and begin seeing some self-paced reading-like presentation. Occasionally, there will be some prompts.  To respond to prompts, press 1/q/a/z to choose the left-hand option, 0/p/l/m to choose the right-hand option.</p>"
+            "string": "<p>The previous screen and this screen illustrate <i>instruction</i> screens which can display relatively free-form text to the participant for the purpose of explanation or guidance.</p><p>Some minimal formatting of these screens can be done using html mark-up to make paragraphs, line breaks, or <b>bold</b>, <i>italicized</i>, or <u>underlined</u> text.</p><p>Press the <b>[space]</b> bar again to continue and begin seeing some self-paced reading-like presentation. Occasionally, there will be some prompts.  To respond to prompts, press <b>1/q/a/z</b> to choose the left-hand option or <b>0/p/l/m</b> to choose the right-hand option.</p>"
         }
     ],
     "practice-stimuli": {
@@ -83,16 +83,16 @@ var jesprExperimentDesign =
             {
                 "item": {
                     "id": "practice04",
-                    "string": "Previously|regions|are|masked|after|a|new|region|is|unmasked.",
+                    "string": "Previous|regions|are|masked|after|a|new|region|is|unmasked.",
                     "prompt": "Did you see a moving window display?",
                     "options": [
                         {
                             "string": "Yes",
-                            "feedback": "Actually you didn't: This setting can't be changed in the middle."
+                            "feedback": "Actually you didn't: This setting can't be changed in the middle of an experiment."
                         },
                         {
                             "string": "No",
-                            "feedback": "That's right: This setting can't be changed in the middle."
+                            "feedback": "That's right: This setting can't be changed in the middle of an experiment."
                         }
                     ]
                 }
@@ -100,7 +100,7 @@ var jesprExperimentDesign =
             {
                 "item": {
                     "id": "practice05",
-                    "string": "If you want|longer regions,|that's also possible."
+                    "string": "If longer regions|are desired,|that's also possible,|as shown here."
                 }
             },
             {
@@ -121,7 +121,7 @@ var jesprExperimentDesign =
                         },
                         {
                             "string": "vertical display",
-                            "feedback": "Uh, no. It was horizontal actually."
+                            "feedback": "Uh, no. It was horizontal, actually."
                         }
                     ]
                 }
@@ -131,7 +131,7 @@ var jesprExperimentDesign =
     "post-practice-instruction-screens": [
         {
             "id": "instruction3",
-            "string": "<p>So far, the items you've seen so far might constitute what would be the practice portion of a JESPR experiment. From now, you'll see some test stimuli. In fact, they won't look much different from the practice stimuli, but under the hood, JESPR is ordering and merging groups of stimuli in a manner as specified by the investigator. This ordering and merging is done a per-participant basis.</p><p>Go through the following stimuli to see how certain test conditions and filler items are merged together. You might also notice some other differences in the feedback messages.</p>"
+            "string": "<p>So far, the items you've seen  might constitute what would be the practice portion of a <b>JESPR</b> experiment. From now, you'll see some test stimuli. In fact, they won't look much different from the practice stimuli, but under the hood, JESPR is ordering and merging groups of stimuli in a manner as specified by the investigator. This ordering and merging is done on a per-participant basis.</p><p>Go through the following stimuli to see how certain test conditions and filler items are merged together. You might also notice some other differences in the feedback messages.</p>"
         }
     ],
     "experiment-stimuli": {
@@ -190,7 +190,7 @@ var jesprExperimentDesign =
                                         "item": {
                                             "id": "filler01",
                                             "string": "This|is|filler|one,|just|to|make|sure|you're|paying|attention.",
-                                            "prompt": "What is the name of the Javascript library?",
+                                            "prompt": "What is the name of this Javascript library?",
                                             "options": [
                                                 {
                                                     "string": "JESPR",
@@ -207,7 +207,7 @@ var jesprExperimentDesign =
                                         "item": {
                                             "id": "filler02",
                                             "string": "This|is|filler|two,|which|has|no|influence|on|the|data.",
-                                            "prompt": "Who is created with the idea of the self-paced reading task",
+                                            "prompt": "Who is credited with the idea of the self-paced reading task",
                                             "options": [
                                                 {
                                                     "string": "Just, Carpenter, and Woolley",
@@ -235,7 +235,7 @@ var jesprExperimentDesign =
         },
         {
             "id": "instruction5",
-            "string": "<p>That's the end of the JESPR demo. Thanks for trying it out.  Feel free to try it again, if you like, to see how randomization results in a different ordering of the stimulus items. Or, if you're already persuaded to make use of JESPR in your own experiments, go to the Github JESPR page to read more and to get started.</p><p><b>Thank you <i>very</i> much!</p>"
+            "string": "<p>That's the end of the <b>JESPR</b> demo. Thanks for trying it out.  Feel free to try it again, if you like, to see how randomization results in a different ordering of the stimulus items. Or, if you're already persuaded to make use of <b>JESPR</b> in your own experiments, go to the Github <b>JESPR</b> page to read more and to get started.</p><p><b>Thank you <i>very</i> much!</b></p>"
         }
     ]
 };
