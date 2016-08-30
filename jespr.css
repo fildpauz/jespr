@@ -33,6 +33,7 @@ div.title,
     font-family: inherit;
     font-size: inherit;
     color: inherit;
+    padding: 5%;
 }
 
 div.instructions p {
@@ -113,4 +114,8 @@ textarea.log {
     font-size: 9pt;
     margin: 1em;
     display: none;
+}
+
+div.center {
+    text-align: center;
 }
