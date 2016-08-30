@@ -639,6 +639,7 @@ function Experiment(design, form){
     this.participant;   // A string to identify the experimental participant, defaults to startTime
     this.showResultsDisplay = typeof design["show-results-display"] !== 'undefined' ? design["show-results-display"] : false;
     this.showLogDisplay = typeof design["show-log-display"] !== 'undefined' ? design["show-log-display"] : false;
+    this.callbackFunction; // An optional callback function to call when experiment ends
 
     Experiment.prototype.processKeydown = function(e){
         var elapsedTime = Date.now() - self.startTime;
