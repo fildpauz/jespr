@@ -1,3 +1,5 @@
+![JESPR logo](https://fildpauz.github.io/jespr/jespr-logo.png)
+
 # JESPR
 A javascript library for conducting browser-based self-paced reading experiments.
 
