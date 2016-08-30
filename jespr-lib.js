@@ -693,6 +693,9 @@ Experiment.prototype.endExperiment = function(){
 Experiment.prototype.createResults = function(){
     var container = document.createElement("div");
     container.className = "center";
+    var hdr = document.createElement("h2");
+    h2.textContent = "Experimental results";
+    container.appendChild(h2);
     var data = this.getData();
     var resultsDisplay = document.createElement("textarea");
     resultsDisplay.id = "resultsDisplay";
@@ -703,7 +706,7 @@ Experiment.prototype.createResults = function(){
     resultsDisplay.readOnly = true;
     resultsDisplay.wrap = "soft";
     if (this.showResultsDisplay){
-        resultsDisplay.style.display = "block";
+        resultsDisplay.style.display = "inline-block";
     }
     container.appendChild(resultsDisplay);
     this.form.appendChild(container);
@@ -712,6 +715,9 @@ Experiment.prototype.createResults = function(){
 Experiment.prototype.createLog = function(){
     var container = document.createElement("div");
     container.className = "center";
+    var hdr = document.createElement("h2");
+    h2.textContent = "JESPR log";
+    container.appendChild(h2);
     var logDisplay = document.createElement("textarea");
     logDisplay.id = "logDisplay";
     logDisplay.name = "jesprLog";
@@ -721,7 +727,7 @@ Experiment.prototype.createLog = function(){
     logDisplay.readOnly = true;
     logDisplay.wrap = "soft";
     if (this.showLogDisplay){
-        logDisplay.style.display = "block";
+        logDisplay.style.display = "inline-block";
     }
     container.appendChild(logDisplay);
     this.form.appendChild(container);
