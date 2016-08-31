@@ -2,9 +2,8 @@
  * Title: jespr-lib.js
  * Author: Ralph L. ROSE
  * E-mail address: rose@waseda.jp
- * Description: This javascript library defines prototypes that may be used
- * to support the execution of a self-paced-reading experiment. It is designed
- * to be used by self-paced-reading.js 
+ * Description: This javascript library defines the objects
+ * necessary to run a JESPR experiment.
  * License: The MIT License (MIT)
  */
 
