@@ -916,7 +916,7 @@ Experiment.prototype.getOrder = function(order, fallbackValue){
         if (order === "random"){
             result = "random";
         } else if (order === "fixed"){
-            order = "fixed";
+            result = "fixed";
         } else {
             this.jesprLog("Unexpected value for 'order'. Using default/fallback value: '" + result + "'.");
         }
