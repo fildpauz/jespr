@@ -64,7 +64,7 @@ Region.prototype.lockWidth = function(){
     // This function will only be effective after the region has been added
     // to the DOM and display is not 'none'. (but visibility may be 'hidden').
     var width = this.html.offsetWidth;
-    this.html.style.width = width + "px";
+    this.html.style.width = (width + 2) + "px";
 };
 
 /*
