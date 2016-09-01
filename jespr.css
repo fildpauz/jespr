@@ -23,8 +23,8 @@ html, body {
 }
 
 div.title,
-.instructions,
-.item {
+div.instructions,
+div.item {
     display: none;
     position: relative;
     top: 50%;
@@ -33,7 +33,17 @@ div.title,
     font-family: inherit;
     font-size: inherit;
     color: inherit;
+}
+
+div.title,
+div.instructions {
     padding: 5%;
+}
+
+div.item {
+    padding: 0;
+    margin-left: -100%; /* helps ensure that stimuli don't wrap */
+    margin-right: -100%;
 }
 
 div.instructions p {
