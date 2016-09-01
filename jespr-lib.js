@@ -634,6 +634,7 @@ function Experiment(design, form){
     this.maskchar = typeof design["masking-character"] !== 'undefined' ? design["masking-character"].trim().substr(0,1) : "_";
     this.minInstructionTime = typeof design["min-instruction-time"] !== 'undefined' ? design["min-instruction-time"] : 3000;
     this.idList = []; // Used during validation to ensure that all IDs are unique
+    this.showProgressBar = typeof design["show-progress-bar"] !== 'undefined' ? design["show-progress-bar"] : false;
     
     // Info about json object containing experimental design
     this.design = design; // json object containing the design, stimuli, etc.
@@ -664,6 +665,7 @@ function Experiment(design, form){
                 self.curScreenIndex++;
                 if (self.curScreenIndex < self.screens.length){
                     self.screens[self.curScreenIndex].object.show(self.frame, elapsedTime);
+                    self.updateProgressBar();
                     self.jesprLog("Starting screen: " + self.screens[self.curScreenIndex].object.id);
                 } else {
                     self.endExperiment();
@@ -687,6 +689,7 @@ Experiment.prototype.startExperiment = function(callback){
     document.body.addEventListener("keyup", this.processKeyup);
     window.focus();  // to make sure the window is listening for keypress events
     this.curScreenIndex = 0;
+    this.updateProgressBar();
     this.screens[this.curScreenIndex].object.show(this.frame, 0);
     this.jesprLog("Starting screen: " + this.screens[this.curScreenIndex].object.id);
 };
@@ -700,6 +703,13 @@ Experiment.prototype.endExperiment = function(){
     this.createLog();
     if (typeof this.callbackFunction === "function"){
         this.callbackFunction();
+    }
+};
+
+Experiment.prototype.updateProgressBar = function(){
+    if (this.showProgressBar){
+        var progressBar = document.getElementById("progressBar");
+        progressBar.style.width = (100 * (this.curScreenIndex + 1) / this.screens.length) + "%";
     }
 };
 
@@ -954,6 +964,15 @@ Experiment.prototype.createFrame = function(){
   frame.style.color = this.textcolor;
   frame.style.fontFamily = this.fontname;
   frame.style.fontSize = this.fontsize + "pt";
+  if (this.showProgressBar){
+    var progressBar = document.createElement("div");
+    progressBar.className = "progressbar";
+    progressBar.id = "progressBar";
+    if (this.backgroundcolor === "black"){
+        progressBar.style.backgroundColor = "white";
+    }
+    frame.appendChild(progressBar);
+  }
   document.body.appendChild(frame);
   return frame;
 };

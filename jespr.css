@@ -119,3 +119,14 @@ textarea.log {
 div.center {
     text-align: center;
 }
+
+div.progressbar {
+    position: absolute;
+    height: 0.15em;
+    left: 0;
+    bottom: 0;
+    background-color: black;
+    z-index: 11;
+    opacity: 0.5;
+    filter: alpha(opacity=10); /* For IE8 and earlier */
+}
