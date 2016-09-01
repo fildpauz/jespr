@@ -24,6 +24,7 @@ var jesprExperimentDesign =
     "masking-character": "*",
     "fixation-character": "+",
     "min-instruction-time": "1500",
+    "show-progress-bar": "true",
     "show-results-display": "true",
     "show-log-display": "true",
     "feedback-options": [
