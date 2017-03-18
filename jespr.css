@@ -22,6 +22,34 @@ html, body {
     text-align: center;
 }
 
+.nextButton {
+    display: block;
+    position: absolute;
+    z-index: 11;
+    top: 80%;
+    bottom: 10%;
+    left: 10%;
+    right: 10%;
+    width: 80%;
+    visibility: visible;
+    color: inherit;
+    background-color: inherit;
+    text-align: center;
+    font-family: inherit;
+    font-size: inherit;
+    border-radius: 1em;
+}
+
+.optButton:hover,
+.nextButton:hover {
+    filter: invert(15%);
+}
+
+.optButton:focus,
+.nextButton:focus {
+    outline: none;
+}
+
 div.title,
 div.instructions,
 div.item {
@@ -87,6 +115,19 @@ span.option {
 span.option {
     margin-left: 2em;
     margin-right: 2em;
+}
+
+button.optButton {
+    margin-top: 0.5em;
+    margin-left: 2em;
+    margin-right: 2em;
+    padding: 1em;
+    text-align: center;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    background-color: inherit;
+    border-radius: 1em;
 }
 
 span.feedback {
