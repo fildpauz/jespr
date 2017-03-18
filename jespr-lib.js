@@ -79,8 +79,9 @@ Region.prototype.lockWidth = function(){
  * are presented horizontally (i.e., one-sentence stimuli) or vertically (i.e.,
  * multi-sentence stimuli). [default=true]
  */
-function Item(id, text, orientation, fixationChar, maskChar, display, prompt, options, feedbackOptions, setName, groupName, tags){
+function Item(id, text, orientation, fixationChar, maskChar, display, prompt, options, feedbackOptions, setName, groupName, tags, experiment){
     this.id = id;
+    this.experiment = experiment;
     this.text = text; // Is it useful to store this as plain text: .replace(/\|/g, ' ') ?
     if (orientation === 'horizontal' | orientation === 'vertical') {
         this.orientation = orientation;
@@ -124,7 +125,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
     switch (keyCode){
         case 32: // space bar
             if (this.curRegionIndex === -1){ // fixation mark is showing
-                this.saveData(this.id + "_fixation", "NA", this.showTime, elapsedTime, keyCode, this.fixationChar);
+                this.saveData(this.id + "_fixation", "NA", this.showTime, elapsedTime, "KBD:" + keyCode, this.fixationChar);
                 var fixationP = document.getElementById(this.id + "_fixation");
                 fixationP.style.display = "none";
                 var stimulusP = document.getElementById(this.id + "_stimulus");
@@ -140,7 +141,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
             } else if (this.curRegionIndex < this.regions.length-1){ // non-final SPR region is showing
                 var showTime = this.timeData[this.timeData.length-1]["elapsedTime"];
                 var curRegion = this.regions[this.curRegionIndex];
-                this.saveData(curRegion.id, this.curRegionIndex, showTime, elapsedTime, keyCode, curRegion.text);
+                this.saveData(curRegion.id, this.curRegionIndex, showTime, elapsedTime, "KBD:" + keyCode, curRegion.text);
                 if (this.display === "moving window"){
                     curRegion.mask(this.maskChar);
                 }
@@ -150,7 +151,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
             } else if (this.curRegionIndex === this.regions.length-1){ // final SPR region is showing
                 var showTime = this.timeData[this.timeData.length-1]["elapsedTime"];
                 var curRegion = this.regions[this.curRegionIndex];
-                this.saveData(curRegion.id, this.curRegionIndex, showTime, elapsedTime, keyCode, curRegion.text);
+                this.saveData(curRegion.id, this.curRegionIndex, showTime, elapsedTime, "KBD:" + keyCode, curRegion.text);
                 this.curRegionIndex++;
                 if (typeof this.prompt !== 'undefined'){
                     var stimulusP = document.getElementById(this.id + "_stimulus");
@@ -167,7 +168,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
             } else if (this.curRegionIndex === this.regions.length+1){ // feedback is showing
                 var showTime = this.timeData[this.timeData.length-1]["elapsedTime"];
                 var feedbackP = document.getElementById(this.id + "_feedback");
-                this.saveData(this.id + "_feedback", "NA", showTime, elapsedTime, keyCode, feedbackP.dataset.feedback);
+                this.saveData(this.id + "_feedback", "NA", showTime, elapsedTime, "KBD:" + keyCode, feedbackP.dataset.feedback);
                 this.hide();
                 result = "end of screen";
             } else {
@@ -185,7 +186,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
             if (this.curRegionIndex === this.regions.length){
                 var showTime = this.timeData[this.timeData.length-1]["elapsedTime"];
                 var promptP = document.getElementById(this.id + "_prompt");
-                this.saveData(this.id + "_prompt", "NA", showTime, elapsedTime, keyCode, promptP.dataset.string);
+                this.saveData(this.id + "_prompt", "NA", showTime, elapsedTime, "KBD:" + keyCode, promptP.dataset.string);
                 if (this.showFeedback){
                     promptP.style.display = "none";
                     var feedbackP = document.getElementById(this.id + "_feedback");
@@ -209,7 +210,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
             if (this.curRegionIndex === this.regions.length){
                 var showTime = this.timeData[this.timeData.length-1]["elapsedTime"];
                 var promptP = document.getElementById(this.id + "_prompt");
-                this.saveData(this.id + "_prompt", "NA", showTime, elapsedTime, keyCode, promptP.dataset.string);
+                this.saveData(this.id + "_prompt", "NA", showTime, elapsedTime, "KBD:" + keyCode, promptP.dataset.string);
                 if (this.showFeedback){
                     promptP.style.display = "none";
                     var feedbackP = document.getElementById(this.id + "_feedback");
@@ -228,6 +229,109 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
         default:
             // Pressed other key -- do nothing
     }
+    return result;
+};
+
+Item.prototype.processNextButtonClick = function(elapsedTime){
+    var result = "continue";
+    if (this.curRegionIndex === -1){ // fixation mark is showing
+        this.saveData(this.id + "_fixation", "NA", this.showTime, elapsedTime, "NEXT_BTN", this.fixationChar);
+        var fixationP = document.getElementById(this.id + "_fixation");
+        fixationP.style.display = "none";
+        var stimulusP = document.getElementById(this.id + "_stimulus");
+        stimulusP.style.display = "block";
+        for (var i=0; i<this.regions.length; i++){
+            this.regions[i].unmask();
+            this.regions[i].lockWidth();
+            this.regions[i].mask(this.maskChar);
+        }
+        stimulusP.style.visibility = "visible";
+        this.curRegionIndex++;
+        this.regions[this.curRegionIndex].unmask();
+    } else if (this.curRegionIndex < this.regions.length-1){ // non-final SPR region is showing
+        var showTime = this.timeData[this.timeData.length-1]["elapsedTime"];
+        var curRegion = this.regions[this.curRegionIndex];
+        this.saveData(curRegion.id, this.curRegionIndex, showTime, elapsedTime, "NEXT_BTN", curRegion.text);
+        if (this.display === "moving window"){
+            curRegion.mask(this.maskChar);
+        }
+        var nextRegion = this.regions[this.curRegionIndex+1];
+        nextRegion.unmask();
+        this.curRegionIndex++;
+    } else if (this.curRegionIndex === this.regions.length-1){ // final SPR region is showing
+        var showTime = this.timeData[this.timeData.length-1]["elapsedTime"];
+        var curRegion = this.regions[this.curRegionIndex];
+        this.saveData(curRegion.id, this.curRegionIndex, showTime, elapsedTime, "NEXT_BTN", curRegion.text);
+        this.curRegionIndex++;
+        if (typeof this.prompt !== 'undefined'){
+            var stimulusP = document.getElementById(this.id + "_stimulus");
+            stimulusP.style.display = "none";
+            var leftOptionButton = document.getElementById(this.id + "_optButton_1");
+            leftOptionButton.addEventListener("click", this.experiment.processOptionButtonClick);
+            var rightOptionButton = document.getElementById(this.id + "_optButton_2");
+            rightOptionButton.addEventListener("click", this.experiment.processOptionButtonClick);
+            var promptP = document.getElementById(this.id + "_prompt");
+            promptP.style.display = "block";
+            promptP.style.visibility = "visible";
+            var nextButton = document.getElementById("jespr.nextButton");
+            nextButton.disabled = true;
+            nextButton.style.visibility = "hidden";
+        } else {
+            this.hide();
+            result = "end of screen";
+        }
+    } else if (this.curRegionIndex === this.regions.length){ // prompt is showing
+        // prompt is showing, but nextButton clicked
+        // should never reach here
+    } else if (this.curRegionIndex === this.regions.length+1){ // feedback is showing
+        var showTime = this.timeData[this.timeData.length-1]["elapsedTime"];
+        var feedbackP = document.getElementById(this.id + "_feedback");
+        this.saveData(this.id + "_feedback", "NA", showTime, elapsedTime, "NEXT_BTN", feedbackP.dataset.feedback);
+        this.hide();
+        result = "end of screen";
+    } else {
+        // This case should never be reached, but if it is, end item
+        // to prevent getting stuck in an infinite loop
+        this.hide();
+        result = "end of screen";
+    }
+    return result;
+};
+
+Item.prototype.processOptionButtonClick = function(elapsedTime, minTime, elId, parentId){
+    var result = "continue";
+    if (this.curRegionIndex === this.regions.length){
+        var showTime = this.timeData[this.timeData.length-1]["elapsedTime"];
+        var promptP = document.getElementById(this.id + "_prompt");
+        var whichBtn = elId.charAt(elId.length-1) === "1" ? "LEFT_OPTIONBTN" : "RIGHT_OPTIONBTN";
+        this.saveData(this.id + "_prompt", "NA", showTime, elapsedTime, whichBtn, promptP.dataset.string);
+        var leftOptionButton = document.getElementById(this.id + "_optButton_1");
+        leftOptionButton.removeEventListener("click", this.experiment.processOptionButtonClick);
+        var rightOptionButton = document.getElementById(this.id + "_optButton_2");
+        rightOptionButton.removeEventListener("click", this.experiment.processOptionButtonClick);
+        if (this.showFeedback){
+            promptP.style.display = "none";
+            var feedbackP = document.getElementById(this.id + "_feedback");
+            var feedbackSpanId = elId.charAt(elId.length-1) === "1" ? this.id + "_feedback_left" : this.id + "_feedback_right";
+            var feedbackSpan = document.getElementById(feedbackSpanId);
+            feedbackSpan.style.display = "inline-block";
+            feedbackP.style.display = "block";
+            feedbackP.style.visibility = "visible";
+            feedbackP.dataset.feedback = feedbackSpan.dataset.string;
+            this.curRegionIndex++;
+        } else {
+            this.hide();
+            result = "end of screen";
+        }
+    } else {
+        // This case should never be reached, but if it is, end item
+        // to prevent getting stuck in an infinite loop
+        this.hide();
+        result = "end of screen";
+    }
+    var nextButton = document.getElementById("jespr.nextButton");
+    nextButton.disabled = false;
+    nextButton.style.visibility = "visible";
     return result;
 };
 
@@ -324,18 +428,35 @@ Item.prototype.createHtml = function(){
         var br2 = document.createElement("br");
         promptP.appendChild(br2);
         if (this.optionOrder === "random"){ shuffle(this.options); }
-        var leftOption = document.createElement("span");
-        leftOption.id = this.id + "_option_1";
-        leftOption.className = "option";
-        leftOption.textContent = this.options[0]["string"];
-        promptP.appendChild(leftOption);
-        var space2 = document.createTextNode(" ");
-        promptP.appendChild(space2);
-        var rightOption = document.createElement("span");
-        rightOption.id = this.id + "_option_2";
-        rightOption.className = "option";
-        rightOption.textContent = this.options[1]["string"];
-        promptP.appendChild(rightOption);
+        if (this.experiment.inputMethod === "keyboard") {
+            var leftOption = document.createElement("span");
+            leftOption.id = this.id + "_option_1";
+            leftOption.className = "option";
+            leftOption.textContent = this.options[0]["string"];
+            promptP.appendChild(leftOption);
+            var space2 = document.createTextNode(" ");
+            promptP.appendChild(space2);
+            var rightOption = document.createElement("span");
+            rightOption.id = this.id + "_option_2";
+            rightOption.className = "option";
+            rightOption.textContent = this.options[1]["string"];
+            promptP.appendChild(rightOption);
+        } else if (this.experiment.inputMethod === "html-button") {
+            var leftOptButton = document.createElement("button");
+            leftOptButton.id = this.id + "_optButton_1";
+            leftOptButton.className = "optButton";
+            leftOptButton.textContent = this.options[0]["string"];
+            promptP.appendChild(leftOptButton);
+            var space2 = document.createTextNode(" ");
+            promptP.appendChild(space2);
+            var rightOptButton = document.createElement("button");
+            rightOptButton.id = this.id + "_optButton_2";
+            rightOptButton.className = "optButton";
+            rightOptButton.textContent = this.options[1]["string"];
+            promptP.appendChild(rightOptButton);
+        } else if (this.experiment.inputMethod === "touchscreen") {
+            // TODO: not yet implemented
+        }
         promptP.dataset.string = this.prompt + "|" + this.options[0]["string"] + "|" + this.options[1]["string"];
         itemDiv.appendChild(promptP);
         if (typeof this.options[0]["feedback"] !== 'undefined' || typeof this.options[0]["feedback-option"] !== 'undefined'){
@@ -470,6 +591,22 @@ Title.prototype.processKeydown = function(keyCode, elapsedTime, minTime){
     return result;
 };
 
+Title.prototype.processNextButtonClick = function(elapsedTime, minTime){
+    var result = "continue";
+    if (elapsedTime - this.showTime > minTime){
+        this.elapsedTime = elapsedTime;
+        this.keyCode = "NEXT_BTN";
+        this.hide();
+        result = "end of screen";
+    }
+    return result;
+};
+
+Title.prototype.processOptionButtonClick = function(elapsedTime, minTime, id, parentId){
+    // Should never reach this function. Return "end of screen" in order to avoid infinite loop.
+    return "end of screen";
+};
+
 Title.prototype.getData = function(participant, maxTags){
     var timeInterval = this.elapsedTime - this.showTime;
     var result = "\"" + participant + "\",\"" + this.id + "\",NA,NA," + this.elapsedTime + "," + timeInterval + ",\"" + this.keyCode + "\",\"" + truncateText(this.text, 40) + "\",NA,NA";
@@ -568,6 +705,22 @@ Instructions.prototype.processKeydown = function(keyCode, elapsedTime, minTime){
     return result;
 };
 
+Instructions.prototype.processNextButtonClick = function(elapsedTime, minTime){
+    var result = "continue";
+    if (elapsedTime - this.showTime > minTime){
+        this.elapsedTime = elapsedTime;
+        this.keyCode = "NEXT_BTN";
+        this.hide();
+        result = "end of screen";
+    }
+    return result;
+};
+
+Instructions.prototype.processOptionButtonClick = function(elapsedTime, minTime, id, parentId){
+    // Should never reach this function. Return "end of screen" in order to avoid infinite loop.
+    return "end of screen";
+};
+
 /*
  * Creates a <div> object to show the instructions
  * @returns a <div> object containing the instructions screen info
@@ -603,6 +756,14 @@ Screen.prototype.processKeydown = function(keyCode, elapsedTime, minTime){
     return this.object.processKeydown(keyCode, elapsedTime, minTime);
 };
 
+Screen.prototype.processNextButtonClick = function(elapsedTime, minTime){
+    return this.object.processNextButtonClick(elapsedTime, minTime);
+};
+
+Screen.prototype.processOptionButtonClick = function(elapsedTime, minTime, elId, parentId){
+    return this.object.processOptionButtonClick(elapsedTime, minTime, elId, parentId);
+};
+
 Screen.prototype.getData = function(participant, maxTags){
     return this.object.getData(participant, maxTags);
 };
@@ -635,6 +796,7 @@ function Experiment(design, form){
     this.minInstructionTime = typeof design["min-instruction-time"] !== 'undefined' ? design["min-instruction-time"] : 3000;
     this.idList = []; // Used during validation to ensure that all IDs are unique
     this.showProgressBar = typeof design["show-progress-bar"] !== 'undefined' ? design["show-progress-bar"] : false;
+    this.inputMethod = typeof design["input-method"] !== 'undefined' ? design["input-method"] : "keyboard";
     
     // Info about json object containing experimental design
     this.design = design; // json object containing the design, stimuli, etc.
@@ -650,6 +812,7 @@ function Experiment(design, form){
     this.curScreenIndex;   // The index of the current screen in screenInfo array being displayed.
     this.startTime;     // The start time of the experiment. Timing results are relative to this.
     this.keystate = "up"; // for monitoring keyup/keydown and ensuring one-step-at-a-time process
+    this.nextButton; // when using html-button input-method, this is the button to use for advancing experiment
     this.participant;   // A string to identify the experimental participant, defaults to startTime
     this.showResultsDisplay = typeof design["show-results-display"] !== 'undefined' ? design["show-results-display"] : false;
     this.showLogDisplay = typeof design["show-log-display"] !== 'undefined' ? design["show-log-display"] : false;
@@ -679,15 +842,63 @@ function Experiment(design, form){
     Experiment.prototype.processKeyup = function(e){
         this.keystate = "up";
     };
+    
+    Experiment.prototype.processNextButtonClick = function(e){
+        var elapsedTime = Date.now() - self.startTime;
+        var result = self.screens[self.curScreenIndex].processNextButtonClick(elapsedTime, self.minInstructionTime);
+        if (result === "end of screen"){
+            self.curScreenIndex++;
+            if (self.curScreenIndex < self.screens.length){
+                self.screens[self.curScreenIndex].object.show(self.frame, elapsedTime);
+                self.updateProgressBar();
+                self.jesprLog("Starting screen: " + self.screens[self.curScreenIndex].object.id);
+            } else {
+                self.endExperiment();
+            }
+        } else if (result === "continue"){
+            // Continue with the same screen; nothing else to do here
+        }
+    };
+    
+    Experiment.prototype.processOptionButtonClick = function(e){
+        var elapsedTime = Date.now() - self.startTime;
+        var elId = e.target.id;
+        var parentId = e.target.id.slice(0, e.target.id.indexOf("_"));
+        var result = self.screens[self.curScreenIndex].processOptionButtonClick(elapsedTime, self.minInstructionTime, elId, parentId);
+        if (result === "end of screen"){
+            self.curScreenIndex++;
+            if (self.curScreenIndex < self.screens.length){
+                self.screens[self.curScreenIndex].object.show(self.frame, elapsedTime);
+                self.updateProgressBar();
+                self.jesprLog("Starting screen: " + self.screens[self.curScreenIndex].object.id);
+            } else {
+                self.endExperiment();
+            }
+        } else if (result === "continue"){
+            // Continue with the same screen; nothing else to do here
+        }
+    };
 }
 
 Experiment.prototype.startExperiment = function(callback){
     this.startTime = Date.now();
     this.participant = this.setParticipant();
     this.callbackFunction = callback;
-    document.body.addEventListener("keydown", this.processKeydown);
-    document.body.addEventListener("keyup", this.processKeyup);
-    window.focus();  // to make sure the window is listening for keypress events
+    if (this.inputMethod === "keyboard"){
+        document.body.addEventListener("keydown", this.processKeydown);
+        document.body.addEventListener("keyup", this.processKeyup);
+        window.focus();  // to make sure the window is listening for keypress events
+    } else if (this.inputMethod === "html-button") {
+        this.nextButton = document.createElement("BUTTON");
+        this.nextButton.id = "jespr.nextButton";
+        this.nextButton.className = "nextButton";
+        this.nextButton.textContent = "Click here to continue";
+        this.nextButton.addEventListener("click", this.processNextButtonClick);
+        document.body.appendChild(this.nextButton);
+        this.nextButton.focus();
+    } else if (this.inputMethod === "touchscreen") {
+        // Not currently implemented
+    }
     this.curScreenIndex = 0;
     this.updateProgressBar();
     this.screens[this.curScreenIndex].object.show(this.frame, 0);
@@ -695,8 +906,16 @@ Experiment.prototype.startExperiment = function(callback){
 };
 
 Experiment.prototype.endExperiment = function(){
-    document.body.removeEventListener("keydown", this.processKeydown);
-    document.body.removeEventListener("keyup", this.processKeyup);
+    if (this.inputMethod === "keyboard"){
+        document.body.removeEventListener("keydown", this.processKeydown);
+        document.body.removeEventListener("keyup", this.processKeyup);
+    } else if (this.inputMethod === "html-button") {
+        this.nextButton.removeEventListener("click", this.processNextButtonClick);
+        this.nextButton.disabled = true;
+        this.nextButton.style.visibility = "hidden";
+    } else if (this.inputMethod === "touchscreen") {
+        // Not currently implemented
+    }
     this.frame.style.display = "none";
     document.body.removeChild(this.frame);
     this.createResults();
@@ -904,7 +1123,7 @@ Experiment.prototype.loadStimuliGroup = function(design, setName, ord){
 //        var orientation = typeof item["orientation"] !== 'undefined' ? design["items"][i]["item"]["orientation"] : this.orientation;
         var prompt = item["prompt"];
         var options = item["options"];
-        var item = new Item(id, text, this.orientation, this.fixationchar, this.maskchar, this.display, prompt, options, this.feedbackOptions, setName, groupName, tags);
+        var item = new Item(id, text, this.orientation, this.fixationchar, this.maskchar, this.display, prompt, options, this.feedbackOptions, setName, groupName, tags, this);
         // Create the Screen object and push it to the sceens array
         var screen = new Screen("stimuli", item);
         screens.push(screen);

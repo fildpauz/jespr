@@ -25,6 +25,7 @@ var jesprExperimentDesign =
     "fixation-character": "+",
     "min-instruction-time": "1500",
     "show-progress-bar": "true",
+    "input-method": "html-button",
     "show-results-display": "true",
     "show-log-display": "true",
     "feedback-options": [
