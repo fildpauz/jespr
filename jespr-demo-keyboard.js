@@ -7,7 +7,7 @@
  * License: The MIT License (MIT)
  */
 
-var jesprExperimentDesign =
+var jesprExperimentDesignForKeyboard =
 {
     "title": "JESPR Demo",
     "investigators": [
