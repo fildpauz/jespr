@@ -43,11 +43,11 @@ var jesprExperimentDesignForButton =
     "instruction-screens": [
         {
             "id": "instruction1",
-            "string": "<p><b>JESPR</b> stands for <i>Javascript-Enabled Self-Paced Reading</i> and is a library for conducting self-paced reading experiments via a web browser. This short demo should give you a quick introduction to the main capabilities that JESPR provides while letting you experience how a JESPR-based experiment proceeds.</p><p>Proceed through the demo by pressing the <b>[space]</b> bar on your keyboard.</p>"
+            "string": "<p><b>JESPR</b> stands for <i>Javascript-Enabled Self-Paced Reading</i> and is a library for conducting self-paced reading experiments via a web browser. This short demo should give you a quick introduction to the main capabilities that JESPR provides while letting you experience how a JESPR-based experiment proceeds.</p><p>Proceed through the demo by clicking on the <b>button</b> below.</p>"
         },
         {
             "id": "instruction2",
-            "string": "<p>The previous screen and this screen illustrate <i>instruction</i> screens which can display relatively free-form text to the participant for the purpose of explanation or guidance.</p><p>Some minimal formatting of these screens can be done using html mark-up to make paragraphs, line breaks, or <b>bold</b>, <i>italicized</i>, or <u>underlined</u> text.</p><p>Press the <b>[space]</b> bar again to continue and begin seeing some self-paced reading-like presentation. Occasionally, there will be some prompts.  To respond to prompts, press <b>1/q/a/z</b> to choose the left-hand option or <b>0/p/l/m</b> to choose the right-hand option.</p>"
+            "string": "<p>The previous screen and this screen illustrate <i>instruction</i> screens which can display relatively free-form text to the participant for the purpose of explanation or guidance.</p><p>Some minimal formatting of these screens can be done using html mark-up to make paragraphs, line breaks, or <b>bold</b>, <i>italicized</i>, or <u>underlined</u> text.</p><p>Click the <b>button</b> below again to continue and begin seeing some self-paced reading-like presentation. Occasionally, there will be some prompts.  To respond to prompts, click the left or right option buttons which will appear together with the prompts.</p>"
         }
     ],
     "practice-stimuli": {
