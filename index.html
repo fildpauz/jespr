@@ -6,7 +6,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         
         <!-- The following three lines are needed to run a JESPR experiment -->
-        <script src="jespr-demo.js"></script>
+        <script src="jespr-demo-keyboard.js"></script>
+        <script src="jespr-demo-html-button.js"></script>
         <script src="jespr-lib.js"></script>
         <link href="jespr.css" rel="stylesheet" type="text/css"/>
         <style>
@@ -26,18 +27,29 @@
         </div>
         <div id="content">
             <p class="buttons">
-                <button type="button" onclick="checkNGo();" id="btnStartDemo">Click here to start<br/>the JESPR Demo</button>
+                <button type="button" onclick="checkNGoKeyboard();" id="btnStartKeyboardDemo">Click here to start<br/>the JESPR Demo<br/>(keyboard)</button>
+                <button type="button" onclick="checkNGoButton();" id="btnStartButtonDemo">Click here to start<br/>the JESPR Demo<br/>(mouse/screen)</button>
                 <button type="button" onclick="window.location.assign('https://github.com/fildpauz/jespr')" id="btnGotoJesprHP">Click here to go to the<br/>JESPR GitHub page</button>
             </p>
         </div>
         <!-- The form to which results and log data will be attached -->
         <form id="jesprForm" name="jesprForm" method="POST"></form>
         <script>
-            function checkNGo(){
+            function checkNGoKeyboard(){
                 // The jesprExperimentDesign variable is defined in the
                 // design file and defined above in the <head> section.
-                if (typeof jesprExperimentDesign !== 'undefined'){
-                    start(jesprExperimentDesign);
+                if (typeof jesprExperimentDesignForKeyboard !== 'undefined'){
+                    start(jesprExperimentDesignForKeyboard);
+                } else {
+                    alert("The jesprExperimentDesign object could not be found. Experiment cannot start");
+                }
+            }
+            
+            function checkNGoButton(){
+                // The jesprExperimentDesign variable is defined in the
+                // design file and defined above in the <head> section.
+                if (typeof jesprExperimentDesignForButton !== 'undefined'){
+                    start(jesprExperimentDesignForButton);
                 } else {
                     alert("The jesprExperimentDesign object could not be found. Experiment cannot start");
                 }
