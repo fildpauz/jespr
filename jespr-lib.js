@@ -1192,6 +1192,23 @@ Experiment.prototype.createFrame = function(){
     }
     frame.appendChild(progressBar);
   }
+  if (this.inputMethod === "keyboard") {
+      var kbdHelp = document.createElement("div");
+      kbdHelp.className = "keyboardHelp";
+      var kbdHelpLeft = document.createElement("div");
+      kbdHelpLeft.className = "keyboardHelpLeft";
+      kbdHelpLeft.textContent = "Left option: 1/q/a/z";
+      kbdHelp.appendChild(kbdHelpLeft);
+      var kbdHelpCenter = document.createElement("div");
+      kbdHelpCenter.className = "keyboardHelpCenter";
+      kbdHelpCenter.textContent = "[space] bar to continue";
+      kbdHelp.appendChild(kbdHelpCenter);
+      var kbdHelpRight = document.createElement("div");
+      kbdHelpRight.className = "keyboardHelpRight";
+      kbdHelpRight.textContent = "Right option: 0/p/l/m";
+      kbdHelp.appendChild(kbdHelpRight);
+      frame.appendChild(kbdHelp);
+  }
   document.body.appendChild(frame);
   return frame;
 };
