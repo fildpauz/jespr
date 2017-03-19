@@ -7,7 +7,7 @@
  * License: The MIT License (MIT)
  */
 
-var jesprExperimentDesign =
+var jesprExperimentDesignForButton =
 {
     "title": "JESPR Demo",
     "investigators": [
