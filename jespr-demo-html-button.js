@@ -209,7 +209,7 @@ var jesprExperimentDesignForButton =
                                         "item": {
                                             "id": "filler02",
                                             "string": "This|is|filler|two,|which|has|no|influence|on|the|data.",
-                                            "prompt": "Who is credited with the idea of the self-paced reading task",
+                                            "prompt": "Who is credited with the idea of the self-paced reading task?",
                                             "options": [
                                                 {
                                                     "string": "Just, Carpenter, and Woolley",
