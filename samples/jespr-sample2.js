@@ -88,11 +88,11 @@ var jesprExperimentDesign =
                     "options": [
                         {
                             "string": "no",
-                            "feedback": "Correct"
+                            "feedback-option": "correct"
                         },
                         {
                             "string": "yes",
-                            "feedback": "Incorrect"
+                            "feedback-option": "incorrect"
                         }
                     ]
                 }
