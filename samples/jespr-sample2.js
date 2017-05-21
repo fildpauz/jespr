@@ -47,11 +47,11 @@ var jesprExperimentDesign =
     "instruction-screens": [
         {
             "id": "instruction1",
-            "string": "Thank you for participating in this experiment. This experiment uses a technique called <i>self-paced reading</i>. Very simply, you will read through several sentences, controlling the pace of reading on your own, using your computer keyboard. Before each sentence, you will see a fixation symbol: <b>&lquo;+&rquo;</b>. After you press the <b>[space]</b> bar, a sentence will appear on the screen, but all the words but the first will be masked with <b>***</b>'s. Continue pressing the <b>[space]</b> bar to reveal the words one by one and therefore read through the sentence at your own pace. Read each sentence as quickly as you can, but also read for full comprehension.<br/><br/>After some sentences, there will be a comprehension question about the last sentence you read. The question will have two answer options. Select your answer by tapping one of the keys <b>1/q/a/z</b> for the left-hand option or one of the keys <b>0/p/l/m</b> for the right-hand option."
+            "string": "Thank you for participating in this experiment. This experiment uses a technique called <i>self-paced reading</i>. Very simply, you will read through several sentences, controlling the pace of reading on your own, using your computer keyboard. Before each sentence, you will see a fixation symbol: <b>+</b>. After you press the <b>[space]</b> bar, a sentence will appear on the screen, but all the words but the first will be masked with <b>***</b>'s. Continue pressing the <b>[space]</b> bar to reveal the words one by one and therefore read through the sentence at your own pace. Read each sentence as quickly as you can, but also read for full comprehension.<br/><br/>After some sentences, there will be a comprehension question about the last sentence you read. The question will have two answer options. Select your answer by tapping one of the keys <b>1/Q/A/Z</b> for the left-hand option or one of the keys <b>0/P/L/M</b> for the right-hand option."
         },
         {
             "id": "instruction2",
-            "string": "Following are three practice items. Remember to use the <b>[space]</b> bar on your keyboard to read through the words in each sentence, and then use one of the <b>1/q/a/z</b> or <b>0/p/l/m</b> keys for answering comprehension questions."
+            "string": "Following are three practice items. Remember to use the <b>[space]</b> bar on your keyboard to read through the words in each sentence, and then use one of the <b>1/Q/A/Z</b> or <b>0/P/L/M</b> keys for answering comprehension questions."
         }
     ],
     "practice-stimuli": {
@@ -102,7 +102,7 @@ var jesprExperimentDesign =
     "post-practice-instruction-screens": [
         {
             "id": "instruction3",
-            "string": "That is the end of the practice items. Note that not all of the sentences have questions after them. Nevertheless, be sure to read all of the sentences closely for comprehension.<br/><br/>When ready, press the <b>[space]</b> bar to begin the actual experiment.<br/><br/>There are 56 sentences to read. If you feel tired, feel free to take a short break anytime. However, please do NOT pause in the middle of a sentence or question. Instead, please take a break when you see the fixation symbol: <b>&lquo;+&rquo;</b>"
+            "string": "That is the end of the practice items. Note that not all of the sentences have questions after them. Nevertheless, be sure to read all of the sentences closely for comprehension.<br/><br/>When ready, press the <b>[space]</b> bar to begin the actual experiment.<br/><br/>There are 56 sentences to read. If you feel tired, feel free to take a short break anytime. However, please do NOT pause in the middle of a sentence or question. Instead, please take a break when you see the fixation symbol: <b>+</b>"
         }
     ],
     "experiment-stimuli": {
@@ -573,16 +573,10 @@ var jesprExperimentDesign =
                                             ]
                                         }
                                     },
-                                ]
-                            },
-                            "group": {
-                                "name": "ungrammatical",
-                                "order": "random",
-                                "items": [
                                     {
                                         "item": {
                                             "id": "filler13",
-                                            "string": "The|famous|senator|that|Robert|volunteer|for|compared|himself|to|past|presidents.",
+                                            "string": "The|famous|senator|that|Robert|volunteered|for|compared|himself|to|past|presidents.",
                                             "prompt": "Was Robert's senator famous?",
                                             "options": [
                                                 {
@@ -599,7 +593,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler14",
-                                            "string": "The|rancher|that|Paul|chosen|exhausted|himself|after|building|a|barn|on|the|hill.",
+                                            "string": "The|rancher|that|Paul|chose|exhausted|himself|after|building|a|barn|on|the|hill.",
                                             "prompt": "Did the rancher build a barn on the hill?",
                                             "options": [
                                                 {
@@ -616,7 +610,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler15",
-                                            "string": "The|truck|driver|that|Frank|met|hated|himself|for|smoke|so|heavily.",
+                                            "string": "The|truck|driver|that|Frank|met|hated|himself|for|smoking|so|heavily.",
                                             "prompt": "Did Frank meet any truck drivers?",
                                             "options": [
                                                 {
@@ -633,7 +627,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler16",
-                                            "string": "The|construction|worker|that|David|drived|by|hit|himself|on|the|face|by|accident.",
+                                            "string": "The|construction|worker|that|David|drove|by|hit|himself|on|the|face|by|accident.",
                                             "prompt": "Did the construction worker hit himself?",
                                             "options": [
                                                 {
@@ -650,7 +644,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler17",
-                                            "string": "The|rude|receptionist|that|Melinda|speak|with|locked|herself|out|of|the|office.",
+                                            "string": "The|rude|receptionist|that|Melinda|spoke|with|locked|herself|out|of|the|office.",
                                             "prompt": "Did Melinda lock herself out of the office?",
                                             "options": [
                                                 {
@@ -667,7 +661,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler18",
-                                            "string": "The|cheerleader|that|Tanya|hearing|in|the|big|stadium|gave|herself|a|sore|throat.",
+                                            "string": "The|cheerleader|that|Tanya|heard|in|the|big|stadium|gave|herself|a|sore|throat.",
                                             "prompt": "Was the cheerleader too quiet?",
                                             "options": [
                                                 {
@@ -684,7 +678,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler19",
-                                            "string": "The|beautician|that|Amy|interviewed|in|the|magazine|educate|herself|through|hard|work.",
+                                            "string": "The|beautician|that|Amy|interviewed|in|the|magazine|educated|herself|through|hard|work.",
                                             "prompt": "Was the beautician interviewed by Amy in the newspaper?",
                                             "options": [
                                                 {
@@ -701,7 +695,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler20",
-                                            "string": "The|cosmetician|that|Janice|photographing|for|the|local|newspaper|poisoned|herself.",
+                                            "string": "The|cosmetician|that|Janice|photographed|for|the|local|newspaper|poisoned|herself.",
                                             "prompt": "Did Janice poison herself?",
                                             "options": [
                                                 {
@@ -718,7 +712,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler21",
-                                            "string": "The|flight|attendant|that|Wendy|troubled|restrained|herself|from|get|impatient.",
+                                            "string": "The|flight|attendant|that|Wendy|troubled|restrained|herself|from|getting|impatient.",
                                             "prompt": "Did Wendy trouble the flight attendant?",
                                             "options": [
                                                 {
@@ -735,7 +729,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler22",
-                                            "string": "The|hairdresser|that|Betsy|keeped|at|work|all|day|drove|herself|home|at|midnight.",
+                                            "string": "The|hairdresser|that|Betsy|kept|at|work|all|day|drove|herself|home|at|midnight.",
                                             "prompt": "Did the hairdresser drive herself home at night?",
                                             "options": [
                                                 {
@@ -752,7 +746,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler23",
-                                            "string": "The|teacher|that|Helen|calling|for|a|meeting|sent|herself|an|email|reminder.",
+                                            "string": "The|teacher|that|Helen|called|for|a|meeting|sent|herself|an|e-mail|reminder.",
                                             "prompt": "Did the teacher send herself an email?",
                                             "options": [
                                                 {
@@ -769,7 +763,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler24",
-                                            "string": "The|beauty|consultant|that|Isabelle|meeted|covered|herself|with|ocean|mud.",
+                                            "string": "The|beauty|consultant|that|Isabelle|met|covered|herself|with|ocean|mud.",
                                             "prompt": "Did the beauty consultant cover herself with ocean mud?",
                                             "options": [
                                                 {

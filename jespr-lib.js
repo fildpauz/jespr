@@ -1197,7 +1197,7 @@ Experiment.prototype.createFrame = function(){
       kbdHelp.className = "keyboardHelp";
       var kbdHelpLeft = document.createElement("div");
       kbdHelpLeft.className = "keyboardHelpLeft";
-      kbdHelpLeft.textContent = "Left option: 1/q/a/z";
+      kbdHelpLeft.textContent = "Left option: 1/Q/A/Z";
       kbdHelp.appendChild(kbdHelpLeft);
       var kbdHelpCenter = document.createElement("div");
       kbdHelpCenter.className = "keyboardHelpCenter";
@@ -1205,7 +1205,7 @@ Experiment.prototype.createFrame = function(){
       kbdHelp.appendChild(kbdHelpCenter);
       var kbdHelpRight = document.createElement("div");
       kbdHelpRight.className = "keyboardHelpRight";
-      kbdHelpRight.textContent = "Right option: 0/p/l/m";
+      kbdHelpRight.textContent = "Right option: 0/P/L/M";
       kbdHelp.appendChild(kbdHelpRight);
       frame.appendChild(kbdHelp);
   }
