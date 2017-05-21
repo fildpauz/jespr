@@ -47,11 +47,11 @@ var jesprExperimentDesign =
     "instruction-screens": [
         {
             "id": "instruction1",
-            "string": "Thank you for participating in this experiment. This experiment uses a technique called <i>self-paced reading</i>. Very simply, you will read through several sentences, controlling the pace of reading on your own, using your computer keyboard. Before each sentence, you will see a fixation symbol: <b>+</b>. After you press the <b>[space]</b> bar, a sentence will appear on the screen, but all the words but the first will be masked with <b>***</b>'s. Continue pressing the <b>[space]</b> bar to reveal the words one by one and therefore read through the sentence at your own pace. Read each sentence as quickly as you can, but also read for full comprehension.<br/><br/>After some sentences, there will be a comprehension question about the last sentence you read. The question will have two answer options. Select your answer by tapping one of the keys <b>1/Q/A/Z</b> for the left-hand option or one of the keys <b>0/P/L/M</b> for the right-hand option."
+            "string": "<p>Thank you for participating in this experiment. This experiment uses a technique called <i>self-paced reading</i>. Very simply, you will read through several sentences, controlling the pace of reading on your own, using your computer keyboard. Before each sentence, you will see a fixation symbol: <b>+</b>. After you press the <b>[space]</b> bar, a sentence will appear on the screen, but all the words but the first will be masked with <b>***</b>'s. Continue pressing the <b>[space]</b> bar to reveal the words one by one and therefore read through the sentence at your own pace. Read each sentence as quickly as you can, but also read for full comprehension.</p><p>After some sentences, there will be a comprehension question about the last sentence you read. The question will have two answer options. Select your answer by tapping one of the keys <b>1/Q/A/Z</b> for the left-hand option or one of the keys <b>0/P/L/M</b> for the right-hand option.</p>"
         },
         {
             "id": "instruction2",
-            "string": "Following are three practice items. Remember to use the <b>[space]</b> bar on your keyboard to read through the words in each sentence, and then use one of the <b>1/Q/A/Z</b> or <b>0/P/L/M</b> keys for answering comprehension questions."
+            "string": "<p>Following are three practice items. Remember to use the <b>[space]</b> bar on your keyboard to read through the words in each sentence, and then use one of the <b>1/Q/A/Z</b> or <b>0/P/L/M</b> keys for answering comprehension questions.</p>"
         }
     ],
     "practice-stimuli": {
@@ -102,7 +102,7 @@ var jesprExperimentDesign =
     "post-practice-instruction-screens": [
         {
             "id": "instruction3",
-            "string": "That is the end of the practice items. Note that not all of the sentences have questions after them. Nevertheless, be sure to read all of the sentences closely for comprehension.<br/><br/>When ready, press the <b>[space]</b> bar to begin the actual experiment.<br/><br/>There are 56 sentences to read. If you feel tired, feel free to take a short break anytime. However, please do NOT pause in the middle of a sentence or question. Instead, please take a break when you see the fixation symbol: <b>+</b>"
+            "string": "<p>That is the end of the practice items. Note that not all of the sentences have questions after them. Nevertheless, be sure to read all of the sentences closely for comprehension.</p><p>When ready, press the <b>[space]</b> bar to begin the actual experiment.</p><p>There are 56 sentences to read. If you feel tired, feel free to take a short break anytime. However, please do NOT pause in the middle of a sentence or question. Instead, please take a break when you see the fixation symbol: <b>+</b>.</p>"
         }
     ],
     "experiment-stimuli": {
@@ -788,7 +788,7 @@ var jesprExperimentDesign =
     "ending-screens": [
         {
             "id": "instruction4",
-            "string": "This is the end of the experiment.<br/>Thank you for participating!"
+            "string": "This is the end of the experiment.<br/>Thank you for participating!<br/><br/>(Press <b>[space]</b> to finish.)"
         }
     ]
 };
