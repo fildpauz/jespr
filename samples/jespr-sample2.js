@@ -3,20 +3,20 @@
  * Author: Ralph L. ROSE
  * E-mail address: rose@waseda.jp
  * Description: This file defines an experimental design to be used in a
- * JESPR experiment. The stimuli test agreement attraction and are taken
+ * JESPR experiment. The stimuli test agreement attraction and are adapted
  * from Pearlmutter, Garnsey, and Bock (1999): http://dx.doi.org/10.1006/jmla.1999.2653
+ * and Tucker and Wagers (201?): https://people.ucsc.edu/~gmcguir1/LabReport/TuckerWagersLRC.pdf.
+ * Fillers are adpated from Patil, Vasishth, and Lewis (2016): https://doi.org/10.3389/fpsyg.2016.00329
+ * and Lucy MacGregor (used in Corley, MacGregor, and Donaldson, 2006: https://doi.org/10.1016/j.cognition.2006.10.010).
  * License: The MIT License (MIT)
  */
 
 var jesprExperimentDesign =
 {
-    "title": "Agreement attraction",
+    "title": "Self-paced reading experiment",
     "investigators": [
         {
-            "primary": "Ima Jeanyuss"
-        },
-        {
-            "other": "Dawn Tchannou"
+            "primary": "Ralph Rose"
         }
     ],
     "font-name": "Arial",
@@ -26,8 +26,10 @@ var jesprExperimentDesign =
     "display": "cumulative",
     "orientation": "horizontal",
     "masking-character": "*",
-    "fixation-character": "X",
+    "fixation-character": "+",
     "min-instruction-time": "3000",
+    "show-progress-bar": "true",
+    "input-method": "keyboard",
     "show-results-display": "true",
     "show-log-display": "true",
     "feedback-options": [
@@ -45,11 +47,11 @@ var jesprExperimentDesign =
     "instruction-screens": [
         {
             "id": "instruction1",
-            "string": "blah1 blah1 blah1"
+            "string": "Thank you for participating in this experiment. This experiment uses a technique called <i>self-paced reading</i>. Very simply, you will read through several sentences, controlling the pace of reading on your own, using your computer keyboard. Before each sentence, you will see a fixation symbol: <b>&lquo;+&rquo;</b>. After you press the <b>[space]</b> bar, a sentence will appear on the screen, but all the words but the first will be masked with <b>***</b>'s. Continue pressing the <b>[space]</b> bar to reveal the words one by one and therefore read through the sentence at your own pace. Read each sentence as quickly as you can, but also read for full comprehension.<br/><br/>After some sentences, there will be a comprehension question about the last sentence you read. The question will have two answer options. Select your answer by tapping one of the keys <b>1/q/a/z</b> for the left-hand option or one of the keys <b>0/p/l/m</b> for the right-hand option."
         },
         {
             "id": "instruction2",
-            "string": "blah2 blah2 blah2"
+            "string": "Following are three practice items. Remember to use the <b>[space]</b> bar on your keyboard to read through the words in each sentence, and then use one of the <b>1/q/a/z</b> or <b>0/p/l/m</b> keys for answering comprehension questions."
         }
     ],
     "practice-stimuli": {
@@ -58,15 +60,15 @@ var jesprExperimentDesign =
             {
                 "item": {
                     "id": "practice01",
-                    "string": "blah1|blah2|blah3|{blah4}|blah5",
-                    "prompt": "Whah blah bleeh bluh blah?",
+                    "string": "The|playful|dog|jumped|up|on|its|owner's|lap|to|get|a|tasty|treat.",
+                    "prompt": "Did the dog jump",
                     "options": [
                         {
-                            "string": "bleh",
+                            "string": "yes",
                             "feedback-option": "correct"
                         },
                         {
-                            "string": "blih",
+                            "string": "no",
                             "feedback-option": "incorrect"
                         }
                     ]
@@ -75,15 +77,21 @@ var jesprExperimentDesign =
             {
                 "item": {
                     "id": "practice02",
-                    "string": "blech1|{blech2}|blech3|blech4|blech5",
-                    "prompt": "Whach blach bleech bluch blach?",
+                    "string": "Helena's|son|was|playing|soccer|with|his|friends|at|the|public|park|last|Saturday."
+                }
+            },
+            {
+                "item": {
+                    "id": "practice03",
+                    "string": "A|squirrel|managed|to|get|inside|the|attic|of|the|house|but|couldn't|escape.",
+                    "prompt": "Did the squirrel get out of the attic?",
                     "options": [
                         {
-                            "string": "blich",
+                            "string": "no",
                             "feedback": "Correct"
                         },
                         {
-                            "string": "blech",
+                            "string": "yes",
                             "feedback": "Incorrect"
                         }
                     ]
@@ -94,7 +102,7 @@ var jesprExperimentDesign =
     "post-practice-instruction-screens": [
         {
             "id": "instruction3",
-            "string": "blah3 blah3 blah3"
+            "string": "That is the end of the practice items. Note that not all of the sentences have questions after them. Nevertheless, be sure to read all of the sentences closely for comprehension.<br/><br/>When ready, press the <b>[space]</b> bar to begin the actual experiment.<br/><br/>There are 56 sentences to read. If you feel tired, feel free to take a short break anytime. However, please do NOT pause in the middle of a sentence or question. Instead, please take a break when you see the fixation symbol: <b>&lquo;+&rquo;</b>"
         }
     ],
     "experiment-stimuli": {
@@ -109,127 +117,119 @@ var jesprExperimentDesign =
                     "groups": [
                         {
                             "group": {
-                                "name": "match",
+                                "name": "grammatical",
                                 "order": "random",
                                 "items": [
                                     {
                                         "item": {
                                             "id": "item01",
-                                            "tags": [ "singular" ],
-                                            "string": "The slogan on the poster was designed to get attention."
+                                            "tags": [ "singular", "match" ],
+                                            "string": "The|slogan|on|the|poster|{was}|designed|to|get|attention."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item02",
-                                            "tags": [ "singular" ],
-                                            "string": "The picture on the postcard was of a village church in the south of France."
+                                            "tags": [ "singular", "match" ],
+                                            "string": "The|picture|on|the|postcard|{was}|of|a|village|church|in|the|south|of|France."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item03",
-                                            "tags": [ "singular" ],
-                                            "string": "The mistake in the program was disastrous for the small software company."
+                                            "tags": [ "singular", "mismatch" ],
+                                            "string": "The|mistake|in|the|programs|{was}|disastrous|for|the|small|software|company."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item04",
-                                            "tags": [ "singular" ],
-                                            "string": "The label on the bottle was a warning about the toxic effects of the drug."
+                                            "tags": [ "singular", "mismatch" ],
+                                            "string": "The|label|on|the|bottles|{was}|a|warning|about|the|toxic|effects|of|the|drug."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item05",
-                                            "tags": [ "plural" ],
-                                            "string": "The problems in the school were solved by firing the superintendent."
+                                            "tags": [ "plural", "match" ],
+                                            "string": "The|problems|in|the|schools|{were}|solved|by|firing|the|superintendent."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item06",
-                                            "tags": [ "plural" ],
-                                            "string": "The names on the billboard were of a prominent local politician."
+                                            "tags": [ "plural", "match" ],
+                                            "string": "The|names|on|the|billboards|{were}|of|a|prominent|local|politician."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item07",
-                                            "tags": [ "plural" ],
-                                            "string": "The crimes in the city were a reflection of the violence in today’s society."
+                                            "tags": [ "plural", "mismatch" ],
+                                            "string": "The|crimes|in|the|city|{were}|a|reflection|of|the|violence|in|today’s|society."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item08",
-                                            "tags": [ "plural" ],
-                                            "string": "The defects in the car were unknown to consumers and government regulators."
+                                            "tags": [ "plural", "mismatch" ],
+                                            "string": "The|defects|in|the|car|{were}|unknown|to|consumers|and|government|regulators."
                                         }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "group": {
-                                "name": "mismatch",
-                                "order": "random",
-                                "items": [
+                                    },
                                     {
                                         "item": {
                                             "id": "item09",
-                                            "tags": [ "singular" ],
-                                            "string": "The door to the office were left unlocked by the cleaning service."
+                                            "tags": [ "singular", "match" ],
+                                            "string": "The|decision|to|pass|the|student|{was}|difficult|for|the|teacher."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item10",
-                                            "tags": [ "singular" ],
-                                            "string": "The memo from the accountant were about the delinquent tax return."
+                                            "tags": [ "singular", "match" ],
+                                            "string": "The|request|to|begin|the|project|{was}|overwhelming|because|of|the|cost."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item11",
-                                            "tags": [ "singular" ],
-                                            "string": "The check from the stockbroker were a dividend on a long-term bond."
+                                            "tags": [ "singular", "mismatch" ],
+                                            "string": "The|proposal|to|help|the|refugees|{was}|honorable|but|misguided."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item12",
-                                            "tags": [ "singular" ],
-                                            "string": "The key to the cabinet were rusty from many years of disuse."
+                                            "tags": [ "singular", "mismatch" ],
+                                            "string": "The|proposal|to|help|the|refugees|{was}|honorable|but|misguided."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item13",
-                                            "tags": [ "plural" ],
-                                            "string": "The letters from the lawyer was received in San Francisco in late March."
+                                            "tags": [ "plural", "match" ],
+                                            "string": "The|attempts|to|rescue|the|soldiers|{were}|successful."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item14",
-                                            "tags": [ "plural" ],
-                                            "string": "The entrances to the laboratory was hard to locate on the diagram."
+                                            "tags": [ "plural", "match" ],
+                                            "string": "The|efforts|to|save|the|trees|{were}|disappointing|to|the|volunteer."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item15",
-                                            "tags": [ "plural" ],
-                                            "string": "The warnings from the expert was a shock to the residents of the city."
+                                            "tags": [ "plural", "mismatch" ],
+                                            "string": "The|plots|to|assassinate|the|leader|{were}|unsuccessful."
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item16",
-                                            "tags": [ "plural" ],
-                                            "string": "The bridges to the island was about ten miles off the main highway."
+                                            "tags": [ "plural", "mismatch" ],
+                                            "string": "The|bids|to|acquire|the|company|{were}|rejected|by|the|board."
                                         }
                                     }
                                 ]
@@ -237,19 +237,119 @@ var jesprExperimentDesign =
                         },
                         {
                             "group": {
-                                "name": "my filler group",
-                                "order": "fixed",
+                                "name": "ungrammatical",
+                                "order": "random",
                                 "items": [
                                     {
                                         "item": {
-                                            "id": "filler01",
-                                            "string": "Donec|tempor,|magna|quis|efficitur|rutrum,|ligula|nisi."
+                                            "id": "item17",
+                                            "tags": [ "singular", "match" ],
+                                            "string": "The|door|to|the|offices|{were}|left|unlocked|by|the|cleaning|service."
                                         }
                                     },
                                     {
                                         "item": {
-                                            "id": "filler02",
-                                            "string": "Quisque|ac|velit|viverra,|dictum|velit|a,|tempus."
+                                            "id": "item18",
+                                            "tags": [ "singular", "match" ],
+                                            "string": "The|memo|from|the|accountants|{were}|about|the|delinquent|tax|return."
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "item19",
+                                            "tags": [ "singular", "mismatch" ],
+                                            "string": "The|check|from|the|stockbroker|{were}|a|dividend|on|a|long-term|bond."
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "item20",
+                                            "tags": [ "singular", "mismatch" ],
+                                            "string": "The|key|to|the|cabinet|{were}|rusty|from|many|years|of|disuse."
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "item21",
+                                            "tags": [ "plural", "match" ],
+                                            "string": "The|letters|from|the|lawyer|{was}|received|in|San|Francisco|in|late|March."
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "item22",
+                                            "tags": [ "plural", "match" ],
+                                            "string": "The|entrances|to|the|laboratory|{was}|hard|to|locate|on|the|diagram."
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "item23",
+                                            "tags": [ "plural", "mismatch" ],
+                                            "string": "The|warnings|from|the|experts|{was}|a|shock|to|the|residents|of|the|city."
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "item24",
+                                            "tags": [ "plural", "mismatch" ],
+                                            "string": "The|bridges|to|the|islands|{was}|about|ten|miles|off|the|main|highway."
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "item25",
+                                            "tags": [ "singular", "match" ],
+                                            "string": "The|opportunity|to|meet|the|senators|{were}|unbelievable."
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "item26",
+                                            "tags": [ "singular", "match" ],
+                                            "string": "The|promise|to|fix|the|cars|{were}|broken|by|the|overworked|mechanic."
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "item27",
+                                            "tags": [ "singular", "mismatch" ],
+                                            "string": "The|mission|to|feed|the|hostage|{were}|discovered|by|the|gang."
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "item28",
+                                            "tags": [ "singular", "mismatch" ],
+                                            "string": "The pledge|to|implement|the|agreement|{were}|honored|by|the|nation."
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "item29",
+                                            "tags": [ "plural", "match" ],
+                                            "string": "The|campaigns|to|censure|the|candidate|{was}|overly|aggressive."
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "item30",
+                                            "tags": [ "plural", "match" ],
+                                            "string": "The|agreements|to|house|the|dog|{was}|rejected|by|the|roommate."
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "item31",
+                                            "tags": [ "plural", "mismatch" ],
+                                            "string": "The|mandates|to|relinquish|the|claims|{was}|issued|by|the|court."
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "item32",
+                                            "tags": [ "plural", "mismatch" ],
+                                            "string": "The|commitments|to|teach|the|children|{was}|made|by|every|teacher."
                                         }
                                     }
                                 ]
@@ -266,13 +366,13 @@ var jesprExperimentDesign =
                     "groups": [
                         {
                             "group": {
-                                "name": "fillers",
+                                "name": "grammatical",
                                 "order": "random",
                                 "items": [
                                     {
                                         "item": {
                                             "id": "filler01",
-                                            "string": "It was such a nice day that Philip had his lunch on the grass.",
+                                            "string": "It|was|such|a|nice|day|that|Philip|had|his|lunch|on|the|grass.",
                                             "prompt": "Did Philip have lunch in the house?",
                                             "options": [
                                                 {
@@ -289,7 +389,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler02",
-                                            "string": "Betty thought they could have tomato soup and potato salad.",
+                                            "string": "Betty|thought|they|could|have|tomato|soup|and|potato|salad.",
                                             "prompt": "Does Betty think they can have potato salad?",
                                             "options": [
                                                 {
@@ -306,7 +406,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler03",
-                                            "string": "The prices have definitely gone up since the management changed.",
+                                            "string": "The|prices|have|definitely|gone|up|since|the|management|changed.",
                                             "prompt": "Have the prices gone down?",
                                             "options": [
                                                 {
@@ -323,7 +423,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler04",
-                                            "string": "There was a dead mouse under Bill's sofa last week.",
+                                            "string": "There|was|a|dead|mouse|under|Bill's|sofa|last|week.",
                                             "prompt": "Did Bill find a dead cockroach under the sofa?",
                                             "options": [
                                                 {
@@ -340,7 +440,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler05",
-                                            "string": "Allan said we should go into town at the weekend.",
+                                            "string": "Allan|said|we|should|go|into|town|at|the|weekend.",
                                             "prompt": "Did Allan suggest visiting town?",
                                             "options": [
                                                 {
@@ -357,7 +457,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler06",
-                                            "string": "It was the last match of the season and Bradley's team won!",
+                                            "string": "It|was|the|last|match|of|the|season|and|Bradley's|team|won!",
                                             "prompt": "Did Bradley's team win the match?",
                                             "options": [
                                                 {
@@ -374,7 +474,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler07",
-                                            "string": "June says there's all sorts of chemicals in cosmetics.",
+                                            "string": "June|says|there's|all|sorts|of|chemicals|in|cosmetics.",
                                             "prompt": "Is June talking about health foods?",
                                             "options": [
                                                 {
@@ -391,7 +491,7 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler08",
-                                            "string": "Alexa said that she'd been really busy but she'd get it all done.",
+                                            "string": "Alexa|said|that|she'd|been|really|busy|but|she'd|get|it|all|done.",
                                             "prompt": "Did Alexa say that she had been busy?",
                                             "options": [
                                                 {
@@ -408,8 +508,8 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler09",
-                                            "string": "",
-                                            "prompt": "",
+                                            "string": "The|firefighter|that|Henry|recommended|for|the|new|job|cut|himself|on|broken|glass.",
+                                            "prompt": "Did Henry cut himself on broken glass?",
                                             "options": [
                                                 {
                                                     "string": "yes",
@@ -425,8 +525,8 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler10",
-                                            "string": "",
-                                            "prompt": "",
+                                            "string": "The|engineer|that|Peter|visited|convinced|himself|that|the|building|was|safe.",
+                                            "prompt": "Did Peter convince himself about the safety of the building?",
                                             "options": [
                                                 {
                                                     "string": "yes",
@@ -442,8 +542,8 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler11",
-                                            "string": "",
-                                            "prompt": "",
+                                            "string": "The|electrician|that|John|consulted|about|the|problems|blamed|himself|for|the|fire.",
+                                            "prompt": "Did John blame himself for the fire?",
                                             "options": [
                                                 {
                                                     "string": "yes",
@@ -459,8 +559,8 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler12",
-                                            "string": "",
-                                            "prompt": "",
+                                            "string": "The|mechanic|that|Brian|found|in|the|newspaper|taught|himself|everything|about|boats.",
+                                            "prompt": "Did Brian teach himself everything about boats?",
                                             "options": [
                                                 {
                                                     "string": "yes",
@@ -473,19 +573,25 @@ var jesprExperimentDesign =
                                             ]
                                         }
                                     },
+                                ]
+                            },
+                            "group": {
+                                "name": "ungrammatical",
+                                "order": "random",
+                                "items": [
                                     {
                                         "item": {
                                             "id": "filler13",
-                                            "string": "",
-                                            "prompt": "",
+                                            "string": "The|famous|senator|that|Robert|volunteer|for|compared|himself|to|past|presidents.",
+                                            "prompt": "Was Robert's senator famous?",
                                             "options": [
                                                 {
                                                     "string": "yes",
-                                                    "feedback-option": "incorrect"
+                                                    "feedback-option": "correct"
                                                 },
                                                 {
                                                     "string": "no",
-                                                    "feedback-option": "correct"
+                                                    "feedback-option": "incorrect"
                                                 }
                                             ]
                                         }
@@ -493,16 +599,16 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler14",
-                                            "string": "",
-                                            "prompt": "",
+                                            "string": "The|rancher|that|Paul|chosen|exhausted|himself|after|building|a|barn|on|the|hill.",
+                                            "prompt": "Did the rancher build a barn on the hill?",
                                             "options": [
                                                 {
                                                     "string": "yes",
-                                                    "feedback-option": "incorrect"
+                                                    "feedback-option": "correct"
                                                 },
                                                 {
                                                     "string": "no",
-                                                    "feedback-option": "correct"
+                                                    "feedback-option": "incorrect"
                                                 }
                                             ]
                                         }
@@ -510,8 +616,25 @@ var jesprExperimentDesign =
                                     {
                                         "item": {
                                             "id": "filler15",
-                                            "string": "",
-                                            "prompt": "",
+                                            "string": "The|truck|driver|that|Frank|met|hated|himself|for|smoke|so|heavily.",
+                                            "prompt": "Did Frank meet any truck drivers?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "filler16",
+                                            "string": "The|construction|worker|that|David|drived|by|hit|himself|on|the|face|by|accident.",
+                                            "prompt": "Did the construction worker hit himself?",
                                             "options": [
                                                 {
                                                     "string": "yes",
@@ -526,9 +649,9 @@ var jesprExperimentDesign =
                                     },
                                     {
                                         "item": {
-                                            "id": "filler16",
-                                            "string": "",
-                                            "prompt": "",
+                                            "id": "filler17",
+                                            "string": "The|rude|receptionist|that|Melinda|speak|with|locked|herself|out|of|the|office.",
+                                            "prompt": "Did Melinda lock herself out of the office?",
                                             "options": [
                                                 {
                                                     "string": "yes",
@@ -537,6 +660,125 @@ var jesprExperimentDesign =
                                                 {
                                                     "string": "no",
                                                     "feedback-option": "correct"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "filler18",
+                                            "string": "The|cheerleader|that|Tanya|hearing|in|the|big|stadium|gave|herself|a|sore|throat.",
+                                            "prompt": "Was the cheerleader too quiet?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "filler19",
+                                            "string": "The|beautician|that|Amy|interviewed|in|the|magazine|educate|herself|through|hard|work.",
+                                            "prompt": "Was the beautician interviewed by Amy in the newspaper?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "filler20",
+                                            "string": "The|cosmetician|that|Janice|photographing|for|the|local|newspaper|poisoned|herself.",
+                                            "prompt": "Did Janice poison herself?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "filler21",
+                                            "string": "The|flight|attendant|that|Wendy|troubled|restrained|herself|from|get|impatient.",
+                                            "prompt": "Did Wendy trouble the flight attendant?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "filler22",
+                                            "string": "The|hairdresser|that|Betsy|keeped|at|work|all|day|drove|herself|home|at|midnight.",
+                                            "prompt": "Did the hairdresser drive herself home at night?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "filler23",
+                                            "string": "The|teacher|that|Helen|calling|for|a|meeting|sent|herself|an|email|reminder.",
+                                            "prompt": "Did the teacher send herself an email?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "item": {
+                                            "id": "filler24",
+                                            "string": "The|beauty|consultant|that|Isabelle|meeted|covered|herself|with|ocean|mud.",
+                                            "prompt": "Did the beauty consultant cover herself with ocean mud?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
                                                 }
                                             ]
                                         }
@@ -552,7 +794,7 @@ var jesprExperimentDesign =
     "ending-screens": [
         {
             "id": "instruction4",
-            "string": "This is the end of the self-paced-reading experiment.<br/>Thank you for participating!"
+            "string": "This is the end of the experiment.<br/>Thank you for participating!"
         }
     ]
 };
