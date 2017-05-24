@@ -10,6 +10,28 @@
 "use strict";
 
 /*
+ * This provides the Array.some() method for IE<9. Taken from 
+ * https://www.tutorialspoint.com/javascript/array_some.htm
+ */
+if (!Array.prototype.some)
+{
+   Array.prototype.some = function(fun /*, thisp*/)
+   {
+      var len = this.length;
+      if (typeof fun != "function")
+      throw new TypeError();
+      
+      var thisp = arguments[1];
+      for (var i = 0; i < len; i++)
+      {
+         if (i in this && fun.call(thisp, this[i], i, this))
+         return true;
+      }
+      return false;
+   };
+}
+
+/*
  * The Region object defines a region of text to be displayed in
  * a self-paced-reading experiment.
  * @param id - The ID for this region
@@ -1580,6 +1602,7 @@ function truncateText(text, len){
     return result;
 }
 
+/* The following helper function is necessary because IE<9 doesn't support string.trim() */
 function jesprTrim(x) {
     return x.replace(/^\s+|\s+$/gm,'');
 }
