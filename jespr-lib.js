@@ -1049,7 +1049,7 @@ Experiment.prototype.getData = function(){
 Experiment.prototype.setParticipant = function(){
     var d = new Date();
     d.setTime(this.startTime);
-    var result = d.toISOString();
+    var result = d.toString(); // date.toISOString() gives ms, but not compatible with IE<9 
     // TODO Give user chance to provide an identifier via Experiment constructor
     // or to input an identifier via a popup input box.
     return result;
