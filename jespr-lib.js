@@ -535,7 +535,7 @@ Item.prototype.parseRegions = function(){
 Item.prototype.getRoi = function(regions){
     var result = "NA";
     for (var i=0; i<regions.length; i++){
-        var r = regions[i].trim();
+        var r = jesprTrim(regions[i]);
         if (r.charAt(0) === '{' && r.charAt(r.length-1) === '}'){
             result = i;
             break; // assumes only one ROI per item
@@ -779,20 +779,20 @@ function Experiment(design, form){
     // For binding 'this' inside listeners
     var self = this;
     // General experiment settings and parameters
-    this.title = typeof design["title"] !== 'undefined' ? design["title"].trim() : "A Self-paced Reading Experiment";
-    this.fontname = typeof design["font-name"] !== 'undefined' ? design["font-name"].trim() : "Courier new";
-    this.fontsize = typeof design["font-size"] !== 'undefined' ? Number(design["font-size"].trim()) : 12;
+    this.title = typeof design["title"] !== 'undefined' ? jesprTrim(design["title"]) : "A Self-paced Reading Experiment";
+    this.fontname = typeof design["font-name"] !== 'undefined' ? jesprTrim(design["font-name"]) : "Courier new";
+    this.fontsize = typeof design["font-size"] !== 'undefined' ? Number(jesprTrim(design["font-size"])) : 12;
     this.fontsize = !isNaN(this.fontsize) ? this.fontsize : 12;
     // Following colors must be HTML supported color names; e.g., http://www.w3schools.com/colors/colors_names.asp
-    this.textcolor = typeof design["text-color"] !== 'undefined' ? design["text-color"].trim() : "black";
+    this.textcolor = typeof design["text-color"] !== 'undefined' ? jesprTrim(design["text-color"]) : "black";
     this.textcolor = isValidColor(this.textcolor) ? this.textcolor : "black";
-    this.backgroundcolor = typeof design["background-color"] !== 'undefined' ? design["background-color"].trim() : "white";
+    this.backgroundcolor = typeof design["background-color"] !== 'undefined' ? jesprTrim(design["background-color"]) : "white";
     this.backgroundcolor = isValidColor(this.backgroundcolor) ? this.backgroundcolor : "white";
     this.display = this.getStringSetting("display", design["display"], ["moving window","cumulative"], "moving window");
     this.orientation = this.getStringSetting("orientation", design["orientation"], ["horizontal","vertical"], "horizontal");
     // Following must be only one character in length
-    this.fixationchar = typeof design["fixation-character"] !== 'undefined' ? design["fixation-character"].trim().substr(0,1) : "+";
-    this.maskchar = typeof design["masking-character"] !== 'undefined' ? design["masking-character"].trim().substr(0,1) : "_";
+    this.fixationchar = typeof design["fixation-character"] !== 'undefined' ? jesprTrim(design["fixation-character"]).substr(0,1) : "+";
+    this.maskchar = typeof design["masking-character"] !== 'undefined' ? jesprTrim(design["masking-character"]).substr(0,1) : "_";
     this.minInstructionTime = typeof design["min-instruction-time"] !== 'undefined' ? design["min-instruction-time"] : 3000;
     this.idList = []; // Used during validation to ensure that all IDs are unique
     this.showProgressBar = typeof design["show-progress-bar"] !== 'undefined' ? design["show-progress-bar"] : false;
@@ -1217,8 +1217,8 @@ Experiment.prototype.getStringSetting = function(name, value, options, fallback)
     var result = fallback;
     if (typeof value === 'undefined') {
         this.jesprLog("No value for " + name + " setting. Using default value: '" + fallback + "'");
-    } else if (options.some(function(o){ return value.trim().toLowerCase() === o.trim().toLowerCase(); })){
-        result = value.toLowerCase().trim();
+    } else if (options.some(function(o){ return jesprTrim(value.toLowerCase()) === jesprTrim(o.toLowerCase()); })){
+        result = jesprTrim(value.toLowerCase());
     } else {
         this.jesprLog("Invalid value for " + name + " setting. Using default value: '" + fallback + "'");
     }
@@ -1469,7 +1469,7 @@ Experiment.prototype.isValidItem = function(item){
 
 Experiment.prototype.isValidStringSetting = function(string, settings){
     return settings.some(function(s){
-        return string.trim().toLowerCase() === s.trim().toLowerCase();
+        return jesprTrim(string.toLowerCase()) === jesprTrim(s.toLowerCase());
     });
 };
 
@@ -1578,4 +1578,8 @@ function truncateText(text, len){
         result = text.substr(0,57) + "...";
     }
     return result;
+}
+
+function jesprTrim(x) {
+    return x.replace(/^\s+|\s+$/gm,'');
 }
