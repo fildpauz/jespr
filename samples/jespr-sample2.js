@@ -492,7 +492,7 @@ var jesprExperimentDesign =
                                         "item": {
                                             "id": "filler08",
                                             "string": "Alexa|said|that|she'd|been|really|busy|but|she'd|get|it|all|done.",
-                                            "prompt": "Did Alexa say that she had been busy?",
+                                            "prompt": "Did Alexa say that she had been lazy?",
                                             "options": [
                                                 {
                                                     "string": "yes",
@@ -632,11 +632,11 @@ var jesprExperimentDesign =
                                             "options": [
                                                 {
                                                     "string": "yes",
-                                                    "feedback-option": "incorrect"
+                                                    "feedback-option": "correct"
                                                 },
                                                 {
                                                     "string": "no",
-                                                    "feedback-option": "correct"
+                                                    "feedback-option": "incorrect"
                                                 }
                                             ]
                                         }
@@ -679,15 +679,15 @@ var jesprExperimentDesign =
                                         "item": {
                                             "id": "filler19",
                                             "string": "The|beautician|that|Amy|interviewed|in|the|magazine|educated|herself|through|hard|work.",
-                                            "prompt": "Was the beautician interviewed by Amy in the newspaper?",
+                                            "prompt": "Was the beautician interviewed by Amy in the magazine?",
                                             "options": [
                                                 {
                                                     "string": "yes",
-                                                    "feedback-option": "incorrect"
+                                                    "feedback-option": "correct"
                                                 },
                                                 {
                                                     "string": "no",
-                                                    "feedback-option": "correct"
+                                                    "feedback-option": "incorrect"
                                                 }
                                             ]
                                         }
