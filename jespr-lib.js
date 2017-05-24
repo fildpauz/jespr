@@ -328,9 +328,17 @@ Item.prototype.processNextButtonClick = function(elapsedTime){
             var stimulusP = document.getElementById(this.id + "_stimulus");
             stimulusP.style.display = "none";
             var leftOptionButton = document.getElementById(this.id + "_optButton_1");
-            leftOptionButton.addEventListener("click", this.experiment.processOptionButtonClick);
+            if (leftOptionButton.addEventListener) {
+                leftOptionButton.addEventListener("click", this.experiment.processOptionButtonClick);
+            } else if (leftOptionButtion.attachEvent) { // For IE<9
+                leftOptionButton.attachEvent("onclick", this.experiment.processOptionButtonClick);
+            }
             var rightOptionButton = document.getElementById(this.id + "_optButton_2");
-            rightOptionButton.addEventListener("click", this.experiment.processOptionButtonClick);
+            if (rightOptionButton.addEventListener) { // For IE<9
+                rightOptionButton.addEventListener("click", this.experiment.processOptionButtonClick);
+            } else if (rightOptionButtion.attachEvent) {
+                rightOptionButton.attachEvent("onclick", this.experiment.processOptionButtonClick);
+            }
             var promptP = document.getElementById(this.id + "_prompt");
             promptP.style.display = "block";
             promptP.style.visibility = "visible";
@@ -367,9 +375,17 @@ Item.prototype.processOptionButtonClick = function(elapsedTime, minTime, elId, p
         var whichBtn = elId.charAt(elId.length-1) === "1" ? "LEFT_OPTIONBTN" : "RIGHT_OPTIONBTN";
         this.saveData(this.id + "_prompt", "NA", showTime, elapsedTime, whichBtn, promptP.getAttribute('data-string'));
         var leftOptionButton = document.getElementById(this.id + "_optButton_1");
-        leftOptionButton.removeEventListener("click", this.experiment.processOptionButtonClick);
+        if (leftOptionButton.removeEventListener) {
+            leftOptionButton.removeEventListener("click", this.experiment.processOptionButtonClick);
+        } else if (leftOptionButton.detachEvent) {
+            leftOptionButton.detachEvent("onclick", this.experiment.processOptionButtonClick);
+        }
         var rightOptionButton = document.getElementById(this.id + "_optButton_2");
-        rightOptionButton.removeEventListener("click", this.experiment.processOptionButtonClick);
+        if (rightOptionButton.removeEventListener) {
+            rightOptionButton.removeEventListener("click", this.experiment.processOptionButtonClick);
+        } else if (rightOptionButton.detachEvent) {
+            rightOptionButton.detachEvent("onclick", this.experiment.processOptionButtonClick);
+        }
         if (this.showFeedback){
             promptP.style.display = "none";
             var feedbackP = document.getElementById(this.id + "_feedback");
@@ -946,15 +962,24 @@ Experiment.prototype.startExperiment = function(callback){
     this.participant = this.setParticipant();
     this.callbackFunction = callback;
     if (this.inputMethod === "keyboard"){
-        document.body.addEventListener("keydown", this.processKeydown);
-        document.body.addEventListener("keyup", this.processKeyup);
+        if (document.body.addEventListener) {
+            document.body.addEventListener("keydown", this.processKeydown);
+            document.body.addEventListener("keyup", this.processKeyup);
+        } else if (document.body.attachEvent) { // For IE<9
+            document.body.attachEvent("onkeydown", this.processKeydown);
+            document.body.attachEvent("onkeyup", this.processKeyup);
+        }
         window.focus();  // to make sure the window is listening for keypress events
     } else if (this.inputMethod === "html-button") {
         this.nextButton = document.createElement("BUTTON");
         this.nextButton.id = "jespr.nextButton";
         this.nextButton.className = "nextButton";
         this.nextButton.textContent = "Click here to continue";
-        this.nextButton.addEventListener("click", this.processNextButtonClick);
+        if (this.nextButton.addEventListener) {
+            this.nextButton.addEventListener("click", this.processNextButtonClick);
+        } else if (this.nextButton.attachEvent) { // For IE<9
+            this.nextButton.attachEvent("onclick", this.processNextButtonClick);
+        }
         document.body.appendChild(this.nextButton);
         this.nextButton.focus();
     } else if (this.inputMethod === "touchscreen") {
@@ -968,10 +993,19 @@ Experiment.prototype.startExperiment = function(callback){
 
 Experiment.prototype.endExperiment = function(){
     if (this.inputMethod === "keyboard"){
-        document.body.removeEventListener("keydown", this.processKeydown);
-        document.body.removeEventListener("keyup", this.processKeyup);
+        if (document.body.removeEventListener) {
+            document.body.removeEventListener("keydown", this.processKeydown);
+            document.body.removeEventListener("keyup", this.processKeyup);
+        } else if (document.body.detachEvent) {
+            document.body.detachEvent("onkeydown", this.processKeydown);
+            document.body.detachEvent("onkeyup", this.processKeyup);
+        }
     } else if (this.inputMethod === "html-button") {
-        this.nextButton.removeEventListener("click", this.processNextButtonClick);
+        if (this.nextButton.removeEventListener) {
+            this.nextButton.removeEventListener("click", this.processNextButtonClick);
+        } else if (this.nextButton.detachEvent) {
+            this.nextButton.detachEvent("onclick", this.processNextButtonClick);
+        }
         this.nextButton.disabled = true;
         this.nextButton.style.visibility = "hidden";
     } else if (this.inputMethod === "touchscreen") {
