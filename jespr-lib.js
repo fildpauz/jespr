@@ -168,7 +168,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
             } else if (this.curRegionIndex === this.regions.length+1){ // feedback is showing
                 var showTime = this.timeData[this.timeData.length-1]["elapsedTime"];
                 var feedbackP = document.getElementById(this.id + "_feedback");
-                this.saveData(this.id + "_feedback", "NA", showTime, elapsedTime, "KBD:" + keyCode, feedbackP.dataset.feedback);
+                this.saveData(this.id + "_feedback", "NA", showTime, elapsedTime, "KBD:" + keyCode, feedbackP.getAttribute('data-feedback'));
                 this.hide();
                 result = "end of screen";
             } else {
@@ -186,7 +186,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
             if (this.curRegionIndex === this.regions.length){
                 var showTime = this.timeData[this.timeData.length-1]["elapsedTime"];
                 var promptP = document.getElementById(this.id + "_prompt");
-                this.saveData(this.id + "_prompt", "NA", showTime, elapsedTime, "KBD:" + keyCode, promptP.dataset.string);
+                this.saveData(this.id + "_prompt", "NA", showTime, elapsedTime, "KBD:" + keyCode, promptP.getAttribute('data-string'));
                 if (this.showFeedback){
                     promptP.style.display = "none";
                     var feedbackP = document.getElementById(this.id + "_feedback");
@@ -194,7 +194,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
                     feedbackSpan.style.display = "inline-block";
                     feedbackP.style.display = "block";
                     feedbackP.style.visibility = "visible";
-                    feedbackP.dataset.feedback = feedbackSpan.dataset.string;
+                    feedbackP.setAttribute('data-feedback', feedbackSpan.getAttribute('data-string'));
                     this.curRegionIndex++;
                 } else {
                     this.hide();
@@ -210,7 +210,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
             if (this.curRegionIndex === this.regions.length){
                 var showTime = this.timeData[this.timeData.length-1]["elapsedTime"];
                 var promptP = document.getElementById(this.id + "_prompt");
-                this.saveData(this.id + "_prompt", "NA", showTime, elapsedTime, "KBD:" + keyCode, promptP.dataset.string);
+                this.saveData(this.id + "_prompt", "NA", showTime, elapsedTime, "KBD:" + keyCode, promptP.getAttribute('data-string'));
                 if (this.showFeedback){
                     promptP.style.display = "none";
                     var feedbackP = document.getElementById(this.id + "_feedback");
@@ -218,7 +218,7 @@ Item.prototype.processKeydown = function(keyCode, elapsedTime){
                     feedbackSpan.style.display = "inline-block";
                     feedbackP.style.display = "block";
                     feedbackP.style.visibility = "visible";
-                    feedbackP.dataset.feedback = feedbackSpan.dataset.string;
+                    feedbackP.setAttribute('data-feedback', feedbackSpan.getAttribute('data-string'));
                     this.curRegionIndex++;
                 } else {
                     this.hide();
@@ -286,7 +286,7 @@ Item.prototype.processNextButtonClick = function(elapsedTime){
     } else if (this.curRegionIndex === this.regions.length+1){ // feedback is showing
         var showTime = this.timeData[this.timeData.length-1]["elapsedTime"];
         var feedbackP = document.getElementById(this.id + "_feedback");
-        this.saveData(this.id + "_feedback", "NA", showTime, elapsedTime, "NEXT_BTN", feedbackP.dataset.feedback);
+        this.saveData(this.id + "_feedback", "NA", showTime, elapsedTime, "NEXT_BTN", feedbackP.getAttribute('data-feedback'));
         this.hide();
         result = "end of screen";
     } else {
@@ -304,7 +304,7 @@ Item.prototype.processOptionButtonClick = function(elapsedTime, minTime, elId, p
         var showTime = this.timeData[this.timeData.length-1]["elapsedTime"];
         var promptP = document.getElementById(this.id + "_prompt");
         var whichBtn = elId.charAt(elId.length-1) === "1" ? "LEFT_OPTIONBTN" : "RIGHT_OPTIONBTN";
-        this.saveData(this.id + "_prompt", "NA", showTime, elapsedTime, whichBtn, promptP.dataset.string);
+        this.saveData(this.id + "_prompt", "NA", showTime, elapsedTime, whichBtn, promptP.getAttribute('data-string'));
         var leftOptionButton = document.getElementById(this.id + "_optButton_1");
         leftOptionButton.removeEventListener("click", this.experiment.processOptionButtonClick);
         var rightOptionButton = document.getElementById(this.id + "_optButton_2");
@@ -317,7 +317,7 @@ Item.prototype.processOptionButtonClick = function(elapsedTime, minTime, elId, p
             feedbackSpan.style.display = "inline-block";
             feedbackP.style.display = "block";
             feedbackP.style.visibility = "visible";
-            feedbackP.dataset.feedback = feedbackSpan.dataset.string;
+            feedbackP.setAttribute('data-feedback', feedbackSpan.getAttribute('data-string'));
             this.curRegionIndex++;
         } else {
             this.hide();
@@ -457,7 +457,7 @@ Item.prototype.createHtml = function(){
         } else if (this.experiment.inputMethod === "touchscreen") {
             // TODO: not yet implemented
         }
-        promptP.dataset.string = this.prompt + "|" + this.options[0]["string"] + "|" + this.options[1]["string"];
+        promptP.setAttribute('data-string', this.prompt + "|" + this.options[0]["string"] + "|" + this.options[1]["string"]);
         itemDiv.appendChild(promptP);
         if (typeof this.options[0]["feedback"] !== 'undefined' || typeof this.options[0]["feedback-option"] !== 'undefined'){
             // Add feedback element
@@ -472,13 +472,13 @@ Item.prototype.createHtml = function(){
                 if (this.feedbackOptions[this.options[0]["feedback-option"]]["text-color"] !== 'undefined'){
                     leftFeedback.style.color = this.feedbackOptions[this.options[0]["feedback-option"]]["text-color"];
                 }
-                leftFeedback.dataset.string = this.options[0]["feedback-option"];
+                leftFeedback.setAttribute('data-string', this.options[0]["feedback-option"]);
             } else {
                 leftFeedback.textContent = this.options[0]["feedback"];
                 if (this.options[0]["text-color"] !== 'undefined'){
                     leftFeedback.style.color = this.options[0]["text-color"];
                 }
-                leftFeedback.dataset.string = this.options[0]["feedback"];
+                leftFeedback.setAttribute('data-string', this.options[0]["feedback"]);
             }
             feedbackP.appendChild(leftFeedback);
             var rightFeedback = document.createElement("span");
@@ -489,13 +489,13 @@ Item.prototype.createHtml = function(){
                 if (this.feedbackOptions[this.options[1]["feedback-option"]]["text-color"] !== 'undefined'){
                     rightFeedback.style.color = this.feedbackOptions[this.options[1]["feedback-option"]]["text-color"];
                 }
-                rightFeedback.dataset.string = this.options[1]["feedback-option"];
+                rightFeedback.setAttribute('data-string', this.options[1]["feedback-option"]);
             } else {
                 rightFeedback.textContent = this.options[1]["feedback"];
                 if (this.options[1]["text-color"] !== 'undefined'){
                     rightFeedback.style.color = this.options[1]["text-color"];
                 }
-                rightFeedback.dataset.string = this.options[1]["feedback"];
+                rightFeedback.setAttribute('data-string', this.options[1]["feedback"]);
             }
             feedbackP.appendChild(rightFeedback);
             this.showFeedback = true;
