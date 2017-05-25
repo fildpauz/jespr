@@ -330,13 +330,13 @@ Item.prototype.processNextButtonClick = function(elapsedTime){
             var leftOptionButton = document.getElementById(this.id + "_optButton_1");
             if (leftOptionButton.addEventListener) {
                 leftOptionButton.addEventListener("click", this.experiment.processOptionButtonClick);
-            } else if (leftOptionButtion.attachEvent) { // For IE<9
+            } else if (leftOptionButton.attachEvent) { // For IE<9
                 leftOptionButton.attachEvent("onclick", this.experiment.processOptionButtonClick);
             }
             var rightOptionButton = document.getElementById(this.id + "_optButton_2");
             if (rightOptionButton.addEventListener) { // For IE<9
                 rightOptionButton.addEventListener("click", this.experiment.processOptionButtonClick);
-            } else if (rightOptionButtion.attachEvent) {
+            } else if (rightOptionButton.attachEvent) {
                 rightOptionButton.attachEvent("onclick", this.experiment.processOptionButtonClick);
             }
             var promptP = document.getElementById(this.id + "_prompt");
