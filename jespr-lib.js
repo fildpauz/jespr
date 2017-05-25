@@ -955,6 +955,14 @@ function Experiment(design, form){
             // Continue with the same screen; nothing else to do here
         }
     };
+
+    /*
+     * This will fire continuously throughout resizing. Possible solution can be
+     * found here: https://stackoverflow.com/questions/5489946/jquery-how-to-wait-for-the-end-of-resize-event-and-only-then-perform-an-ac
+     */
+    Experiment.prototype.processWindowResizeFinished = function(e){
+        self.jesprLog("Window size changed: height " + self.frame.offsetHeight + " x width " + self.frame.offsetWidth);
+    };
 }
 
 Experiment.prototype.startExperiment = function(callback){
@@ -985,9 +993,16 @@ Experiment.prototype.startExperiment = function(callback){
     } else if (this.inputMethod === "touchscreen") {
         // Not currently implemented
     }
+    if (window.addEventListener){
+        window.addEventListener("resize", this.processWindowResize);
+    } else if (window.attachEvent) {
+        window.attachEvent("onresize", this.processWindowResize);
+    }
     this.curScreenIndex = 0;
     this.updateProgressBar();
     this.screens[this.curScreenIndex].object.show(this.frame, 0);
+//    this.jesprLog("Starting JESPR experiment on " + navigator.userAgent);
+    this.jesprLog("Window size: height " + this.frame.offsetHeight + " x width " + this.frame.offsetWidth);
     this.jesprLog("Starting screen: " + this.screens[this.curScreenIndex].object.id);
 };
 
@@ -1010,6 +1025,11 @@ Experiment.prototype.endExperiment = function(){
         this.nextButton.style.visibility = "hidden";
     } else if (this.inputMethod === "touchscreen") {
         // Not currently implemented
+    }
+    if (window.removeEventListener) {
+        window.removeEventListener("resize", this.processWindowResize);
+    } else if (window.detachEvent) {
+        window.detachEvent("onresize", this.processWindowResize);
     }
     this.frame.style.display = "none";
     document.body.removeChild(this.frame);
