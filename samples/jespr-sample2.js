@@ -78,7 +78,7 @@ var jesprExperimentDesign =
                 "item": {
                     "id": "practice02",
                     "string": "Helena's|son|was|playing|soccer|with|his|friends|at|the|public|park|last|Saturday.",
-                    "prompt": "Did Helen's son meet his friends at the park?",
+                    "prompt": "Did Helena's son meet his friends at the park?",
                     "options": [
                         {
                             "string": "yes",
