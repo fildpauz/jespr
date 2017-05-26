@@ -61,7 +61,7 @@ var jesprExperimentDesign =
                 "item": {
                     "id": "practice01",
                     "string": "The|playful|dog|jumped|up|on|its|owner's|lap|to|get|a|tasty|treat.",
-                    "prompt": "Did the dog jump",
+                    "prompt": "Did the dog jump?",
                     "options": [
                         {
                             "string": "yes",
@@ -136,7 +136,7 @@ var jesprExperimentDesign =
                                             "id": "item01",
                                             "tags": [ "singular", "match" ],
                                             "string": "The|slogan|on|the|poster|{was}|designed|to|get|attention.",
-                                            "prompt": "Was there a slogan on the poster",
+                                            "prompt": "Was there a slogan on the poster?",
                                             "options": [
                                                 {
                                                     "string": "yes",
