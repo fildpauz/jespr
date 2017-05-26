@@ -18,7 +18,7 @@ if (!Array.prototype.some)
    Array.prototype.some = function(fun /*, thisp*/)
    {
       var len = this.length;
-      if (typeof fun != "function")
+      if (typeof fun != "function") // Should this be !== ?
       throw new TypeError();
       
       var thisp = arguments[1];
@@ -1000,9 +1000,10 @@ Experiment.prototype.startExperiment = function(callback){
     }
     this.curScreenIndex = 0;
     this.updateProgressBar();
-    this.screens[this.curScreenIndex].object.show(this.frame, 0);
+    this.jesprLog("Starting JESP experiment: " + this.title);
 //    this.jesprLog("Starting JESPR experiment on " + navigator.userAgent);
     this.jesprLog("Window size: height " + this.frame.offsetHeight + " x width " + this.frame.offsetWidth);
+    this.screens[this.curScreenIndex].object.show(this.frame, 0);
     this.jesprLog("Starting screen: " + this.screens[this.curScreenIndex].object.id);
 };
 
@@ -1343,7 +1344,7 @@ Experiment.prototype.getStringSetting = function(name, value, options, fallback)
 // Helper functions for validating design
 Experiment.prototype.validateDesign = function(){
     this.designValidated = false;
-    this.jesprLog("Validating design");
+    this.jesprLog("Validating experiment design: " + this.title);
     var result = true;
     // Check structure of feedback-options
     if (this.design["feedback-options"]){
