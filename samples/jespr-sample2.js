@@ -333,7 +333,7 @@ var jesprExperimentDesign =
                                         "item": {
                                             "id": "item12",
                                             "tags": [ "singular", "mismatch" ],
-                                            "string": "The movement to subsidize the drugs was impressive in size.",
+                                            "string": "The|movement|to|subsidize|the|drugs|{was}|impressive|in|size.",
                                             "prompt": "Was the drug subsidy movement small?",
                                             "options": [
                                                 {
