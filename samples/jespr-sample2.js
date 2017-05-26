@@ -27,7 +27,7 @@ var jesprExperimentDesign =
     "orientation": "horizontal",
     "masking-character": "*",
     "fixation-character": "+",
-    "min-instruction-time": "3000",
+    "min-instruction-time": "2500",
     "show-progress-bar": "true",
     "input-method": "keyboard",
     "show-results-display": "true",
@@ -47,7 +47,7 @@ var jesprExperimentDesign =
     "instruction-screens": [
         {
             "id": "instruction1",
-            "string": "<p>Thank you for participating in this experiment. This experiment uses a technique called <i>self-paced reading</i>. Very simply, you will read through several sentences, controlling the pace of reading on your own, using your computer keyboard. Before each sentence, you will see a fixation symbol: <b>+</b>. After you press the <b>[space]</b> bar, a sentence will appear on the screen, but all the words but the first will be masked with <b>***</b>'s. Continue pressing the <b>[space]</b> bar to reveal the words one by one and therefore read through the sentence at your own pace. Read each sentence as quickly as you can, but also read for full comprehension.</p><p>After some sentences, there will be a comprehension question about the last sentence you read. The question will have two answer options. Select your answer by tapping one of the keys <b>1/Q/A/Z</b> for the left-hand option or one of the keys <b>0/P/L/M</b> for the right-hand option.</p>"
+            "string": "<p>Thank you for participating in this experiment. This experiment uses a technique called <i>self-paced reading</i>. Very simply, you will read through several sentences, controlling the pace of reading on your own, word-by-word, using your computer keyboard. Before each sentence, you will see a fixation symbol: <b>+</b>. After you press the <b>[space]</b> bar, a sentence will appear on the screen, but all the words but the first will be masked with <b>***</b>'s. Press [space] to reveal the next word and read it. Then continue pressing the <b>[space]</b> bar to reveal and read the words one by one; thereby reading through the sentence at your own pace. Read as quickly as you can, but also read for full comprehension.</p><p>After each sentence, there will be a comprehension question about the sentence. The question will have two answer options. Select your answer by tapping one of the keys <b>1/Q/A/Z</b> for the left-hand option or one of the keys <b>0/P/L/M</b> for the right-hand option. In this experiment, the options will always be 'yes' and 'no', but be aware that the left-right position of the options may change.</p>"
         },
         {
             "id": "instruction2",
@@ -102,7 +102,7 @@ var jesprExperimentDesign =
     "post-practice-instruction-screens": [
         {
             "id": "instruction3",
-            "string": "<p>That is the end of the practice items. Note that not all of the sentences have questions after them. Nevertheless, be sure to read all of the sentences closely for comprehension.</p><p>When ready, press the <b>[space]</b> bar to begin the actual experiment.</p><p>There are 56 sentences to read. If you feel tired, feel free to take a short break anytime. However, please do NOT pause in the middle of a sentence or question. Instead, please take a break when you see the fixation symbol: <b>+</b>.</p>"
+            "string": "<p>That is the end of the practice items. Be sure to read all of the sentences closely for comprehension.</p><p>When ready, press the <b>[space]</b> bar to begin the actual experiment.</p><p>There are 56 sentences to read. If you feel tired, feel free to take a short break anytime. However, please do NOT pause in the middle of a sentence or question. Instead, please take a break when you see the fixation symbol: <b>+</b>.</p><p>Finally, note that there is a thin black progress bar at the bottom of the screen that will show how far through the experiment you have progressed.</p>"
         }
     ],
     "experiment-stimuli": {
@@ -124,112 +124,288 @@ var jesprExperimentDesign =
                                         "item": {
                                             "id": "item01",
                                             "tags": [ "singular", "match" ],
-                                            "string": "The|slogan|on|the|poster|{was}|designed|to|get|attention."
+                                            "string": "The|slogan|on|the|poster|{was}|designed|to|get|attention.",
+                                            "prompt": "Was there a slogan on the poster",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item02",
                                             "tags": [ "singular", "match" ],
-                                            "string": "The|picture|on|the|postcard|{was}|of|a|village|church|in|the|south|of|France."
+                                            "string": "The|picture|on|the|postcard|{was}|of|a|village|church|in|the|south|of|France.",
+                                            "prompt": "Was the village church in the north of France?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item03",
                                             "tags": [ "singular", "mismatch" ],
-                                            "string": "The|mistake|in|the|programs|{was}|disastrous|for|the|small|software|company."
+                                            "string": "The|mistake|in|the|programs|{was}|disastrous|for|the|small|software|company.",
+                                            "prompt": "Did the mistake cause problems for the company?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item04",
-                                            "tags": [ "singular", "mismatch" ],
-                                            "string": "The|label|on|the|bottles|{was}|a|warning|about|the|toxic|effects|of|the|drug."
+                                            "tags": [ "plural", "match" ],
+                                            "string": "The|problems|in|the|schools|{were}|solved|by|firing|the|superintendent.",
+                                            "prompt": "Did the superintendent continue working?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item05",
-                                            "tags": [ "plural", "match" ],
-                                            "string": "The|problems|in|the|schools|{were}|solved|by|firing|the|superintendent."
+                                            "tags": [ "singular", "mismatch" ],
+                                            "string": "The|label|on|the|bottles|{was}|a|warning|about|the|toxic|effects|of|the|drug.",
+                                            "prompt": "Did the bottles have a warning on them?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item06",
                                             "tags": [ "plural", "match" ],
-                                            "string": "The|names|on|the|billboards|{were}|of|a|prominent|local|politician."
+                                            "string": "The|names|on|the|billboards|{were}|of|a|prominent|local|politician.",
+                                            "prompt": "Did the billboards advertise a local business?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item07",
                                             "tags": [ "plural", "mismatch" ],
-                                            "string": "The|crimes|in|the|city|{were}|a|reflection|of|the|violence|in|today’s|society."
+                                            "string": "The|crimes|in|the|city|{were}|a|reflection|of|the|violence|in|today's|society.",
+                                            "prompt": "Were there a numer of crimes in the city?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item08",
                                             "tags": [ "plural", "mismatch" ],
-                                            "string": "The|defects|in|the|car|{were}|unknown|to|consumers|and|government|regulators."
+                                            "string": "The|defects|in|the|car|{were}|unknown|to|consumers|and|government|regulators.",
+                                            "prompt": "Did the consumers know about the car's defects?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item09",
                                             "tags": [ "singular", "match" ],
-                                            "string": "The|decision|to|pass|the|student|{was}|difficult|for|the|teacher."
+                                            "string": "The|decision|to|pass|the|student|{was}|difficult|for|the|teacher.",
+                                            "prompt": "Did the teacher have to make a difficult decision?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item10",
                                             "tags": [ "singular", "match" ],
-                                            "string": "The|request|to|begin|the|project|{was}|overwhelming|because|of|the|cost."
+                                            "string": "The|request|to|begin|the|project|{was}|overwhelming|because|of|the|cost.",
+                                            "prompt": "Was the cost of the project quite low?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item11",
                                             "tags": [ "singular", "mismatch" ],
-                                            "string": "The|proposal|to|help|the|refugees|{was}|honorable|but|misguided."
+                                            "string": "The|proposal|to|help|the|refugees|{was}|honorable|but|misguided.",
+                                            "prompt": "Was the proposal designed to help refugees?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item12",
                                             "tags": [ "singular", "mismatch" ],
-                                            "string": "The|proposal|to|help|the|refugees|{was}|honorable|but|misguided."
+                                            "string": "The movement to subsidize the drugs was impressive in size.",
+                                            "prompt": "Was the drug subsidy movement small?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item13",
                                             "tags": [ "plural", "match" ],
-                                            "string": "The|attempts|to|rescue|the|soldiers|{were}|successful."
+                                            "string": "The|attempts|to|rescue|the|soldiers|{were}|successful.",
+                                            "prompt": "Were the soldiers rescued?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item14",
                                             "tags": [ "plural", "match" ],
-                                            "string": "The|efforts|to|save|the|trees|{were}|disappointing|to|the|volunteer."
+                                            "string": "The|efforts|to|save|the|trees|{were}|disappointing|to|the|volunteer.",
+                                            "prompt": "Were the efforts designed to save the volunteer?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item15",
                                             "tags": [ "plural", "mismatch" ],
-                                            "string": "The|plots|to|assassinate|the|leader|{were}|unsuccessful."
+                                            "string": "The|plots|to|assassinate|the|leader|{were}|unsuccessful.",
+                                            "prompt": "Did the leader survive the assassination attempt?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item16",
                                             "tags": [ "plural", "mismatch" ],
-                                            "string": "The|bids|to|acquire|the|company|{were}|rejected|by|the|board."
+                                            "string": "The|bids|to|acquire|the|company|{were}|rejected|by|the|board.",
+                                            "prompt": "Did the board approve the bids?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
                                         }
                                     }
                                 ]
@@ -244,112 +420,288 @@ var jesprExperimentDesign =
                                         "item": {
                                             "id": "item17",
                                             "tags": [ "singular", "match" ],
-                                            "string": "The|door|to|the|offices|{were}|left|unlocked|by|the|cleaning|service."
+                                            "string": "The|memo|from|the|accountants|{were}|about|the|delinquent|tax|return.",
+                                            "prompt": "Did the accountants write a memo?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item18",
                                             "tags": [ "singular", "match" ],
-                                            "string": "The|memo|from|the|accountants|{were}|about|the|delinquent|tax|return."
+                                            "string": "The|door|to|the|offices|{were}|left|unlocked|by|the|cleaning|service.",
+                                            "prompt": "Did the cleaning service lock the door?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item19",
                                             "tags": [ "singular", "mismatch" ],
-                                            "string": "The|check|from|the|stockbroker|{were}|a|dividend|on|a|long-term|bond."
+                                            "string": "The|check|from|the|stockbroker|{were}|a|dividend|on|a|long-term|bond.",
+                                            "prompt": "Does the long-term bond pay dividends?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item20",
                                             "tags": [ "singular", "mismatch" ],
-                                            "string": "The|key|to|the|cabinet|{were}|rusty|from|many|years|of|disuse."
+                                            "string": "The|key|to|the|cabinet|{were}|rusty|from|many|years|of|disuse.",
+                                            "prompt": "Did somebody use the key recently?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item21",
                                             "tags": [ "plural", "match" ],
-                                            "string": "The|letters|from|the|lawyer|{was}|received|in|San|Francisco|in|late|March."
+                                            "string": "The|warnings|from|the|experts|{was}|a|shock|to|the|residents|of|the|city.",
+                                            "prompt": "Did the experts issue warnings to the residents?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item22",
                                             "tags": [ "plural", "match" ],
-                                            "string": "The|entrances|to|the|laboratory|{was}|hard|to|locate|on|the|diagram."
+                                            "string": "The|letters|from|the|lawyer|{was}|received|in|San|Francisco|in|late|March.",
+                                            "prompt": "Were the letters sent to San Francisco in May?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item23",
                                             "tags": [ "plural", "mismatch" ],
-                                            "string": "The|warnings|from|the|experts|{was}|a|shock|to|the|residents|of|the|city."
+                                            "string": "The|bridges|to|the|islands|{was}|about|ten|miles|off|the|main|highway.",
+                                            "prompt": "Did the bridges connect to the islands?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item24",
                                             "tags": [ "plural", "mismatch" ],
-                                            "string": "The|bridges|to|the|islands|{was}|about|ten|miles|off|the|main|highway."
+                                            "string": "The|entrances|to|the|laboratory|{was}|hard|to|locate|on|the|diagram.",
+                                            "prompt": "Did the diagram show the entrances clearly?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item25",
                                             "tags": [ "singular", "match" ],
-                                            "string": "The|opportunity|to|meet|the|senators|{were}|unbelievable."
+                                            "string": "The|opportunity|to|meet|the|senators|{were}|unbelievable.",
+                                            "prompt": "Was there a chance to meet the senators?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item26",
                                             "tags": [ "singular", "match" ],
-                                            "string": "The|promise|to|fix|the|cars|{were}|broken|by|the|overworked|mechanic."
+                                            "string": "The|promise|to|fix|the|cars|{were}|broken|by|the|overworked|mechanic.",
+                                            "prompt": "Did the mechanic keep the promise?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item27",
                                             "tags": [ "singular", "mismatch" ],
-                                            "string": "The|mission|to|feed|the|hostage|{were}|discovered|by|the|gang."
+                                            "string": "The|mission|to|feed|the|hostage|{were}|discovered|by|the|gang.",
+                                            "prompt": "Did the gang discover the mission?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item28",
                                             "tags": [ "singular", "mismatch" ],
-                                            "string": "The pledge|to|implement|the|agreement|{were}|honored|by|the|nation."
+                                            "string": "The pledge|to|implement|the|agreement|{were}|honored|by|the|nation.",
+                                            "prompt": "Did the nation reject the agreement?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item29",
                                             "tags": [ "plural", "match" ],
-                                            "string": "The|campaigns|to|censure|the|candidate|{was}|overly|aggressive."
+                                            "string": "The|campaigns|to|censure|the|candidate|{was}|overly|aggressive.",
+                                            "prompt": "Was there a campaign to censure the candidate?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item30",
                                             "tags": [ "plural", "match" ],
-                                            "string": "The|agreements|to|house|the|dog|{was}|rejected|by|the|roommate."
+                                            "string": "The|agreements|to|house|the|dog|{was}|rejected|by|the|roommate.",
+                                            "prompt": "Did the roommate accept the agreement?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item31",
                                             "tags": [ "plural", "mismatch" ],
-                                            "string": "The|mandates|to|relinquish|the|claims|{was}|issued|by|the|court."
+                                            "string": "The|mandates|to|relinquish|the|claims|{was}|issued|by|the|court.",
+                                            "prompt": "Did the court issue the mandates?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "correct"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "incorrect"
+                                                }
+                                            ]
                                         }
                                     },
                                     {
                                         "item": {
                                             "id": "item32",
                                             "tags": [ "plural", "mismatch" ],
-                                            "string": "The|commitments|to|teach|the|children|{was}|made|by|every|teacher."
+                                            "string": "The|commitments|to|teach|the|children|{was}|made|by|every|teacher.",
+                                            "prompt": "Did the children make a commitment to the teachers?",
+                                            "options": [
+                                                {
+                                                    "string": "yes",
+                                                    "feedback-option": "incorrect"
+                                                },
+                                                {
+                                                    "string": "no",
+                                                    "feedback-option": "correct"
+                                                }
+                                            ]
                                         }
                                     }
                                 ]
