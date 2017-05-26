@@ -77,7 +77,18 @@ var jesprExperimentDesign =
             {
                 "item": {
                     "id": "practice02",
-                    "string": "Helena's|son|was|playing|soccer|with|his|friends|at|the|public|park|last|Saturday."
+                    "string": "Helena's|son|was|playing|soccer|with|his|friends|at|the|public|park|last|Saturday.",
+                    "prompt": "Did Helen's son meet his friends at the park?",
+                    "options": [
+                        {
+                            "string": "yes",
+                            "feedback-option": "correct"
+                        },
+                        {
+                            "string": "no",
+                            "feedback-option": "incorrect"
+                        }
+                    ]
                 }
             },
             {
@@ -87,12 +98,12 @@ var jesprExperimentDesign =
                     "prompt": "Did the squirrel get out of the attic?",
                     "options": [
                         {
-                            "string": "no",
-                            "feedback-option": "correct"
-                        },
-                        {
                             "string": "yes",
                             "feedback-option": "incorrect"
+                        },
+                        {
+                            "string": "no",
+                            "feedback-option": "correct"
                         }
                     ]
                 }
