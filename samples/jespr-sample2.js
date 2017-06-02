@@ -47,7 +47,7 @@ var jesprExperimentDesign =
     "instruction-screens": [
         {
             "id": "instruction1",
-            "string": "<p>Thank you for participating in this experiment. This experiment uses a technique called <i>self-paced reading</i>. Very simply, you will read through several sentences, controlling the pace of reading on your own, word-by-word, using your computer keyboard. Before each sentence, you will see a fixation symbol: <b>+</b>. After you press the <b>[space]</b> bar, a sentence will appear on the screen, but all the words but the first will be masked with <b>***</b>'s. Press [space] to reveal the next word and read it. Then continue pressing the <b>[space]</b> bar to reveal and read the words one by one; thereby reading through the sentence at your own pace. Read as quickly as you can, but also read for full comprehension.</p><p>After each sentence, there will be a comprehension question about the sentence. The question will have two answer options. Select your answer by tapping one of the keys <b>1/Q/A/Z</b> for the left-hand option or one of the keys <b>0/P/L/M</b> for the right-hand option. In this experiment, the options will always be 'yes' and 'no', but be aware that the left-right position of the options may change.</p>"
+            "string": "<p>Thank you for participating in this experiment. This experiment uses a technique called <i>self-paced reading</i>. Very simply, you will read through several sentences, controlling the pace of reading on your own, word-by-word, using your computer keyboard. Before each sentence, you will see a fixation symbol: <b>+</b>. After you press the <b>[space]</b> bar, a sentence will appear on the screen, but all the words but the first will be masked with <b>***</b>'s. Press <b>[space]</b> to reveal the next word and read it. Then continue pressing the <b>[space]</b> bar to reveal and read the words one by one; thereby reading through the sentence at your own pace. Read as quickly as you can, but also read for full comprehension.</p><p>After each sentence, there will be a comprehension question about the sentence. The question will have two answer options. Select your answer by tapping one of the keys <b>1/Q/A/Z</b> for the left-hand option or one of the keys <b>0/P/L/M</b> for the right-hand option. In this experiment, the options will always be 'yes' and 'no', but be aware that the left-right position of the options may change.</p>"
         },
         {
             "id": "instruction2",
@@ -61,7 +61,7 @@ var jesprExperimentDesign =
                 "item": {
                     "id": "practice01",
                     "string": "The|playful|dog|jumped|up|on|its|owner's|lap|to|get|a|tasty|treat.",
-                    "prompt": "Did the dog jump",
+                    "prompt": "Did the dog jump?",
                     "options": [
                         {
                             "string": "yes",
@@ -78,7 +78,7 @@ var jesprExperimentDesign =
                 "item": {
                     "id": "practice02",
                     "string": "Helena's|son|was|playing|soccer|with|his|friends|at|the|public|park|last|Saturday.",
-                    "prompt": "Did Helen's son meet his friends at the park?",
+                    "prompt": "Did Helena's son meet his friends at the park?",
                     "options": [
                         {
                             "string": "yes",
@@ -136,7 +136,7 @@ var jesprExperimentDesign =
                                             "id": "item01",
                                             "tags": [ "singular", "match" ],
                                             "string": "The|slogan|on|the|poster|{was}|designed|to|get|attention.",
-                                            "prompt": "Was there a slogan on the poster",
+                                            "prompt": "Was there a slogan on the poster?",
                                             "options": [
                                                 {
                                                     "string": "yes",
