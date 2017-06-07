@@ -29,6 +29,7 @@ var jesprExperimentDesign =
     "min-instruction-time": "3000",
     "show-progress-bar": "true",
     "input-method": "keyboard",
+    "quote-mark": "double_quote",
     "show-results-display": "true",
     "show-log-display": "true",
     "feedback-options": [

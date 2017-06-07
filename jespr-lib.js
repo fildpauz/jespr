@@ -426,29 +426,38 @@ Item.prototype.saveData = function(regionId, index, showTime, elapsedTime, keyCo
 
 Item.prototype.getData = function(participant, maxTags){
     var result = "";
+    var lhq = "\"";
+    var rhq = "\"";
+    if (this.experiment.quoteMark === 'single_quote') {
+        lhq = "\'";
+        rhq = "\'";
+    } else if (this.experiment.quoteMark === 'curly_brackets') {
+        lhq = "{";
+        rhq = "}";
+    }
     for (var i=0; i<this.timeData.length; i++){
         var data = this.timeData[i];
         var timeInterval = data["elapsedTime"] - data["showTime"];
-        var line = "\"" + participant + "\",\"" + this.id + "\"";
-        line = line + ",\"" + data["regionId"] + "\"";
+        var line = lhq + participant + rhq + "," + lhq + this.id + rhq;
+        line = line + "," + lhq + data["regionId"] + rhq;
         line = line + "," + data["roiRelPosition"];
         line = line + "," + data["elapsedTime"];
         line = line + "," + timeInterval;
-        line = line + ",\"" + data["keyCode"] + "\"";
-        line = line + ",\"" + data["string"] + "\"";
+        line = line + "," + lhq + data["keyCode"] + rhq;
+        line = line + "," + lhq + data["string"] + rhq;
         if (this.setName === "NA"){
             line = line + ",NA";
         } else {
-            line = line + ",\"" + this.setName + "\"";
+            line = line + "," + lhq + this.setName + rhq;
         }
         if (this.groupName === "NA"){
             line = line + ",NA";
         } else {
-            line = line + ",\"" + this.groupName + "\"";
+            line = line + "," + lhq + this.groupName + rhq;
         }
         for (var j=0; j<this.tags.length; j++){
             if (this.tags[j].length > 0){
-                line = line + ",\"" + this.tags[j] + "\"";
+                line = line + "," + lhq + this.tags[j] + rhq;
             } else {
                 line = line + ",NA";
             }
@@ -627,11 +636,12 @@ Item.prototype.getRoi = function(regions){
  * @param primaryInvestigators - An array of names of the primary investigators
  * @param otherInvestigators - An array of names of other investigators
  */
-function Title(text, primaryInvestigators, otherInvestigators){
+function Title(text, primaryInvestigators, otherInvestigators, experiment){
     this.id = "title";
     this.text = text;
     this.primaryInvestigators = primaryInvestigators;
     this.otherInvestigators = otherInvestigators;
+    this.experiment = experiment;
     this.html = this.createHtml();
     this.frame = undefined;
     this.showTime;
@@ -657,7 +667,7 @@ Title.prototype.processKeydown = function(keyCode, elapsedTime, minTime){
         switch (keyCode){
             case 32: // space bar
                 this.elapsedTime = elapsedTime;
-                this.keyCode = keyCode;
+                this.keyCode = "KBD:" + keyCode;
                 this.hide();
                 result = "end of screen";
                 break;
@@ -685,8 +695,17 @@ Title.prototype.processOptionButtonClick = function(elapsedTime, minTime, id, pa
 };
 
 Title.prototype.getData = function(participant, maxTags){
+    var lhq = "\"";
+    var rhq = "\"";
+    if (this.experiment.quoteMark === 'single_quote') {
+        lhq = "\'";
+        rhq = "\'";
+    } else if (this.experiment.quoteMark === 'curly_brackets') {
+        lhq = "{";
+        rhq = "}";
+    }
     var timeInterval = this.elapsedTime - this.showTime;
-    var result = "\"" + participant + "\",\"" + this.id + "\",NA,NA," + this.elapsedTime + "," + timeInterval + ",\"" + this.keyCode + "\",\"" + truncateText(this.text, 40) + "\",NA,NA";
+    var result = lhq + participant + rhq + "," + lhq + this.id + rhq + ",NA,NA," + this.elapsedTime + "," + timeInterval + "," + lhq + this.keyCode + rhq + "," + lhq + truncateText(this.text, 40) + rhq + ",NA,NA";
     for (var i=0; i<maxTags; i++){ result = result + ",NA"; }
     result = result + "\n";
     return result;
@@ -736,9 +755,10 @@ Title.prototype.createHtml = function(){
  * The Instructions object merely defines the parameters related to an instructions screen
  * @param text - The instructions text (with html allowed)
  */
-function Instructions(id, text){
+function Instructions(id, text, experiment){
     this.id = id;
     this.text = text;
+    this.experiment = experiment;
     this.html = this.createHtml();
     this.frame = undefined;
     this.showTime;
@@ -771,7 +791,7 @@ Instructions.prototype.processKeydown = function(keyCode, elapsedTime, minTime){
         switch (keyCode){
             case 32: // space bar
                 this.elapsedTime = elapsedTime;
-                this.keyCode = keyCode;
+                this.keyCode = "KBD:" + keyCode;
                 this.hide();
                 result = "end of screen";
                 break;
@@ -810,8 +830,17 @@ Instructions.prototype.createHtml = function(){
 };
 
 Instructions.prototype.getData = function(participant, maxTags){
+    var lhq = "\"";
+    var rhq = "\"";
+    if (this.experiment.quoteMark === 'single_quote') {
+        lhq = "\'";
+        rhq = "\'";
+    } else if (this.experiment.quoteMark === 'curly_brackets') {
+        lhq = "{";
+        rhq = "}";
+    }
     var timeInterval = this.elapsedTime - this.showTime;
-    var result = "\"" + participant + "\",\"" + this.id + "\",NA,NA," + this.elapsedTime + "," + timeInterval + ",\"" + this.keyCode + "\",\"" + truncateText(this.text, 20) + "\",NA,NA";
+    var result = lhq + participant + rhq + "," + lhq + this.id + rhq + ",NA,NA," + this.elapsedTime + "," + timeInterval + "," + lhq + this.keyCode + rhq + "," + lhq + truncateText(this.text, 20) + rhq + ",NA,NA";
     for (var i=0; i<maxTags; i++){ result = result + ",NA"; }
     result = result + "\n";
     return result;
@@ -874,6 +903,7 @@ function Experiment(design, form){
     this.idList = []; // Used during validation to ensure that all IDs are unique
     this.showProgressBar = typeof design["show-progress-bar"] !== 'undefined' ? design["show-progress-bar"] : false;
     this.inputMethod = typeof design["input-method"] !== 'undefined' ? design["input-method"] : "keyboard";
+    this.quoteMark = typeof design["quote-mark"] !== 'undefined' ? design["quote-mark"] : "double_quote";
     
     // Info about json object containing experimental design
     this.design = design; // json object containing the design, stimuli, etc.
@@ -1092,8 +1122,17 @@ Experiment.prototype.createLog = function(){
 };
 
 Experiment.prototype.getData = function(){
-    var result = "\"participant\",\"itemId\",\"regionId\",\"roiRelPosition\",\"elapsedTime\",\"timeInterval\",\"keyCode\",\"string\",\"setName\",\"groupName\"";
-    for (var i=1; i<=this.maxTags; i++){ result = result + ",\"tag" + i + "\""; }
+    var lhq = "\"";
+    var rhq = "\"";
+    if (this.quoteMark === 'single_quote') {
+        lhq = "\'";
+        rhq = "\'";
+    } else if (this.quoteMark === 'curly_brackets') {
+        lhq = "{";
+        rhq = "}";
+    }
+    var result = lhq + "participant" + rhq + "," + lhq + "itemId" + rhq + "," + lhq + "regionId" + rhq + "," + lhq + "roiRelPosition" + rhq + "," + lhq + "elapsedTime" + rhq + "," + lhq + "timeInterval" + rhq + "," + lhq + "keyCode" + rhq + "," + lhq + "string" + rhq + "," + lhq + "setName" + rhq + "," + lhq + "groupName" + rhq;
+    for (var i=1; i<=this.maxTags; i++){ result = result + "," + lhq + "tag" + i + rhq; }
     result = result + "\n";
     for (var j=0; j<this.screens.length; j++){
         result = result + this.screens[j].getData(this.participant, this.maxTags);
@@ -1166,7 +1205,7 @@ Experiment.prototype.loadTitleScreen = function(design){
             oi.push(design["investigators"][i]["other"]);
         }
     }
-    var title = new Title(this.title, pi, oi);
+    var title = new Title(this.title, pi, oi, this);
     var screen = new Screen("title", title);
     return screen;
 };
@@ -1174,7 +1213,7 @@ Experiment.prototype.loadTitleScreen = function(design){
 Experiment.prototype.loadInstructions = function(design){
     var screens = [];
     for (var i=0; i<design.length; i++){
-        var instructions = new Instructions(design[i]["id"], design[i]["string"]);
+        var instructions = new Instructions(design[i]["id"], design[i]["string"], this);
         var screen = new Screen("instructions", instructions);
         screens.push(screen);
     }
