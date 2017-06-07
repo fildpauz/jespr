@@ -30,6 +30,7 @@ var jesprExperimentDesign =
     "min-instruction-time": "2500",
     "show-progress-bar": "true",
     "input-method": "keyboard",
+    "quote-mark": "curly_brackets",
     "show-results-display": "true",
     "show-log-display": "true",
     "feedback-options": [
@@ -351,7 +352,7 @@ var jesprExperimentDesign =
                                         "item": {
                                             "id": "item13",
                                             "tags": [ "plural", "match" ],
-                                            "string": "The|attempts|to|rescue|the|soldiers|{were}|successful.",
+                                            "string": "The|attempts|to|rescue|the|soldiers|{were}|successful|in|the|spring.",
                                             "prompt": "Were the soldiers rescued?",
                                             "options": [
                                                 {
@@ -387,8 +388,8 @@ var jesprExperimentDesign =
                                         "item": {
                                             "id": "item15",
                                             "tags": [ "plural", "mismatch" ],
-                                            "string": "The|plots|to|assassinate|the|leader|{were}|unsuccessful.",
-                                            "prompt": "Did the leader survive the assassination attempt?",
+                                            "string": "The|plots|to|assassinate|the|leader|{were}|unsuccessful|every|time.",
+                                            "prompt": "Did the leader survive the assassination attempts?",
                                             "options": [
                                                 {
                                                     "string": "yes",
@@ -575,7 +576,7 @@ var jesprExperimentDesign =
                                         "item": {
                                             "id": "item25",
                                             "tags": [ "singular", "match" ],
-                                            "string": "The|opportunity|to|meet|the|senators|{were}|unbelievable.",
+                                            "string": "The|opportunity|to|meet|the|senators|{were}|unbelievable|to|the|voters.",
                                             "prompt": "Was there a chance to meet the senators?",
                                             "options": [
                                                 {
@@ -647,7 +648,7 @@ var jesprExperimentDesign =
                                         "item": {
                                             "id": "item29",
                                             "tags": [ "plural", "match" ],
-                                            "string": "The|campaigns|to|censure|the|candidate|{was}|overly|aggressive.",
+                                            "string": "The|campaigns|to|censure|the|candidate|{was}|overly|aggressive|in|tone.",
                                             "prompt": "Was there a campaign to censure the candidate?",
                                             "options": [
                                                 {
