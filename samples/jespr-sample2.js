@@ -316,7 +316,7 @@ var jesprExperimentDesign =
                                         "item": {
                                             "id": "item11",
                                             "tags": [ "singular", "mismatch" ],
-                                            "string": "The|proposal|to|help|the|refugees|{was}|honorable|but|misguided.",
+                                            "string": "The|proposal|to|help|the|refugees|{was}|honorable|but|very|misguided.",
                                             "prompt": "Was the proposal designed to help refugees?",
                                             "options": [
                                                 {
@@ -334,7 +334,7 @@ var jesprExperimentDesign =
                                         "item": {
                                             "id": "item12",
                                             "tags": [ "singular", "mismatch" ],
-                                            "string": "The|movement|to|subsidize|the|drugs|{was}|impressive|in|size.",
+                                            "string": "The|movement|to|subsidize|the|drugs|{was}|impressive|in|size|and|scope.",
                                             "prompt": "Was the drug subsidy movement small?",
                                             "options": [
                                                 {
@@ -388,7 +388,7 @@ var jesprExperimentDesign =
                                         "item": {
                                             "id": "item15",
                                             "tags": [ "plural", "mismatch" ],
-                                            "string": "The|plots|to|assassinate|the|leader|{were}|unsuccessful|every|time.",
+                                            "string": "The|plots|to|assassinate|the|leader|{were}|unsuccessful|each|time|the|rebels|tried.",
                                             "prompt": "Did the leader survive the assassination attempts?",
                                             "options": [
                                                 {
@@ -406,7 +406,7 @@ var jesprExperimentDesign =
                                         "item": {
                                             "id": "item16",
                                             "tags": [ "plural", "mismatch" ],
-                                            "string": "The|bids|to|acquire|the|company|{were}|rejected|by|the|board.",
+                                            "string": "The|bids|to|acquire|the|company|{were}|rejected|by|the|board|of|trustees.",
                                             "prompt": "Did the board approve the bids?",
                                             "options": [
                                                 {
