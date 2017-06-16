@@ -245,7 +245,7 @@ var jesprExperimentDesign =
                                             "id": "item07",
                                             "tags": [ "plural", "mismatch" ],
                                             "string": "The|crimes|in|the|city|{were}|a|reflection|of|the|violence|in|today's|society.",
-                                            "prompt": "Were there a numer of crimes in the city?",
+                                            "prompt": "Were there a number of crimes in the city?",
                                             "options": [
                                                 {
                                                     "string": "yes",
