@@ -157,7 +157,8 @@ function Item(id, text, orientation, fixationChar, maskChar, display, prompt, op
     this.curRegionIndex = undefined;   // The index of the current SPR region being displayed
     this.prompt = prompt;
     this.options = options;
-    this.optionOrder = "random"; // TODO: Implement a way for this to be set in json file
+    // Right now the following is overridden by experiment-wide setting
+    this.optionOrder = "random"; // TODO: Implement a way for this to be set per item in json file
     this.showFeedback = false;
     this.setName = setName; // Name of stimulus set as given in json design object
     this.groupName = groupName; // Name of stimulus group as given in json design object
@@ -513,7 +514,7 @@ Item.prototype.createHtml = function(){
         promptP.appendChild(promptText);
         var br2 = document.createElement("br");
         promptP.appendChild(br2);
-        if (this.optionOrder === "random"){ shuffle(this.options); }
+        if (this.experiment.optionOrder === "random"){ shuffle(this.options); }
         if (this.experiment.inputMethod === "keyboard") {
             var leftOption = document.createElement("span");
             leftOption.id = this.id + "_option_1";
@@ -554,13 +555,13 @@ Item.prototype.createHtml = function(){
             leftFeedback.id = this.id + "_feedback_left";
             leftFeedback.className = "feedback";
             if (typeof this.options[0]["feedback-option"] !== 'undefined'){
-                leftFeedback.textContent = this.feedbackOptions[this.options[0]["feedback-option"]]["string"];
+                leftFeedback.innerHTML = this.feedbackOptions[this.options[0]["feedback-option"]]["string"];
                 if (this.feedbackOptions[this.options[0]["feedback-option"]]["text-color"] !== 'undefined'){
                     leftFeedback.style.color = this.feedbackOptions[this.options[0]["feedback-option"]]["text-color"];
                 }
                 leftFeedback.setAttribute('data-string', this.options[0]["feedback-option"]);
             } else {
-                leftFeedback.textContent = this.options[0]["feedback"];
+                leftFeedback.innerHTML = this.options[0]["feedback"];
                 if (this.options[0]["text-color"] !== 'undefined'){
                     leftFeedback.style.color = this.options[0]["text-color"];
                 }
@@ -571,13 +572,13 @@ Item.prototype.createHtml = function(){
             rightFeedback.id = this.id + "_feedback_right";
             rightFeedback.className = "feedback";
             if (typeof this.options[1]["feedback-option"] !== 'undefined'){
-                rightFeedback.textContent = this.feedbackOptions[this.options[1]["feedback-option"]]["string"];
+                rightFeedback.innerHTML = this.feedbackOptions[this.options[1]["feedback-option"]]["string"];
                 if (this.feedbackOptions[this.options[1]["feedback-option"]]["text-color"] !== 'undefined'){
                     rightFeedback.style.color = this.feedbackOptions[this.options[1]["feedback-option"]]["text-color"];
                 }
                 rightFeedback.setAttribute('data-string', this.options[1]["feedback-option"]);
             } else {
-                rightFeedback.textContent = this.options[1]["feedback"];
+                rightFeedback.innerHTML = this.options[1]["feedback"];
                 if (this.options[1]["text-color"] !== 'undefined'){
                     rightFeedback.style.color = this.options[1]["text-color"];
                 }
@@ -722,7 +723,7 @@ Title.prototype.createHtml = function(){
     // create and add the title
     var titleP = document.createElement("p");
     titleP.className = "title";
-    titleP.textContent = this.text;
+    titleP.innerHTML = this.text;
     titleDiv.appendChild(titleP);
     // create and add investigator info
     var investigators = document.createElement("p");
@@ -904,6 +905,7 @@ function Experiment(design, form){
     this.showProgressBar = typeof design["show-progress-bar"] !== 'undefined' ? design["show-progress-bar"] : false;
     this.inputMethod = typeof design["input-method"] !== 'undefined' ? design["input-method"] : "keyboard";
     this.quoteMark = typeof design["quote-mark"] !== 'undefined' ? design["quote-mark"] : "double_quote";
+    this.optionOrder = typeof design["option-order"] !== 'undefined' ? design["option-order"] : "random";
     
     // Info about json object containing experimental design
     this.design = design; // json object containing the design, stimuli, etc.
@@ -1035,6 +1037,12 @@ Experiment.prototype.startExperiment = function(callback){
     this.jesprLog("Window size: height " + this.frame.offsetHeight + " x width " + this.frame.offsetWidth);
     this.screens[this.curScreenIndex].object.show(this.frame, 0);
     this.jesprLog("Starting screen: " + this.screens[this.curScreenIndex].object.id);
+    // prevent spacebar from engaging page scroll actions (default action in some browsers)
+    window.onkeydown = function(e) {
+        if (e.keyCode === 32 && e.target === document.body) {
+            e.preventDefault();
+        }
+    };
 };
 
 Experiment.prototype.endExperiment = function(){
