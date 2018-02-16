@@ -1043,6 +1043,17 @@ Experiment.prototype.startExperiment = function(callback){
             e.preventDefault();
         }
     };
+    document.addEventListener("keydown", function (e) {
+        if (e.keyCode === 13) {
+            if (!document.webkitFullscreenElement) {
+                document.documentElement.webkitRequestFullscreen();
+            } else {
+                if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+            }
+        }
+    }, false);
 };
 
 Experiment.prototype.endExperiment = function(){
