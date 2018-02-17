@@ -883,7 +883,7 @@ Screen.prototype.getData = function(participant, maxTags){
  * @param form - the html <form> object that will handle the data values on submit
  */
 function Experiment(design, form){
-    // For binding 'this' inside listeners
+    // For binding 'this' inside listeners <- but isn't this making "self" a global? Risky?
     var self = this;
     // General experiment settings and parameters
     this.title = typeof design["title"] !== 'undefined' ? jesprTrim(design["title"]) : "A Self-paced Reading Experiment";
@@ -1038,20 +1038,71 @@ Experiment.prototype.startExperiment = function(callback){
     this.screens[this.curScreenIndex].object.show(this.frame, 0);
     this.jesprLog("Starting screen: " + this.screens[this.curScreenIndex].object.id);
     // prevent spacebar from engaging page scroll actions (default action in some browsers)
-    window.onkeydown = function(e) {
-        if (e.keyCode === 32 && e.target === document.body) {
-            e.preventDefault();
-        }
-    };
+//    window.onkeydown = function(e) {
+//        if (e.keyCode === 32 && e.target === document.body) {
+//            e.preventDefault();
+//        }
+//    };
     document.addEventListener("keydown", function (e) {
         if (e.keyCode === 13) {
-            if (!document.webkitFullscreenElement) {
-                document.documentElement.webkitRequestFullscreen();
+            if (!document.fullscreenElement &&
+                    !document.webkitFullscreenElement &&
+                    !document.msFullscreenElement &&
+                    !document.mozFullScreenElement) {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) {
+                    document.documentElement.mozRequestFullScreen();
+                }
             } else {
-                if (document.webkitExitFullscreen) {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
                     document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
                 }
             }
+//            if (browser() === "Firefox") {
+//                if (!document.mozFullscreenElement) {
+//                    document.documentElement.mozRequestFullscreen();
+//                } else if (document.mozCancelFullscreen) {
+//                    document.mozCancelFullscreen();
+//                }
+//            } else if (browser() === "IE") {
+////                if (document.msFullscreenEnabled){
+////                    alert("full screen enabled");
+////                } else {
+////                    alert("not full screen enabled");
+////                }
+////                if (!document.msFullscreenElement) { // This always returns true (even if fullscreen engaged (by F11)
+//                if (document.documentElement.msRequestFullscreen) { // This (always) returns true,
+//                    document.documentElement.msRequestFullscreen(); // But this doesn't seem to be working???
+//                } else if (document.msExitFullscreen) { // This always returns true, even when not in full-screen mode
+//                    document.msExitFullscreen();
+//                }
+//            } else if (browser() === "Chrome" ||
+//                       browser() === "Opera"   ||
+//                       browser() === "Edge"   ||
+//                       browser() === "Safari") {
+//                if (!document.webkitFullscreenElement) {
+//                    document.documentElement.webkitRequestFullscreen();
+//                } else if (document.webkitExitFullscreen) {
+//                    document.webkitExitFullscreen();
+//                }
+//            } else {
+//                if (!document.fullscreenElement) {
+//                    document.documentElement.requestFullscreen();
+//                } else if (document.exitFullscreen) {
+//                    document.exitFullscreen();
+//                }
+//            }
         }
     }, false);
 };
@@ -1758,3 +1809,48 @@ function truncateText(text, len){
 function jesprTrim(x) {
     return x.replace(/^\s+|\s+$/gm,'');
 }
+
+/**
+ * Gets the browser name or returns an empty string if unknown. 
+ * This function also caches the result to provide for any 
+ * future calls this function has.
+ *
+ * @returns {string}
+ */
+// Taken from https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
+var browser = function() {
+    // Return cached result if avalible, else get result then cache it.
+    if (browser.prototype._cachedResult)
+        return browser.prototype._cachedResult;
+
+    // Opera 8.0+
+    var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+
+    // Firefox 1.0+
+    var isFirefox = typeof InstallTrigger !== 'undefined';
+
+    // Safari 3.0+ "[object HTMLElementConstructor]" 
+    var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
+
+    // Internet Explorer 6-11
+    var isIE = /*@cc_on!@*/false || !!document.documentMode;
+
+    // Edge 20+
+    var isEdge = !isIE && !!window.StyleMedia;
+
+    // Chrome 1+
+    var isChrome = !!window.chrome && !!window.chrome.webstore;
+
+    // Blink engine detection
+    var isBlink = (isChrome || isOpera) && !!window.CSS;
+
+    return browser.prototype._cachedResult =
+        isOpera ? 'Opera' :
+        isFirefox ? 'Firefox' :
+        isSafari ? 'Safari' :
+        isChrome ? 'Chrome' :
+        isIE ? 'IE' :
+        isEdge ? 'Edge' :
+        isBlink ? 'Blink' :
+        "Don't know";
+};
