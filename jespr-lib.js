@@ -1778,8 +1778,20 @@ function mergeArrays(arrays, method){
 function mergeArraysRandomly(arrays){
     var result = [];
     if (arrays.length>1) {
+        var totalLength = 0;
+        for (var i=0; i<arrays.length; i++){
+            totalLength += arrays[i].length;
+        }
         // get random array and take the top item and push to result
-        var randomIndex = Math.floor(Math.random() * arrays.length);
+        var randomIndex = Math.floor(Math.random() * totalLength); // use totalLength so that long arrays will be favored
+        totalLength = 0;
+        for (var i=0; i<arrays.length; i++) {
+            totalLength += arrays[i].length;
+            if (randomIndex < totalLength) {
+                randomIndex = i;
+                break;
+            }
+        }
         result.push(arrays[randomIndex].shift());
         return result.concat(mergeArraysRandomly(arrays.filter(function(arr){
             return arr.length > 0;
