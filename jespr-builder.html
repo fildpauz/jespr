@@ -1,21 +1,322 @@
 <html>
-  <head>
-    
-  </head>
-  <body>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: roboto, sans-serif;
+      font-size: 1.2em;
+      background-color: silver;
+      color: black;
+    }
+
+    h1 {
+      font-size: 130%;
+      margin: 0;
+      padding: 0.1em;
+    }
+
+    h2 {
+      border-top: solid silver 5px;
+      font-size: 115%;
+      margin: 0.5em 0 0;
+      padding: 0.05em 0.05em 0.2em;
+    }
+
+    p {
+      margin: 0;
+      padding: 0.05em 0.05 0.2em;
+    }
+
+    #body {
+      margin: 0px auto;
+      max-width: 1200;
+      border: solid black 1px;
+      background-color: white;
+    }
+
+    div {
+      border: solid black 0px;
+    }
+
+    .smaller {
+      font-size: 85%;
+    }
+
+    .header {
+      float: none;
+      clear: both;
+      text-align: center;
+      background-color: black;
+      color: white;
+      padding: 0.2em;
+    }
+
+    .main {
+      display: table;
+      width: 100%;
+      /*       height: fit-content; /* might not work in other browsers... */
+      */ margin: 0;
+      background-color: white;
+    }
+
+    .menu {
+      float: left;
+      width: 20%;
+      height: 100%;
+      text-align: center;
+      padding: 0.5em;
+    }
+
+    .menu button {
+      display: block;
+      width: 100%;
+      padding: 1em;
+      margin: 0.5em 0;
+    }
+
+    .content {
+      float: left;
+      width: 80%;
+      height: 100%;
+      margin: 0;
+      padding: 0.5em;
+    }
+
+    .instructions {
+      margin: 0;
+    }
+
+    .footer {
+      float: none;
+      clear: both;
+      text-align: center;
+      display: block;
+      background-color: black;
+      color: white;
+      padding: 0.2em;
+    }
+
+    .setting {
+      display: table;
+      width: 100%;
+      /*       height: fit-content; /* might not work in other browsers... */
+      */ margin: 0;
+      padding: 0 0 0.5em;
+    }
+
+    .label {
+      float: left;
+      width: 25%;
+      height: 100%;
+    }
+
+    .value {
+      float: left;
+      width: 75%;
+      height: 100%;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100%;
+    }
+
+    input {
+      width: 100%;
+      height: 100%;
+    }
+
+    input[type=color] {
+      width: auto;
+    }
+
+    input[type=number] {
+      width: auto;
+    }
+
+    input[type=radio] {
+      width: auto;
+      height: auto;
+    }
+
+    @media only screen and (max-width:620px) {
+      /* For mobile phones: */
+      .menu,
+      .content,
+      .label,
+      .value {
+        width: 100%;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="body">
     <div class="header">
-      <h1>
-        JESPR Builder
-      </h1>
-      <p>
-        A tool for the creation of the settings and stimulus file for a JESPR experiment.
-      </p>
+      <h1>JESPR Builder</h1>
+      <p class="smaller">A tool for the creation of the settings and stimulus file for a JESPR experiment. </p>
     </div>
     <div class="main">
-      
+      <div class="menu"><button>New</button><button>Export...</button><button>Import...</button><button>Preview</button><button>Help (Wiki)</button></div>
+      <div class="content">
+        <div class="instructions">
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut scelerisque a justo facilisis mollis. Fusce eu elit vehicula, lacinia nisi non, egestas purus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+            Mauris eros mauris, vulputate nec interdum non, bibendum sit amet tellus. In dictum quam vel eros eleifend hendrerit. In suscipit dignissim augue sit amet venenatis. Integer eu urna dictum, gravida neque a, porttitor orci. Sed enim enim, tincidunt
+            nec est dapibus, tincidunt pretium justo. Mauris et ipsum quis est commodo semper. Integer et nunc enim.</p>
+        </div>
+        <h2>General settings </h2>
+        <div class="setting">
+          <div class="label">Title</div>
+          <div class="value"><textarea class="" name="title" style="wrap: soft;" placeholder="Title"></textarea></div>
+        </div>
+
+        <div class="setting-group" id="investigators">
+          <div class="setting">
+            <div class="label">Principal investigator</div>
+            <div class="value"><input type="text" class="" name="pinvestigator" placeholder="Principal investigator"></input>
+            </div>
+          </div>
+
+          <div class="add-placeholder"><button class="add" id="add-investigator">Add another investigator </button></div>
+        </div>
+        <div class="setting">
+          <div class="label">Font name</div>
+          <div class="value"><input type="text" class="" name="font-name" placeholder="Font name"></input>
+          </div>
+        </div>
+        <div class="setting">
+          <div class="label">Font size</div>
+          <div class="value"><input type="number" class="" name="font-size" placeholder="Font size" step="1" min="1"></input>
+          </div>
+        </div>
+        <div class="setting">
+          <div class="label">Text color</div>
+          <div class="value"><input type="color" class="" name="text-color" placeholder="Text color"></input>
+          </div>
+        </div>
+        <div class="setting">
+          <div class="label">Background color</div>
+          <div class="value"><input type="color" class="" name="background-color" placeholder="Background color"></input>
+          </div>
+        </div>
+        <div class="setting">
+          <div class="label">Display method</div>
+
+          <div class="value">
+            <input type="radio" name="display-method" id="dm-cumulative" value="cumulative" /> <label for="dm-cumulative">cumulative</label>
+            <input type="radio" name="display-method" id="dm-moving-window" value="moving window" /> <label for="dm-moving-window">moving window</label>
+          </div>
+        </div>
+        <div class="setting">
+          <div class="label">Orientation</div>
+
+          <div class="value">
+            <input type="radio" name="orientation" id="or-horizontal" value="horizontal" /> <label for="or-horizontal">horizontal</label>
+            <input type="radio" name="orientation" id="or-vertical" value="vertical" /> <label for="or-vertical">vertical</label>
+          </div>
+        </div>
+        <div class="setting">
+          <div class="label">Masking character</div>
+          <div class="value"><input type="text" class="" name="masking-character" placeholder="Masking character" maxlength="1"></input>
+          </div>
+        </div>
+        <div class="setting">
+          <div class="label">Fixation character</div>
+          <div class="value"><input type="text" class="" name="fixation-character" placeholder="Fixation character" maxlength="1"></input>
+          </div>
+        </div>
+        <div class="setting">
+          <div class="label">Minimum instruction time</div>
+          <div class="value"><input type="number" class="" name="min-instruction-time" placeholder="Minimum instruction time" step="100"></input>
+          </div>
+        </div>
+        <div class="setting">
+          <div class="label">Show progress bar</div>
+          <div class="value">
+            <input type="radio" name="show-progress-bar" id="progbar-true" value="true" /> <label for="progbar-true">true</label>
+            <input type="radio" name="show-progress-bar" id="progbar-false" value="false" /> <label for="progbar-false">false</label>
+          </div>
+        </div>
+        <div class="setting">
+          <div class="label">Input method</div>
+          <div class="value">
+            <input type="radio" name="input-method" id="im-keyboard" value="keyboard" /> <label for="im-keyboard">keyboard</label>
+            <input type="radio" name="input-method" id="im-html-button" value="html-button" /> <label for="im-html-button">html button</label>
+            <input type="radio" name="input-method" id="im-touchscreen" value="touchscreen" disabled/> <label for="im-touchscreen">touchscreen</label>
+          </div>
+        </div>
+
+        <div class="setting">
+          <div class="label">Quote mark</div>
+          <div class="value"><input type="text" class="" name="quote-mark" placeholder="Quote mark" maxlength="1"></input>
+          </div>
+        </div>
+        <div class="setting">
+          <div class="label">Show results display</div>
+          <div class="value">
+            <input type="radio" name="show-results-display" id="rdisp-true" value="true" /> <label for="rdisp-true">true</label>
+            <input type="radio" name="show-results-display" id="rdisp-false" value="false" /> <label for="rdisp-false">false</label>
+          </div>
+        </div>
+        <div class="setting">
+          <div class="label">Show log display</div>
+          <div class="value">
+            <input type="radio" name="show-log-display" id="ldisp-true" value="true" /> <label for="ldisp-true">true</label>
+            <input type="radio" name="show-log-display" id="ldisp-false" value="false" /> <label for="ldisp-false">false</label>
+          </div>
+        </div>
+        <h2>Feedback options</h2>
+
+        <div class="setting-group" id="feedback-options">
+
+          <div class="setting-group feedback-option">
+
+            <div class="setting">
+
+              <div class="label">Name</div>
+
+              <div class="value">
+                <input type="text" class="" name="feedback-option-1-name" placeholder="Name"></input>
+              </div>
+            </div>
+          </div>
+
+          <div class="add-placeholder"><button class="add" id="add-feedback-option">Add a feedback option</button></div>
+
+        </div>
+
+
+        <h2>Pre-practice instructions</h2>
+        <div class="setting-group">
+
+          <div class="setting">
+
+            <div class="label">ID</div>
+
+            <div class="value">
+              <textarea class="" name="pre-practice-instructions-1" style="wrap: soft;" placeholder="Instructions"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <h2>Instructions</h2>
+        <h2>Post-practice instructions</h2>
+
+        <h2>Stimuli</h2>
+        <h2>End-of-experiment instructions</h2>
+      </div>
     </div>
     <div class="footer">
-      
+      <p class="smaller">JESPR - Java Enabled Self-paced Reading </p>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>
