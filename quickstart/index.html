@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Self-paced reading experiment using JESPR</title>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        
+        <!-- The following four lines are needed to run a JESPR experiment -->
+        <script src="jespr-experiment.js"></script>
+        <script src="jespr-lib.js"></script>
+        <link href="jespr.css" rel="stylesheet" type="text/css"/>
+        <style>
+            div#top { text-align: center; padding: 2em 2em 0.5em; }
+            div#content { text-align: center; }
+            img.logo { max-width: 280px; }
+            p.buttons button { margin: 1em 0.5em; background-color: gray; color: black; border: none; font-size: 14pt; padding: 1em; border-radius: 0.5em; }
+            p.buttons button:hover { background-color: darkgrey; color: white; }
+            h2 { margin-bottom: 0.2em; margin-top: 1em; }
+        </style>
+    </head>
+    <body>
+        <div id="top">
+            <img src="jespr-logo.png" class="logo" alt="JESPR Logo"/>
+            <h1>JESPR: Javascript-Enabled Self-Paced Reading</h1>
+            <p>A javascript library for conducting Self-Paced Reading experiments via a web browser.</p>
+        </div>
+        <div id="content">
+            <p class="buttons">
+                <button type="button" onclick="checkNGo();" id="btnStartDemo">Click here to<br/>start the<br/>JESPR Demo<br/></button>
+                <button type="button" onclick="window.location.assign('https://github.com/fildpauz/jespr')" id="btnGotoJesprHP">Click here<br/>to go to the<br/>JESPR GitHub page</button>
+            </p>
+        </div>
+        <!-- The form to which results and log data will be attached -->
+        <form id="jesprForm" name="jesprForm" method="POST"></form>
+        <script>
+            function checkNGo(){
+                // The jesprExperimentDesign variable is defined in the
+                // design file and defined above in the <head> section.
+                if (typeof jesprExperimentDesign !== 'undefined'){
+                    start(jesprExperimentDesign);
+                } else {
+                    alert("The jesprExperimentDesign object could not be found. Experiment cannot start");
+                }
+            }
+            
+            function start(experimentDesign){
+                var form = document.getElementById("jesprForm");
+                while (form.hasChildNodes()){
+                    form.removeChild(form.firstChild);
+                }
+                var experiment = new Experiment(experimentDesign, form);
+                if (experiment.validateDesign()){ // Must validate before
+                    experiment.loadDesign();      // loading and then
+                    disableButtons();
+                    experiment.startExperiment(enableButtons); // starting an experiment
+                } else {
+                    alert("The json experiment design seems to be invalid. Check it for errors and try again.");
+                }
+            }
+            
+            function enableButtons(){
+                document.getElementById("btnStartDemo").disabled = false;
+                document.getElementById("btnGotoJesprHP").disabled = false;
+            }
+            
+            function disableButtons(){
+                document.getElementById("btnStartDemo").disabled = true;
+                document.getElementById("btnGotoJesprHP").disabled = true;
+            }
+            
+            enableButtons();
+        </script>
+    </body>
+</html>
