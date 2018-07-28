@@ -32,21 +32,25 @@ var jesprExperimentDesign = {
   "masking-character": "*", // or "_", "-", "+", for example
   "fixation-character": "+", // or "X", for example
   "min-instruction-time": "1500", // how long an instruction screen must appear before a user may continue
-  "show-progress-bar": "true",
+  "show-progress-bar": "true",  // If true, a thin bar will appear across bottom of screen to show progress through exeriment
   "input-method": "keyboard", // or "html-button"
+  // If either of the following are true, after completion of experiment, a read-only
+  // text box will appear on the host html page containing the csv results or the
+  // JESPR event log, respectively.
   "show-results-display": "true",
   "show-log-display": "true",
-  // The feedback-options are optional
+  // The feedback-options are optional. Any number may be defined, but currently,
+  // only two options are displayed when an item prompt is defined.
   "feedback-options": [{
       "feedback-option": {
-        "name": "correct",
+        "name": "correct", // must be a unique name in the experiment file.
         "string": "Yes, that's correct",
         "text-color": "green" // must be valid HTML color (see above)
       }
     },
     {
       "feedback-option": {
-        "name": "incorrect",
+        "name": "incorrect", // must be a unique name in the experiment file.
         "string": "No, that's not correct",
         "text-color": "red" // must be valid HTML color (see above)
       }
@@ -56,7 +60,7 @@ var jesprExperimentDesign = {
   "instruction-screens": [{
       "instruction-screen": {
         "id": "instruction1", // Must be a unique identifier
-        // Limited HTML mark-up is possible: <p>, <b>, <i>
+        // Limited HTML mark-up is possible: <p>, <br/>, <b>, <i>, <u>
         "string": "<p><b>JESPR</b> stands for <i>Javascript-Enabled Self-Paced Reading</i> and is a library for conducting self-paced reading experiments via a web browser. This short demo should give you a quick introduction to the main capabilities that JESPR provides while letting you experience how a JESPR-based experiment proceeds.</p><p>Proceed through the demo by pressing the <b>[space]</b> bar on your keyboard.</p>"
       }
     },
@@ -181,12 +185,14 @@ var jesprExperimentDesign = {
             "group": {
               "name": "my test group", // This name will be output to the results file; can be used to identify one condition
               "order": "random",
+              // Any number of items may be defined here.
               "items": [{
                   "item": {
                     "id": "item01",
                     // These (optional) tags will be output to the results file; can be
                     // used to identify further conditions; number of tags is not limited
                     "tags": ["tag_a", "tag_x"],
+                    // Regions delimited by vertical bar '|'; Region of interest surrounded with curly brackets {}
                     "string": "The|quick|brown|fox|jumped|{over}|the|lazy|dogs."
                   }
                 },
