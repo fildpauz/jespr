@@ -519,34 +519,34 @@ Item.prototype.createHtml = function(){
             var leftOption = document.createElement("span");
             leftOption.id = this.id + "_option_1";
             leftOption.className = "option";
-            leftOption.textContent = this.options[0]["string"];
+            leftOption.textContent = this.options[0]["option"]["string"];
             promptP.appendChild(leftOption);
             var space2 = document.createTextNode(" ");
             promptP.appendChild(space2);
             var rightOption = document.createElement("span");
             rightOption.id = this.id + "_option_2";
             rightOption.className = "option";
-            rightOption.textContent = this.options[1]["string"];
+            rightOption.textContent = this.options[1]["option"]["string"];
             promptP.appendChild(rightOption);
         } else if (this.experiment.inputMethod === "html-button") {
             var leftOptButton = document.createElement("button");
             leftOptButton.id = this.id + "_optButton_1";
             leftOptButton.className = "optButton";
-            leftOptButton.textContent = this.options[0]["string"];
+            leftOptButton.textContent = this.options[0]["option"]["string"];
             promptP.appendChild(leftOptButton);
             var space2 = document.createTextNode(" ");
             promptP.appendChild(space2);
             var rightOptButton = document.createElement("button");
             rightOptButton.id = this.id + "_optButton_2";
             rightOptButton.className = "optButton";
-            rightOptButton.textContent = this.options[1]["string"];
+            rightOptButton.textContent = this.options[1]["option"]["string"];
             promptP.appendChild(rightOptButton);
         } else if (this.experiment.inputMethod === "touchscreen") {
             // TODO: not yet implemented
         }
-        promptP.setAttribute('data-string', this.prompt + "|" + this.options[0]["string"] + "|" + this.options[1]["string"]);
+        promptP.setAttribute('data-string', this.prompt + "|" + this.options[0]["option"]["string"] + "|" + this.options[1]["option"]["string"]);
         itemDiv.appendChild(promptP);
-        if (typeof this.options[0]["feedback"] !== 'undefined' || typeof this.options[0]["feedback-option"] !== 'undefined'){
+        if (typeof this.options[0]["option"]["feedback"] !== 'undefined' || typeof this.options[0]["option"]["feedback-option"] !== 'undefined'){
             // Add feedback element
             var feedbackP = document.createElement("p");
             feedbackP.id = this.id + "_feedback";
@@ -554,35 +554,35 @@ Item.prototype.createHtml = function(){
             var leftFeedback = document.createElement("span");
             leftFeedback.id = this.id + "_feedback_left";
             leftFeedback.className = "feedback";
-            if (typeof this.options[0]["feedback-option"] !== 'undefined'){
-                leftFeedback.innerHTML = this.feedbackOptions[this.options[0]["feedback-option"]]["string"];
-                if (this.feedbackOptions[this.options[0]["feedback-option"]]["text-color"] !== 'undefined'){
-                    leftFeedback.style.color = this.feedbackOptions[this.options[0]["feedback-option"]]["text-color"];
+            if (typeof this.options[0]["option"]["feedback-option"] !== 'undefined'){
+                leftFeedback.innerHTML = this.feedbackOptions[this.options[0]["option"]["feedback-option"]]["string"];
+                if (this.feedbackOptions[this.options[0]["option"]["feedback-option"]]["text-color"] !== 'undefined'){
+                    leftFeedback.style.color = this.feedbackOptions[this.options[0]["option"]["feedback-option"]]["text-color"];
                 }
-                leftFeedback.setAttribute('data-string', this.options[0]["feedback-option"]);
+                leftFeedback.setAttribute('data-string', this.options[0]["option"]["feedback-option"]);
             } else {
-                leftFeedback.innerHTML = this.options[0]["feedback"];
+                leftFeedback.innerHTML = this.options[0]["option"]["feedback"];
                 if (this.options[0]["text-color"] !== 'undefined'){
-                    leftFeedback.style.color = this.options[0]["text-color"];
+                    leftFeedback.style.color = this.options[0]["option"]["text-color"];
                 }
-                leftFeedback.setAttribute('data-string', this.options[0]["feedback"]);
+                leftFeedback.setAttribute('data-string', this.options[0]["option"]["feedback"]);
             }
             feedbackP.appendChild(leftFeedback);
             var rightFeedback = document.createElement("span");
             rightFeedback.id = this.id + "_feedback_right";
             rightFeedback.className = "feedback";
-            if (typeof this.options[1]["feedback-option"] !== 'undefined'){
-                rightFeedback.innerHTML = this.feedbackOptions[this.options[1]["feedback-option"]]["string"];
-                if (this.feedbackOptions[this.options[1]["feedback-option"]]["text-color"] !== 'undefined'){
-                    rightFeedback.style.color = this.feedbackOptions[this.options[1]["feedback-option"]]["text-color"];
+            if (typeof this.options[1]["option"]["feedback-option"] !== 'undefined'){
+                rightFeedback.innerHTML = this.feedbackOptions[this.options[1]["option"]["feedback-option"]]["string"];
+                if (this.feedbackOptions[this.options[1]["option"]["feedback-option"]]["text-color"] !== 'undefined'){
+                    rightFeedback.style.color = this.feedbackOptions[this.options[1]["option"]["feedback-option"]]["text-color"];
                 }
-                rightFeedback.setAttribute('data-string', this.options[1]["feedback-option"]);
+                rightFeedback.setAttribute('data-string', this.options[1]["option"]["feedback-option"]);
             } else {
-                rightFeedback.innerHTML = this.options[1]["feedback"];
-                if (this.options[1]["text-color"] !== 'undefined'){
-                    rightFeedback.style.color = this.options[1]["text-color"];
+                rightFeedback.innerHTML = this.options[1]["option"]["feedback"];
+                if (this.options[1]["option"]["text-color"] !== 'undefined'){
+                    rightFeedback.style.color = this.options[1]["option"]["text-color"];
                 }
-                rightFeedback.setAttribute('data-string', this.options[1]["feedback"]);
+                rightFeedback.setAttribute('data-string', this.options[1]["option"]["feedback"]);
             }
             feedbackP.appendChild(rightFeedback);
             this.showFeedback = true;
@@ -1222,12 +1222,12 @@ Experiment.prototype.setParticipant = function(){
 Experiment.prototype.parseFeedbackOptions = function(design){
     var result = {};
     for (var i=0; i<design.length; i++){
-        result[design[i]["name"]] = {};
-        result[design[i]["name"]]["string"] = design[i]["string"];
-        result[design[i]["name"]]["text-color"] = this.textcolor;
-        if (typeof design[i]["text-color"] !== 'undefined'){
-            if (isValidColor(design[i]["text-color"])){
-                result[design[i]["name"]]["text-color"] = design[i]["text-color"];
+        result[design[i]["feedback-option"]["name"]] = {};
+        result[design[i]["feedback-option"]["name"]]["string"] = design[i]["feedback-option"]["string"];
+        result[design[i]["feedback-option"]["name"]]["text-color"] = this.textcolor;
+        if (typeof design[i]["feedback-option"]["text-color"] !== 'undefined'){
+            if (isValidColor(design[i]["feedback-option"]["text-color"])){
+                result[design[i]["feedback-option"]["name"]]["text-color"] = design[i]["feedback-option"]["text-color"];
             }
         }
     }
@@ -1267,13 +1267,12 @@ Experiment.prototype.loadDesign = function(){
 
 Experiment.prototype.loadTitleScreen = function(design){
     var pi = [];
+    for (var i=0; i<design["investigators"]["primary"].length; i++){
+        pi.push(design["investigators"]["primary"][i]);
+    }
     var oi = [];
-    for (var i=0; i<design["investigators"].length; i++){
-        if (design["investigators"][i]["primary"]){
-            pi.push(design["investigators"][i]["primary"]);
-        } else if (design["investigators"][i]["other"]){
-            oi.push(design["investigators"][i]["other"]);
-        }
+    for (var i=0; i<design["investigators"]["other"].length; i++){
+        oi.push(design["investigators"]["other"][i]);
     }
     var title = new Title(this.title, pi, oi, this);
     var screen = new Screen("title", title);
@@ -1283,7 +1282,7 @@ Experiment.prototype.loadTitleScreen = function(design){
 Experiment.prototype.loadInstructions = function(design){
     var screens = [];
     for (var i=0; i<design.length; i++){
-        var instructions = new Instructions(design[i]["id"], design[i]["string"], this);
+        var instructions = new Instructions(design[i]["instruction-screen"]["id"], design[i]["instruction-screen"]["string"], this);
         var screen = new Screen("instructions", instructions);
         screens.push(screen);
     }
@@ -1465,7 +1464,7 @@ Experiment.prototype.validateDesign = function(){
     // Check structure of pre-practice instructions
     this.jesprLog("Checking pre-practice instruction screens");
     if (this.design["instruction-screens"]){
-        if (!this.isValidInstructionScreen(this.design["instruction-screens"])){
+        if (!this.isValidInstructionScreens(this.design["instruction-screens"])){
             result = false;
         }
     } else {
@@ -1485,7 +1484,7 @@ Experiment.prototype.validateDesign = function(){
     // Check structure of post-practice instructions
     this.jesprLog("Checking post-practice instruction screens");
     if (this.design["post-practice-instruction-screens"]){
-        if (!this.isValidInstructionScreen(this.design["post-practice-instruction-screens"])){
+        if (!this.isValidInstructionScreens(this.design["post-practice-instruction-screens"])){
             result = false;
         }
     } else {
@@ -1504,6 +1503,16 @@ Experiment.prototype.validateDesign = function(){
         result = false;
     }
     this.jesprLog("Result = " + result);
+    // Check structure of ending screens
+    this.jesprLog("Checking ending screens");
+    if (this.design["ending-screens"]){
+        if (!this.isValidInstructionScreens(this.design["ending-screens"])){
+            result = false;
+        }
+    } else {
+        this.jesprLog("No ending screens");
+    }
+    this.jesprLog("Result = " + result);
     this.designValidated = result;
     return result;
 };
@@ -1511,7 +1520,7 @@ Experiment.prototype.validateDesign = function(){
 Experiment.prototype.isValidFeedbackOptions = function(design){
    var result = true;
    for (var i=0; i<design.length; i++){
-       var feedbackOption = design[i];
+       var feedbackOption = design[i]["feedback-option"];
        if (typeof feedbackOption["name"] === 'undefined'){
            this.displayErrorMessage("No 'name' value found for feedback-option");
            this.jesprLog("No 'name' value found for feedback-option");
@@ -1597,10 +1606,10 @@ Experiment.prototype.isValidStimuliSet = function(stimuliSet){
     return result;
 };
 
-Experiment.prototype.isValidInstructionScreen = function(instructions){
+Experiment.prototype.isValidInstructionScreens = function(instructions){
     var result = true;
     for (var i=0; i<instructions.length; i++){
-        var instruction = instructions[i];
+        var instruction = instructions[i]["instruction-screen"];
         // Check ID validity
         if (!instruction["id"]){
             this.displayErrorMessage("Instruction has no id");
