@@ -152,6 +152,7 @@ span.option {
     text-align: center;
     margin-top: 0.25em;
     margin-bottom: 0.25em;
+    white-space: nowrap;
 }
 
 span.option {
